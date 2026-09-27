@@ -1,22 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GoogleGenAI } from '@google/genai';
 
 type Message = {
   role: 'user' | 'model' | 'system';
   text: string;
 };
 
-const SYSTEM_PROMPT = `You are a Senior Technical Interviewer conducting a React Mock Interview. 
-The candidate has learned about: JS fundamentals (Promises, closures), React core hooks (useEffect, useMemo, custom hooks), React 18 (useDeferredValue, Suspense), React Router, React Testing Library, Controlled vs Uncontrolled components, and React 19 (useActionState, useOptimistic, use hook). 
-Instructions:
-1. First, pick one random concept from the list above and ask a single, challenging interview question about it.
-2. Wait for the candidate to answer.
-3. When they answer, evaluate their response critically but constructively. Correct any misconceptions, give them a score out of 10, and then immediately ask the next question on a DIFFERENT random concept.
-4. Keep your questions and evaluations concise and professional. Do NOT output markdown headers that are too large, just standard bold text.`;
-
 export function MockInterviewModule() {
-  const [apiKey, setApiKey] = useState(process.env.NEXT_PUBLIC_GEMINI_API_KEY || '');
+  // Optional: a visitor's own Gemini key, used only if they choose to enter one. Never the
+  // site's own key — that lives server-side only (see app/api/mock-interview/route.ts) and is
+  // never sent to, or readable from, the browser.
+  const [apiKey, setApiKey] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -32,46 +26,33 @@ export function MockInterviewModule() {
   }, [messages, isTyping]);
 
   const callGemini = async (chatHistory: Message[]) => {
-    if (!apiKey) {
-      setError('Please provide a Gemini API Key to start the interview.');
-      return;
-    }
     setError('');
     setIsTyping(true);
 
     try {
-      const contents = [
-        { role: 'user', parts: [{ text: SYSTEM_PROMPT }] },
-        { role: 'model', parts: [{ text: 'Understood. I am ready to begin the mock interview.' }] },
-        ...chatHistory.map(m => ({
-          role: m.role,
-          parts: [{ text: m.text }]
-        }))
-      ];
-
-      const client = new GoogleGenAI({ apiKey });
-      const response = await client.models.generateContent({
-        model: 'gemini-3.5-flash',
-        contents: contents
+      const res = await fetch('/api/mock-interview', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          history: chatHistory.map((m) => ({ role: m.role, text: m.text })),
+          apiKey: apiKey.trim() || undefined,
+        }),
       });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'An unexpected error occurred.');
 
-      const modelReply = response.text;
-
+      const modelReply: string = data.text;
       if (modelReply) {
         setMessages(prev => [...prev, { role: 'model', text: modelReply }]);
       }
-    } catch (err: any) {
-      setError(err.message || 'An unexpected error occurred.');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred.');
     } finally {
       setIsTyping(false);
     }
   };
 
   const handleStart = () => {
-    if (!apiKey.trim()) {
-      setError('API Key is required.');
-      return;
-    }
     const startMsg: Message = { role: 'user', text: 'Hello! I am ready to start the interview. Please ask me your first question.' };
     setMessages([startMsg]);
     callGemini([startMsg]);
@@ -100,17 +81,18 @@ export function MockInterviewModule() {
       {!messages.length && (
         <div className="max-w-xl mx-auto bg-white/5 border border-white/10 rounded-2xl p-8 shadow-2xl backdrop-blur-md">
           <label className="block text-sm font-semibold text-slate-300 mb-2">
-            Gemini API Key {process.env.NEXT_PUBLIC_GEMINI_API_KEY && '(Loaded from Env)'}
+            Gemini API Key (optional)
           </label>
           <input
             type="password"
             value={apiKey}
             onChange={(e) => setApiKey(e.target.value)}
-            placeholder="AIzaSy..."
+            placeholder="AIzaSy... (leave blank to use this demo's key, if configured)"
+            autoComplete="off"
             className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all mb-2"
           />
           <p className="text-xs text-slate-500 mb-6">
-            You can use the default key from your environment variables, or enter a new one above.
+            Leave this blank to use this site&apos;s key, if one is configured. Your own key (if you enter one) is sent to our server for this request only, and never stored.
           </p>
           {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
           <button
