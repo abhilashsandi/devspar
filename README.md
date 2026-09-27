@@ -34,3 +34,16 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Study guides
+
+The interview-prep pages (`/interview-prep`, `/nextjs`, `/genai`, ...) are static: each `app/<guide>/content.json` holds one self-contained HTML document (questions as a `DATA` array, plus the shared card/flashcard/search engine) that `app/components/StaticPrepClient.tsx` renders in an iframe.
+
+After changing any guide's questions, regenerate the cross-guide search index and the homepage counts:
+
+```bash
+npm run study:index
+```
+
+This rewrites `public/search-index.json` and `app/lib/studyMeta.json`. Commit both with the content change.
+`/my-prep` is an encrypted private page (`scripts/encrypt-private.mjs`); nothing links to it.

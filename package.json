@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "study:index": "node scripts/study/build-index.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

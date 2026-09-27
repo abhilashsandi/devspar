@@ -35,7 +35,12 @@ export default function ReactTrainingPage() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setMounted(true);
+    // deep link such as /react-training/labs#interview opens that tab
+    const wanted = window.location.hash.replace(/^#/, '');
+    if (tabs.some((t) => t.id === wanted)) setActiveTab(wanted);
+  }, []);
 
   const ActiveComponent = tabs.find(t => t.id === activeTab)?.Component || tabs[0].Component;
 
