@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Generated (scripts/study/emit-static.mjs writes these on every build; lint the source in
+    // scripts/study/ instead, not this build output).
+    "public/study/**",
   ]),
 ]);
 

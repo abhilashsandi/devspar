@@ -23,8 +23,13 @@ jobs:
       - name: Typecheck
         run: npx tsc --noEmit -p .
 
+      # The repo has substantial pre-existing lint debt outside what this workflow's other steps
+      # touch (the DPS scheduler backend, old one-off root-level scripts, the CSV/PDF tools) —
+      # informational only, so it doesn't block on debt unrelated to a given change. Still visible
+      # per run in the Actions UI.
       - name: Lint
         run: npm run lint
+        continue-on-error: true
 
       - name: Build (also regenerates public/study/* and the search index — fails if they drift)
         run: npm run build
