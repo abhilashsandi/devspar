@@ -1,14 +1,14 @@
 import StaticPrepClient from '../components/StaticPrepClient';
-import content from './content.json';
 
 export const metadata = {
   title: 'Optimize at Every Layer — Interview Prep',
+  description: "A full performance-optimization playbook: client, edge, API, server, cache and database, with the numbers worth knowing cold.",
 };
 
 export default function PerformanceOptimizationPage() {
   return (
     <StaticPrepClient
-      html={(content as { html: string }).html}
+      src="/study/performance-optimization.html"
       title="Optimize at Every Layer — Interview Prep"
       loadingLabel="Loading optimization guide…"
     />

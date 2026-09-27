@@ -1,14 +1,14 @@
 import StaticPrepClient from '../components/StaticPrepClient';
-import content from './content.json';
 
 export const metadata = {
   title: 'Coding Practice — Interview Prep',
+  description: "Algorithm, data-structure and React coding exercises with worked solutions, approach and trade-offs, plus interactive step-through labs.",
 };
 
 export default function Page() {
   return (
     <StaticPrepClient
-      html={(content as { html: string }).html}
+      src="/study/coding-questions.html"
       title="Coding Practice — Interview Prep"
       loadingLabel="Loading study guide…"
     />

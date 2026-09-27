@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: npx tsc --noEmit -p .
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build (also regenerates public/study/* and the search index — fails if they drift)
+        run: npm run build
+
+      - name: Check generated files are committed and up to date
+        run: |
+          git status --porcelain public/study app/lib/studyMeta.json public/search-index.json
+          if [ -n "$(git status --porcelain public/study app/lib/studyMeta.json public/search-index.json)" ]; then
+            echo "::error::public/study, studyMeta.json or search-index.json is out of date. Run 'npm run study:build' and commit the result."
+            git diff --stat public/study app/lib/studyMeta.json public/search-index.json
+            exit 1
+          fi
+
+      - name: Install the Playwright browser used by the tests
+        run: npx playwright install --with-deps chromium
+
+      - name: Test (starts a production server and checks every guide, the engine, and the homepage)
+        run: npm test

@@ -1,14 +1,14 @@
 import StaticPrepClient from '../components/StaticPrepClient';
-import content from './content.json';
 
 export const metadata = {
   title: 'JavaScript — Interview Prep',
+  description: "Closures, prototypes, the event loop, promises, generators, modules and DOM events, categorized with flashcards and a Quick Reference.",
 };
 
 export default function Page() {
   return (
     <StaticPrepClient
-      html={(content as { html: string }).html}
+      src="/study/javascript.html"
       title="JavaScript — Interview Prep"
       loadingLabel="Loading study guide…"
     />

@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Interview Cheatsheet</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F6F4EF;
+    --panel:#FFFFFF;
+    --panel-2:#FBF9F4;
+    --border:#E4E0D4;
+    --text:#211F1B;
+    --muted:#716B5E;
+    --accent:#2F7A72;
+    --accent-ink:#F3FBF9;
+    --accent-soft:#EDF6F4;
+    --gold:#B8792F;
+    --gold-soft:#F5E9D8;
+    --code-bg:#EFECE2;
+    --danger:#B5502F;
+    --shadow: 0 1px 2px rgba(30,26,18,0.05);
+    --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#15181A;
+      --panel:#1B1F21;
+      --panel-2:#202426;
+      --border:#2C3133;
+      --text:#E9E6DE;
+      --muted:#9A968A;
+      --accent:#5FBFB2;
+      --accent-ink:#0B1716;
+      --accent-soft:#1E3230;
+      --gold:#D9A15C;
+      --gold-soft:#332918;
+      --code-bg:#20262A;
+      --danger:#D98866;
+      --shadow: 0 1px 2px rgba(0,0,0,0.4);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#15181A;
+    --panel:#1B1F21;
+    --panel-2:#202426;
+    --border:#2C3133;
+    --text:#E9E6DE;
+    --muted:#9A968A;
+    --accent:#5FBFB2;
+    --accent-ink:#0B1716;
+    --accent-soft:#1E3230;
+    --gold:#D9A15C;
+    --gold-soft:#332918;
+    --code-bg:#20262A;
+    --danger:#D98866;
+    --shadow: 0 1px 2px rgba(0,0,0,0.4);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--accent);}
+
+  .app{
+    display:flex;
+    min-height:100vh;
+  }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    width:260px;
+    flex:0 0 260px;
+    border-right:1px solid var(--border);
+    padding:28px 16px 24px;
+    position:sticky;
+    top:0;
+    height:100vh;
+    overflow-y:auto;
+  }
+  .brand{
+    font-family:var(--mono);
+    font-size:13px;
+    letter-spacing:0.02em;
+    color:var(--muted);
+    padding:0 8px 18px;
+    border-bottom:1px solid var(--border);
+    margin-bottom:14px;
+  }
+  .brand b{color:var(--text);font-weight:600;}
+  .nav-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    width:100%;
+    text-align:left;
+    padding:10px 10px;
+    border-radius:8px;
+    border:1px solid transparent;
+    background:transparent;
+    color:var(--text);
+    font-family:var(--sans);
+    font-size:14.5px;
+    cursor:pointer;
+    margin-bottom:2px;
+  }
+  .nav-item:hover{background:var(--panel-2);}
+  .nav-item.active{
+    background:var(--accent-soft);
+    border-color:var(--accent);
+    color:var(--text);
+    font-weight:600;
+  }
+  .nav-num{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--muted);
+    width:18px;
+    flex:0 0 18px;
+  }
+  .nav-item.active .nav-num{color:var(--accent);}
+  .nav-label{flex:1;}
+  .nav-count{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--muted);
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    padding:1px 6px;
+    border-radius:999px;
+  }
+  .progress-box{
+    margin-top:20px;
+    padding:14px 12px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:var(--panel-2);
+  }
+  .progress-box .label{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--muted);
+    margin-bottom:8px;
+  }
+  .progress-track{
+    height:6px;
+    border-radius:999px;
+    background:var(--border);
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    background:var(--accent);
+    width:0%;
+    transition:width .25s ease;
+  }
+  .progress-num{
+    margin-top:8px;
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--text);
+  }
+  .reset-btn{
+    margin-top:10px;
+    width:100%;
+    font-family:var(--sans);
+    font-size:12px;
+    color:var(--muted);
+    background:transparent;
+    border:1px solid var(--border);
+    border-radius:7px;
+    padding:6px 8px;
+    cursor:pointer;
+  }
+  .reset-btn:hover{color:var(--danger);border-color:var(--danger);}
+
+  /* ---------- Main ---------- */
+  .main{
+    flex:1;
+    min-width:0;
+    padding:36px 40px 80px;
+    max-width:1200px;
+  }
+  .hero{
+    margin-bottom:34px;
+  }
+  .hero .eyebrow-free{
+    font-family:var(--mono);
+    font-size:13px;
+    color:var(--accent);
+    margin:0 0 10px;
+  }
+  .hero h1{
+    font-family:var(--mono);
+    font-size:30px;
+    line-height:1.25;
+    margin:0 0 12px;
+    font-weight:600;
+    letter-spacing:-0.01em;
+  }
+  .hero p{
+    color:var(--muted);
+    max-width:62ch;
+    margin:0 0 6px;
+    font-size:15px;
+  }
+  .hero .source-note{
+    font-size:13px;
+    color:var(--muted);
+    border-left:2px solid var(--border);
+    padding-left:12px;
+    margin-top:16px;
+  }
+
+  .section-head{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    margin:44px 0 16px;
+    padding-bottom:10px;
+    border-bottom:1px solid var(--border);
+  }
+  .section-head .num{
+    font-family:var(--mono);
+    color:var(--accent);
+    font-size:14px;
+  }
+  .section-head h2{
+    font-family:var(--mono);
+    font-size:19px;
+    margin:0;
+    font-weight:600;
+  }
+  .section-head .count{
+    margin-left:auto;
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--muted);
+  }
+
+  .qcard{
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:var(--panel);
+    margin-bottom:12px;
+    overflow:hidden;
+  }
+  .qhead{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    padding:14px 16px;
+    cursor:pointer;
+    user-select:none;
+  }
+  .qcheck{
+    margin-top:3px;
+    flex:0 0 auto;
+    width:18px;height:18px;
+    border-radius:5px;
+    border:1.5px solid var(--border);
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    background:var(--panel);
+  }
+  .qcheck.done{
+    background:var(--accent);
+    border-color:var(--accent);
+  }
+  .qcheck.done::after{
+    content:"✓";
+    color:var(--accent-ink);
+    font-size:12px;
+    font-weight:700;
+  }
+  .qtext{
+    flex:1;
+    font-size:15px;
+    font-weight:500;
+  }
+  .qtext.done-text{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--border);}
+  .qchevron{
+    flex:0 0 auto;
+    color:var(--muted);
+    font-family:var(--mono);
+    font-size:13px;
+    transform:rotate(0deg);
+    transition:transform .15s ease;
+    margin-top:2px;
+  }
+  .qcard.open .qchevron{transform:rotate(90deg);}
+  .qbody{
+    display:none;
+    padding:2px 16px 20px 46px;
+    border-top:1px solid var(--border);
+    font-size:14.5px;
+  }
+  .qcard.open .qbody{display:block; padding-top:14px;}
+  .qbody p{margin:0 0 12px;}
+  .qbody ul{margin:0 0 12px; padding-left:20px;}
+  .qbody li{margin-bottom:6px;}
+  .qbody strong{color:var(--text);}
+  code{
+    font-family:var(--mono);
+    background:var(--code-bg);
+    padding:1px 5px;
+    border-radius:4px;
+    font-size:0.92em;
+  }
+  pre{
+    font-family:var(--mono);
+    background:var(--code-bg);
+    padding:12px 14px;
+    border-radius:8px;
+    overflow-x:auto;
+    font-size:13px;
+    margin:0 0 14px;
+    border:1px solid var(--border);
+  }
+  .diagram{
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:14px;
+    margin:0 0 14px;
+    overflow-x:auto;
+  }
+  .diagram svg{display:block; margin:0 auto; max-width:100%; height:auto;}
+  .tag{
+    display:inline-block;
+    font-family:var(--mono);
+    font-size:10.5px;
+    color:var(--gold);
+    background:var(--gold-soft);
+    border:1px solid var(--gold);
+    border-radius:5px;
+    padding:1px 6px;
+    margin-bottom:10px;
+  }
+  table.cmp{
+    width:100%;
+    border-collapse:collapse;
+    margin:0 0 14px;
+    font-size:13.5px;
+  }
+  table.cmp th, table.cmp td{
+    border:1px solid var(--border);
+    padding:7px 10px;
+    text-align:left;
+    vertical-align:top;
+  }
+  table.cmp th{
+    background:var(--panel-2);
+    font-family:var(--mono);
+    font-size:12px;
+    font-weight:600;
+  }
+
+  ::selection{background:var(--accent-soft);}
+
+  @media (max-width: 820px){
+    .sidebar{
+      width:100%;
+      flex:none;
+      height:auto;
+      position:relative;
+      border-right:none;
+      border-bottom:1px solid var(--border);
+    }
+    .app{flex-direction:column;}
+    .main{padding:24px 18px 60px; max-width:100%;}
+  }
+
+  .tbadge{display:inline-block; font-family:var(--mono); font-size:11px; letter-spacing:.04em; color:var(--gold); background:var(--gold-soft); border:1px solid var(--gold); border-radius:99px; padding:2px 10px; margin-bottom:10px;}
+  .deeper{margin-top:14px; padding-top:10px; border-top:1px dashed var(--border); font-size:13.5px; line-height:1.9;}
+  a.go{color:var(--accent); text-decoration:none; border-bottom:1px solid var(--accent-soft); white-space:nowrap;}
+  a.go:hover{border-bottom-color:var(--accent);}
+
+  .search{width:100%; box-sizing:border-box; margin:0 0 14px; padding:9px 11px; font:inherit; font-size:13.5px; color:var(--text); background:var(--panel); border:1px solid var(--border); border-radius:8px;}
+  .search:focus{outline:2px solid var(--accent); outline-offset:1px;}
+  .qmain{flex:1; min-width:0; display:flex; flex-direction:column; gap:4px;}
+  .qchips{display:flex; gap:6px; flex-wrap:wrap;}
+  .qsec,.qcore{font-family:var(--mono); font-size:10.5px; padding:1px 7px; border-radius:99px; border:1px solid var(--border); color:var(--muted); background:var(--panel-2);}
+  .qcore{color:var(--gold); border-color:var(--gold); background:var(--gold-soft);}
+  .qsum{font-size:13.5px; color:var(--muted); line-height:1.5;}
+  .qcard.open .qsum{display:none;}
+  .qcard.focused{box-shadow:0 0 0 2px var(--accent);}
+  .qcheck:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+  mark{background:var(--gold-soft); color:var(--text); border-radius:3px; padding:0 1px;}
+  .toolbar{display:flex; flex-wrap:wrap; align-items:center; gap:10px 16px; margin:-4px 0 16px; font-size:13px; color:var(--muted);}
+  .toolbar .tmeta{font-family:var(--mono); font-size:12px; margin-right:auto;}
+  .toolbar .tgroup{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
+  .toolbar button{font:inherit; font-size:12.5px; color:var(--text); background:var(--panel); border:1px solid var(--border); border-radius:7px; padding:5px 10px; cursor:pointer;}
+  .toolbar button:hover{border-color:var(--accent);}
+  .toolbar label{display:flex; gap:5px; align-items:center; cursor:pointer; white-space:nowrap;}
+  .toolbar input{accent-color:var(--accent);}
+  .empty{color:var(--muted); font-size:14px; padding:18px; border:1px dashed var(--border); border-radius:10px;}
+  .pager{display:flex; justify-content:space-between; gap:12px; margin-top:26px;}
+  .pager button{font:inherit; font-size:13.5px; color:var(--accent); background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:10px 14px; cursor:pointer; max-width:48%; text-align:left;}
+  .pager button:last-child{text-align:right;}
+  .pager button:hover{border-color:var(--accent);}
+  .back-btn{position:fixed; right:22px; bottom:22px; z-index:10; font:inherit; font-size:13.5px; font-weight:600; color:var(--accent-ink); background:var(--accent); border:0; border-radius:99px; padding:10px 16px; cursor:pointer; box-shadow:0 4px 14px rgba(0,0,0,.18);}
+  .nav-item.complete .nav-count{color:var(--accent); border-color:var(--accent);}
+  .keys{display:inline-block; margin-top:6px;}
+  kbd{font-family:var(--mono); font-size:11px; padding:0 5px; border:1px solid var(--border); border-bottom-width:2px; border-radius:4px; background:var(--panel);}
+  @media (max-width: 820px){ .keys{display:none;} .toolbar .tmeta{width:100%;} }
+  .hero-actions{margin-top:14px;}
+  .fc-start,.toolbar .flash-btn{font:inherit; font-weight:600; color:var(--accent-ink); background:var(--accent); border:1px solid var(--accent); border-radius:8px; cursor:pointer;}
+  .fc-start{font-size:14px; padding:9px 16px;}
+  .toolbar .flash-btn{color:var(--accent-ink);}
+  .fc-start:hover,.toolbar .flash-btn:hover{filter:brightness(1.08);}
+  body.fc-lock{overflow:hidden;}
+  .fc{position:fixed; inset:0; z-index:50; background:rgba(10,12,14,.55); display:flex; align-items:center; justify-content:center; padding:24px;}
+  .fc[hidden]{display:none;}
+  .fc-dialog{width:min(920px,100%); max-height:100%; display:flex; flex-direction:column; background:var(--bg); border:1px solid var(--border); border-radius:14px; box-shadow:0 20px 60px rgba(0,0,0,.35); outline:none;}
+  .fc-head{display:flex; justify-content:space-between; align-items:flex-start; gap:12px; padding:16px 20px 10px;}
+  .fc-title{font-family:var(--mono); font-size:14px; font-weight:600;}
+  .fc-count{font-family:var(--mono); font-size:12px; color:var(--muted); margin-top:3px;}
+  .fc-tools{display:flex; gap:12px; align-items:center; font-size:13px; color:var(--muted);}
+  .fc-tools label{display:flex; gap:5px; align-items:center; cursor:pointer;}
+  .fc-tools input{accent-color:var(--accent);}
+  .fc-tools button{font:inherit; font-size:15px; color:var(--muted); background:transparent; border:1px solid var(--border); border-radius:7px; width:32px; height:32px; cursor:pointer;}
+  .fc-bar{height:4px; background:var(--border); margin:0 20px;}
+  .fc-bar i{display:block; height:100%; width:0; background:var(--accent); transition:width .2s ease;}
+  .fc-body{flex:1; overflow-y:auto; padding:22px 24px; min-height:220px;}
+  .fc-q{font-family:var(--sans); font-size:21px; line-height:1.4; margin:10px 0 16px; font-weight:600;}
+  .fc-prompt{color:var(--muted); font-size:14px; border:1px dashed var(--border); border-radius:10px; padding:26px 18px; text-align:center;}
+  .fc .qbody.fc-a{display:block; border-top:1px solid var(--border); padding:16px 0 0; font-size:14.5px;}
+  .fc-done h3{font-family:var(--mono); margin:0 0 8px;}
+  .fc-done .fc-sub{color:var(--muted); margin:14px 0 6px;}
+  .fc-done ul{padding-left:20px; font-size:14px;}
+  .fc-actions{display:flex; gap:10px; justify-content:flex-end; padding:12px 20px; border-top:1px solid var(--border); flex-wrap:wrap;}
+  .fc-actions button{font:inherit; font-size:14px; color:var(--text); background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:9px 16px; cursor:pointer;}
+  .fc-actions button.primary{color:var(--accent-ink); background:var(--accent); border-color:var(--accent); font-weight:600;}
+  .fc-actions button.again{border-color:var(--gold); color:var(--gold);}
+  .fc-actions button:first-child{margin-right:auto;}
+  .fc-actions kbd{margin-left:6px; background:transparent; border-color:currentColor; opacity:.75;}
+  .fc-keys{font-size:11.5px; color:var(--muted); padding:0 20px 14px; text-align:right;}
+  @media (max-width: 820px){ .fc{padding:0;} .fc-dialog{height:100%; border-radius:0;} .fc-keys{display:none;} .fc-q{font-size:18px;} }
+
+  .lede{font-size:15px; color:var(--muted);}
+  .callout{background:var(--accent-soft); border:1px solid var(--accent); border-radius:9px; padding:11px 14px; margin:0 0 14px;}
+  .note{font-size:13px; color:var(--muted);}
+  .codelabel{font-family:var(--mono); font-size:12px; color:var(--accent); margin:10px 0 4px;}
+  .verified{font-size:12.5px; color:var(--muted); border-top:1px dashed var(--border); padding-top:8px; margin-top:12px;}
+  .diagram.lightbg{background:#F8FAFC; border-color:#CBD5E1;}
+  .diagram.lightbg .codelabel{color:#334155;}
+  .quizopts{display:block; font-weight:400; font-size:13px; color:var(--muted); margin-top:4px; line-height:1.55;}
+  ol.quiz{padding-left:26px;} ol.quiz li{margin-bottom:5px;}
+  ol.quiz li.right{color:var(--accent); font-weight:600;}
+  hr{border:0; border-top:1px dashed var(--border); margin:14px 0;}
+  a.fc-start.alt{display:inline-block; text-decoration:none; margin-left:8px; background:var(--panel); color:var(--accent); border:1px solid var(--accent);}
+
+  /* study-v3: compact phone menu + cross-guide search results */
+  .nav-toggle{display:none;}
+  .ghits{margin-top:22px;}
+  .gh-head{display:flex; justify-content:space-between; gap:10px; font-family:var(--mono); font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin:0 0 8px;}
+  .gh{display:block; text-decoration:none; color:var(--text); background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:10px 14px; margin-bottom:8px;}
+  .gh:hover{border-color:var(--accent);}
+  .gh-t{display:block; font-weight:600; font-size:14.5px;}
+  .gh-m{display:block; font-family:var(--mono); font-size:11.5px; color:var(--accent); margin:2px 0;}
+  .gh-s{display:block; font-size:13px; color:var(--muted);}
+  .gh-note{font-size:13px; color:var(--muted);}
+  @media (max-width: 820px){
+    .sidebar{position:sticky; top:0; z-index:30; display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:10px 14px; background:var(--bg);}
+    .sidebar .brand{display:none;}
+    .sidebar .search{flex:1 1 130px; width:auto; min-width:0; margin:0;}
+    .nav-toggle{display:flex; align-items:center; justify-content:space-between; gap:8px; flex:0 1 54%; min-width:0; padding:9px 12px; font:inherit; font-size:13.5px; font-weight:600; color:var(--text); background:var(--accent-soft); border:1px solid var(--accent); border-radius:8px; cursor:pointer;}
+    .nav-toggle span{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+    .nav-toggle i{font-style:normal; color:var(--accent); transition:transform .15s;}
+    .sidebar.open .nav-toggle i{transform:rotate(180deg);}
+    .nav-panel{display:none; flex:1 0 100%; max-height:calc(100vh - 96px); overflow-y:auto; border-top:1px solid var(--border); padding-top:8px;}
+    .sidebar.open .nav-panel{display:block;}
+    .hero{margin-top:0;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="sidebar" id="sidebar">
+    <div class="brand"><b>Cheatsheet</b><br>fast pass before you walk in</div>
+    <input class="search" id="searchInput" type="search" placeholder="Search all guides   /" aria-label="Search all guides">
+    <button class="nav-toggle" id="navToggle" type="button" aria-expanded="false" aria-controls="navPanel"><span id="navToggleLbl">Sections</span><i>▾</i></button>
+    <div class="nav-panel" id="navPanel">
+    <div id="navList"></div>
+    <div class="progress-box">
+      <div class="label">REVIEWED</div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-num" id="progressNum">0 / 0</div>
+      <button class="reset-btn" id="resetBtn">Reset progress</button>
+    </div>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="hero">
+      <p class="eyebrow-free">Fast pass</p>
+      <h1>Interview cheatsheet</h1>
+      <p>A last-two-hours plan and a one-line answer for every topic. Say the answer out loud before you reveal it. Use <strong>★ Core only</strong> for the 30-minute pass, and follow the link on any card to the full explanation in the guides.</p>
+      <div class="hero-actions"><button id="fcCore" class="fc-start" type="button">▶ Flashcards: all ★ core questions</button>
+      <button id="fcWeak" class="fc-start alt" type="button" hidden>↻ Review weak cards</button></div>
+      <div class="source-note"><span id="heroMeta"></span><br><span class="keys"><kbd>/</kbd> search · <kbd>j</kbd> <kbd>k</kbd> move · <kbd>o</kbd> open · <kbd>x</kbd> mark reviewed · <kbd>n</kbd> <kbd>p</kbd> next / previous section · <kbd>Esc</kbd> clear</span></div>
+    </div>
+    <div id="content"></div>
+    <button id="backBtn" class="back-btn" hidden></button>
+    <div id="fc" class="fc" hidden>
+      <div class="fc-dialog" role="dialog" aria-modal="true" aria-label="Flashcards" tabindex="-1">
+        <div class="fc-head">
+          <div><div class="fc-title"></div><div class="fc-count"></div></div>
+          <div class="fc-tools"><label><input type="checkbox" id="fcShuffle"> Shuffle</label><button data-fc="close" aria-label="Close flashcards">✕</button></div>
+        </div>
+        <div class="fc-bar"><i></i></div>
+        <div class="fc-body"></div>
+        <div class="fc-actions"></div>
+        <div class="fc-keys"><kbd>Space</kbd> reveal · <kbd>1</kbd> again · <kbd>2</kbd> got it (marks reviewed) · <kbd>←</kbd> <kbd>→</kbd> back / skip · <kbd>Esc</kbd> close</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+const DATA = [
+{
+  id:"review", title:"Start Here: Last 2 Hours",
+  questions:[
+    {
+      q:"How do you spend the last two hours before the interview?",
+      a:`<table class="cmp"><tr><th>Minutes left</th><th>What to do</th></tr><tr><td>120 → 100</td><td>Read the guardrails below. Say your 60-second introduction and one project story out loud, once.</td></tr><tr><td>100 → 80</td><td>Write down every fact you still need to verify (versions, what you personally built, real numbers).</td></tr><tr><td>80 → 50</td><td>Work through the <strong>★ core</strong> cards: say each answer aloud before you reveal it. Open the full guide only when you cannot.</td></tr><tr><td>50 → 35</td><td>Your stack deep-dive: <a href="/nextjs" target="_top">Next.js</a>, <a href="/react-training" target="_top">React</a>, <a href="/nodejs" target="_top">Node.js</a>, <a href="/genai" target="_top">GenAI</a> if the role needs it.</td></tr><tr><td>35 → 20</td><td>Design and reliability: retries, circuit breaker, idempotency, queues. Re-read the opening and pacing of <a href="/system-design-scale" target="_top">System Design at Scale</a>.</td></tr><tr><td>20 → 10</td><td>Go through the verify list. Prepare <strong>three questions to ask them</strong>.</td></tr><tr><td>last 10</td><td>Stop studying. Water, notes closed, camera and audio check, breathe.</td></tr></table><h3>Say-it-straight guardrails</h3><ul><li>Say <strong>"I built / I worked on"</strong> only for what you did. "I did not own that, here is how I would find out" is a strong answer.</li><li><strong>No invented numbers.</strong> If you cannot reproduce a figure, retract it and give the underlying facts.</li><li>For any design question: <strong>clarify, estimate, boundaries, data, failure modes, trade-offs</strong>, and say what you would measure.</li><li>Stuck? Restate the question, state your assumptions, answer the part you know, flag the rest.</li></ul><h3>Verify before you walk in</h3><ul><li>The framework and library versions you will talk about.</li><li>Which mechanisms you really used (queues, caching, tracing) and which you would add.</li><li>One real performance or quality win with a before and after number, or plan to say you have none.</li><li>One example of mentoring or leading a change, with a named outcome.</li></ul><div class="callout"><strong>Numbers to know cold:</strong> ALB idle timeout 60 s. Heroku idle 55 s, SIGTERM grace 30 s. RAM ~100 ns, Redis ~1 ms, same-region network 1 to 2 ms, cross-continent ~100 to 150 ms.</div>`
+    },
+    {
+      q:"The must-know 30-minute pass",
+      a:`<p>The 38 topics that come up most. Tick <strong>★ Core only</strong> in any section to see just these, or start the flashcards from the button at the top of the page.</p><p><strong>JavaScript</strong><br><a class="go" href="#javascript:0" data-go="javascript:0">Closures</a> · <a class="go" href="#javascript:1" data-go="javascript:1">Event loop</a></p><p><strong>React</strong><br><a class="go" href="#react:12" data-go="react:12">Why Radix</a> · <a class="go" href="#react:5" data-go="react:5">useEffect deps and cleanup</a> · <a class="go" href="#react:6" data-go="react:6">When NOT to memoize</a> · <a class="go" href="#react:3" data-go="react:3">Performance audit process</a> · <a class="go" href="#react:0" data-go="react:0">Local vs. global state</a></p><p><strong>Node.js</strong><br><a class="go" href="#node-js:4" data-go="node-js:4">Event loop ordering</a> · <a class="go" href="#node-js:1" data-go="node-js:1">Backpressure</a></p><p><strong>Databases</strong><br><a class="go" href="#databases:0" data-go="databases:0">Query went from 1s to 30s</a> · <a class="go" href="#databases:4" data-go="databases:4">MongoDB schema design</a> · <a class="go" href="#databases:5" data-go="databases:5">Zero-downtime schema change</a></p><p><strong>Cloud &amp; Deployment</strong><br><a class="go" href="#cloud:6" data-go="cloud:6">Lambda cold starts</a> · <a class="go" href="#cloud:1" data-go="cloud:1">Multi-AZ vs. multi-region</a> · <a class="go" href="#cloud:2" data-go="cloud:2">Blue-green vs. canary vs. rolling</a> · <a class="go" href="#cloud:3" data-go="cloud:3">Logs vs. metrics vs. traces</a></p><p><strong>Architecture &amp; Reliability</strong><br><a class="go" href="#architecture:9" data-go="architecture:9">Reliable RabbitMQ</a> · <a class="go" href="#architecture:10" data-go="architecture:10">SSE on the wire</a> · <a class="go" href="#architecture:11" data-go="architecture:11">Why queue + SSE, not polling</a> · <a class="go" href="#architecture:8" data-go="architecture:8">Node service architecture</a> · <a class="go" href="#architecture:0" data-go="architecture:0">Circuit breaker</a> · <a class="go" href="#architecture:1" data-go="architecture:1">Retry pattern</a> · <a class="go" href="#architecture:4" data-go="architecture:4">Rate limiting algorithms</a></p><p><strong>Security</strong><br><a class="go" href="#security:2" data-go="security:2">RBAC done right</a> · <a class="go" href="#security:3" data-go="security:3">Securing AI-written code</a> · <a class="go" href="#security:1" data-go="security:1">JWT structure &amp; risk</a></p><p><strong>Testing</strong><br><a class="go" href="#testing:0" data-go="testing:0">Testing Trophy</a></p><p><strong>System Design</strong><br><a class="go" href="#system-design:1" data-go="system-design:1">Saga pattern</a> · <a class="go" href="#system-design:2" data-go="system-design:2">Transactional Outbox</a> · <a class="go" href="#system-design:5" data-go="system-design:5">GraphQL federation</a></p><p><strong>System Design at Scale</strong><br><a class="go" href="#scale-design:0" data-go="scale-design:0">Opening the question</a> · <a class="go" href="#scale-design:1" data-go="scale-design:1">Back-of-envelope estimate</a></p><p><strong>Performance Optimization</strong><br><a class="go" href="#optimization:0" data-go="optimization:0">The optimization loop</a> · <a class="go" href="#optimization:1" data-go="optimization:1">Core Web Vitals fixes</a></p><p><strong>Next.js</strong><br><a class="go" href="#next-js:0" data-go="next-js:0">Server vs. Client Components</a> · <a class="go" href="#next-js:3" data-go="next-js:3">Caching layers</a> · <a class="go" href="#next-js:4" data-go="next-js:4">Version differences</a> · <a class="go" href="#next-js:8" data-go="next-js:8">Filters in the URL</a></p>`
+    }
+  ]
+},
+{
+  id:"behavioral", title:"Engineering Practice",
+  questions:[
+    {
+      q:"AI code quality",
+      a:`<p>Static analysis (TS + oxlint) + dynamic tests catch what AI gets wrong; watch specifically for duplicate/near-duplicate components.</p><p class="deeper">Full answer: <a href="/interview-prep#behavioral" target="_top">interview-prep → behavioral</a></p>`
+    },
+    {
+      q:"Design systems",
+      a:`<p>Tokens (CSS custom properties) + headless components (Radix) + Figma-to-code integration — three layers, three different jobs.</p><p class="deeper">Full answer: <a href="/interview-prep#behavioral" target="_top">interview-prep → behavioral</a></p>`
+    }
+  ]
+},
+{
+  id:"javascript", title:"JavaScript",
+  questions:[
+    {
+      q:"Closures",
+      a:`<p>A function remembers the variables from its creation scope — captures the variable, not a snapshot of its value.</p><p class="deeper">Full answer: <a href="/interview-prep#js" target="_top">interview-prep → js</a></p>`
+    },
+    {
+      q:"Event loop",
+      a:`<p>Call stack &amp;rarr; microtask queue (drained fully) &amp;rarr; one macrotask &amp;rarr; repeat. Promises are microtasks; setTimeout is a macrotask.</p><p class="deeper">Full answer: <a href="/interview-prep#js" target="_top">interview-prep → js</a></p>`
+    },
+    {
+      q:"Promise.all vs. allSettled",
+      a:`<p>all rejects immediately on first failure; allSettled always waits for everyone and reports every outcome.</p><p class="deeper">Full answer: <a href="/interview-prep#js" target="_top">interview-prep → js</a></p>`
+    },
+    {
+      q:"Object vs. Map",
+      a:`<p>Map: any key type, real .size, guaranteed insertion order, no prototype-collision risk — reach for it when keys aren't known strings.</p><p class="deeper">Full answer: <a href="/interview-prep#js" target="_top">interview-prep → js</a></p>`
+    },
+    {
+      q:"Map vs. WeakMap",
+      a:`<p>WeakMap keys are garbage-collectible once nothing else references them — the trade is no iteration, no .size.</p><p class="deeper">Full answer: <a href="/interview-prep#js" target="_top">interview-prep → js</a></p>`
+    },
+    {
+      q:"var vs. let vs. const",
+      a:`<p>var: function-scoped, hoisted as undefined. let/const: block-scoped, temporal dead zone. const freezes the binding, not the object.</p><p class="deeper">Full answer: <a href="/interview-prep#js" target="_top">interview-prep → js</a></p>`
+    },
+    {
+      q:"try / catch / finally",
+      a:`<p>finally always runs: use it for cleanup. try/catch only catches awaited rejections. &lt;code&gt;return await&lt;/code&gt; inside try if you want the catch to apply.</p><p class="deeper">Full answer: <a href="/interview-prep#js" target="_top">interview-prep → js</a></p>`
+    }
+  ]
+},
+{
+  id:"typescript", title:"TypeScript",
+  questions:[
+    {
+      q:"Why TypeScript",
+      a:`<p>Catches a whole class of bugs before a test even runs — shape mismatches, wrong arg counts — at zero runtime cost.</p><p class="deeper">Full answer: <a href="/interview-prep#ts" target="_top">interview-prep → ts</a></p>`
+    },
+    {
+      q:"Generics",
+      a:`<p>Write a function/type once that works across types while preserving the specific type flowing through, instead of widening to any.</p><p class="deeper">Full answer: <a href="/interview-prep#ts" target="_top">interview-prep → ts</a></p>`
+    },
+    {
+      q:"Type vs. interface",
+      a:`<p>Interface: declaration merging, best for public object shapes. Type: unions/intersections/mapped types — more expressive, no merging.</p><p class="deeper">Full answer: <a href="/interview-prep#ts" target="_top">interview-prep → ts</a></p>`
+    },
+    {
+      q:"forwardRef with generics",
+      a:`<p>The built-in type erases generics; cast the result to a generic function type or use React 19's &lt;code&gt;ref&lt;/code&gt; as a prop.</p><p class="deeper">Full answer: <a href="/interview-prep#react" target="_top">interview-prep → react</a></p>`
+    }
+  ]
+},
+{
+  id:"react", title:"React",
+  questions:[
+    {
+      q:"Local vs. global state",
+      a:`<p>useState/useReducer for one component; Context for cross-cutting rarely-changing values; Zustand/Redux for complex shared state; React Query for server state.</p><p class="deeper">Full answer: <a href="/interview-prep#react" target="_top">interview-prep → react</a></p>`
+    },
+    {
+      q:"Prop drilling",
+      a:`<p>Data threaded through components that don't need it, just to reach one that does — fix with composition, Context, or a store.</p><p class="deeper">Full answer: <a href="/interview-prep#react" target="_top">interview-prep → react</a></p>`
+    },
+    {
+      q:"React Server Components",
+      a:`<p>Render on the server, ship zero JS to the client for that piece — cuts bundle size for anything that doesn't need interactivity.</p><p class="deeper">Full answer: <a href="/interview-prep#react" target="_top">interview-prep → react</a></p>`
+    },
+    {
+      q:"Performance audit process",
+      a:`<p>Bundle first &amp;rarr; Server Components &amp;rarr; profile with DevTools &amp;rarr; memoize deliberately (not reflexively) &amp;rarr; virtualize long lists.</p><p class="deeper">Full answer: <a href="/interview-prep#react" target="_top">interview-prep → react</a></p>`
+    },
+    {
+      q:"React Native architecture",
+      a:`<p>Old: async bridge, JSON-serialized. New: JSI + Fabric — direct synchronous JS&amp;harr;native calls, no serialization overhead.</p><p class="deeper">Full answer: <a href="/interview-prep#react" target="_top">interview-prep → react</a></p>`
+    },
+    {
+      q:"useEffect deps and cleanup",
+      a:`<p>List everything the effect reads (stale closure otherwise). Cleanup runs before the next run and on unmount: abort fetches, clear timers, unsubscribe. Strict Mode double-mount exposes missing cleanup.</p><p class="deeper">Full answer: <a href="/interview-prep#react" target="_top">interview-prep → react</a></p>`
+    },
+    {
+      q:"When NOT to memoize",
+      a:`<p>Cheap components, props that change every render anyway, no measurement. Wrong deps in useMemo/useCallback give stale values. memo cannot stop re-renders from own state or context.</p><p class="deeper">Full answer: <a href="/interview-prep#react" target="_top">interview-prep → react</a></p>`
+    },
+    {
+      q:"useDeferredValue vs. debounce",
+      a:`<p>Deferred value: input stays instant, the heavy render is interruptible, no fixed delay. Debounce: delays when work STARTS, and is what you want for network calls.</p><p class="deeper">Full answer: <a href="/interview-prep#react" target="_top">interview-prep → react</a></p>`
+    },
+    {
+      q:"Context performance",
+      a:`<p>Every consumer re-renders when the value changes. Fine for rarely-changing values; split contexts or use a store (Zustand/Redux) for hot state.</p><p class="deeper">Full answer: <a href="/interview-prep#react" target="_top">interview-prep → react</a></p>`
+    },
+    {
+      q:"Reconciliation and keys",
+      a:`<p>Diff by type then key. Stable ids as keys, never the index for reorderable lists; a changed key remounts the component and resets its state.</p><p class="deeper">Full answer: <a href="/interview-prep#react" target="_top">interview-prep → react</a></p>`
+    },
+    {
+      q:"Optimistic update with rollback",
+      a:`<p>Snapshot in &lt;code&gt;onMutate&lt;/code&gt;, apply the guess, restore in &lt;code&gt;onError&lt;/code&gt;, invalidate in &lt;code&gt;onSettled&lt;/code&gt;. Cancel in-flight queries first.</p><p class="deeper">Full answer: <a href="/interview-prep#react" target="_top">interview-prep → react</a></p>`
+    },
+    {
+      q:"Search page data flow",
+      a:`<p>Server owns results, facets and pageInfo; client sends criteria. Reset to page 1 on filter change, cancel superseded requests, keep previous results while loading.</p><p class="deeper">Full answer: <a href="/interview-prep#react" target="_top">interview-prep → react</a></p>`
+    },
+    {
+      q:"Why Radix",
+      a:`<p>Headless primitives give focus management, keyboard behaviour and ARIA for free; you supply the styling. Wrap them in your design system; &lt;code&gt;asChild&lt;/code&gt;, &lt;code&gt;data-state&lt;/code&gt;.</p><p class="deeper">Full answer: <a href="/interview-prep#react" target="_top">interview-prep → react</a></p>`
+    },
+    {
+      q:"React Router hooks",
+      a:`<p>useNavigate (programmatic, &lt;code&gt;replace&lt;/code&gt; after login), useParams (strings), useLocation (state), useSearchParams (shareable filters).</p><p class="deeper">Full answer: <a href="/interview-prep#react" target="_top">interview-prep → react</a></p>`
+    },
+    {
+      q:"React.lazy + Suspense",
+      a:`<p>Code-split by route or heavy widget; wrap in Suspense for the fallback and an error boundary for failed chunks.</p><p class="deeper">Full answer: <a href="/interview-prep#react" target="_top">interview-prep → react</a></p>`
+    }
+  ]
+},
+{
+  id:"node-js", title:"Node.js",
+  questions:[
+    {
+      q:"Event loop blocking",
+      a:`<p>A synchronous CPU-bound task blocks every concurrent request — offload to worker_threads or a separate service.</p><p class="deeper">Full answer: <a href="/interview-prep#node" target="_top">interview-prep → node</a></p>`
+    },
+    {
+      q:"Backpressure",
+      a:`<p>A readable stream outpacing a writable one — ignored, it piles up unwritten chunks in memory until the process OOMs.</p><p class="deeper">Full answer: <a href="/interview-prep#node" target="_top">interview-prep → node</a></p>`
+    },
+    {
+      q:"Memory leak detection",
+      a:`<p>process.memoryUsage() as a first check; heap snapshots (Chrome DevTools) to find what's actually retained and why.</p><p class="deeper">Full answer: <a href="/interview-prep#node" target="_top">interview-prep → node</a></p>`
+    },
+    {
+      q:"When NOT to use Node",
+      a:`<p>CPU-heavy work on the main thread (image/video, ML, big crypto). Offload to workers or another service.</p><p class="deeper">Full answer: <a href="/interview-prep#node" target="_top">interview-prep → node</a></p>`
+    },
+    {
+      q:"Event loop ordering",
+      a:`<p>Sync code &amp;rarr; &lt;code&gt;process.nextTick&lt;/code&gt; &amp;rarr; promise microtasks &amp;rarr; timers / &lt;code&gt;setImmediate&lt;/code&gt;. Top-level setTimeout vs. setImmediate order is not guaranteed.</p><p class="deeper">Full answer: <a href="/interview-prep#node" target="_top">interview-prep → node</a></p>`
+    },
+    {
+      q:"Unhandled rejections",
+      a:`<p>Node 15+ crashes on them by default. Handle at the source; log and exit in a global handler, let the orchestrator restart.</p><p class="deeper">Full answer: <a href="/interview-prep#node" target="_top">interview-prep → node</a></p>`
+    },
+    {
+      q:"Graceful shutdown",
+      a:`<p>On SIGTERM: stop accepting connections, stop consuming jobs, let in-flight finish, close DB last. Finish inside the platform's kill grace period.</p><p class="deeper">Full answer: <a href="/interview-prep#node" target="_top">interview-prep → node</a></p>`
+    },
+    {
+      q:"Cache stampede",
+      a:`<p>A hot key expires and thousands rebuild it at once. Fix: single-flight lock, jittered TTLs, stale-while-revalidate, background refresh.</p><p class="deeper">Full answer: <a href="/interview-prep#node" target="_top">interview-prep → node</a></p>`
+    },
+    {
+      q:"memoryUsage() fields",
+      a:`<p>rss = total process memory. heapTotal/heapUsed = V8 heap. external = C++ objects (Buffers). Steadily rising heapUsed after GC suggests a leak.</p><p class="deeper">Full answer: <a href="/interview-prep#node" target="_top">interview-prep → node</a></p>`
+    }
+  ]
+},
+{
+  id:"databases", title:"Databases",
+  questions:[
+    {
+      q:"Query went from 1s to 30s",
+      a:`<p>EXPLAIN ANALYZE first — the estimated-vs-actual row gap tells you stale stats vs. a genuinely missing index.</p><p class="deeper">Full answer: <a href="/interview-prep#db" target="_top">interview-prep → db</a></p>`
+    },
+    {
+      q:"N+1 / DataLoader",
+      a:`<p>Batch every .load(id) call that happens synchronously in one tick into a single query, keyed and returned in matching order.</p><p class="deeper">Full answer: <a href="/interview-prep#db" target="_top">interview-prep → db</a></p>`
+    },
+    {
+      q:"Caching strategies",
+      a:`<p>Cache-aside (most common) vs. read-through vs. write-through vs. write-behind — invalidation, not the mechanism, is the hard part.</p><p class="deeper">Full answer: <a href="/interview-prep#db" target="_top">interview-prep → db</a></p>`
+    },
+    {
+      q:"Index types",
+      a:`<p>B-tree (default) &amp;middot; partial (subset of rows) &amp;middot; covering/INCLUDE (index-only scan) &amp;middot; GIN (JSONB/full-text/arrays).</p><p class="deeper">Full answer: <a href="/interview-prep#db" target="_top">interview-prep → db</a></p>`
+    },
+    {
+      q:"MongoDB schema design",
+      a:`<p>Start from queries. Embed bounded data read together; reference unbounded or independent data. Index by ESR (Equality, Sort, Range). Shard last, with a high-cardinality key.</p><p class="deeper">Full answer: <a href="/interview-prep#db" target="_top">interview-prep → db</a></p>`
+    },
+    {
+      q:"Zero-downtime schema change",
+      a:`<p>Expand and contract: add nullable column, dual-write, backfill in batches, switch reads, drop later. &lt;code&gt;CREATE INDEX CONCURRENTLY&lt;/code&gt;, &lt;code&gt;NOT VALID&lt;/code&gt; constraints, &lt;code&gt;lock_timeout&lt;/code&gt;.</p><p class="deeper">Full answer: <a href="/interview-prep#db" target="_top">interview-prep → db</a></p>`
+    }
+  ]
+},
+{
+  id:"cloud", title:"Cloud & Deployment",
+  questions:[
+    {
+      q:"CDN basics",
+      a:`<p>Edge servers cache content close to users — cuts latency, cuts origin load, improves resilience.</p><p class="deeper">Full answer: <a href="/interview-prep#cloud" target="_top">interview-prep → cloud</a></p>`
+    },
+    {
+      q:"Multi-AZ vs. multi-region",
+      a:`<p>Multi-AZ: redundant datacenters in one region, covers the common failure. Multi-region: full geo-redundancy, for when a whole-region outage is unacceptable.</p><p class="deeper">Full answer: <a href="/interview-prep#cloud" target="_top">interview-prep → cloud</a></p>`
+    },
+    {
+      q:"Blue-green vs. canary vs. rolling",
+      a:`<p>Blue-green: instant cutover/rollback, 2x infra. Canary: small % first, safest for risky changes. Rolling: no second env, default for routine deploys.</p><p class="deeper">Full answer: <a href="/interview-prep#cloud" target="_top">interview-prep → cloud</a></p>`
+    },
+    {
+      q:"Logs vs. metrics vs. traces",
+      a:`<p>Logs: what happened. Metrics: how's it doing, cheap to alert on. Traces: why was this one request slow, across every service.</p><p class="deeper">Full answer: <a href="/interview-prep#cloud" target="_top">interview-prep → cloud</a></p>`
+    },
+    {
+      q:"AWS reference architecture",
+      a:`<p>Route53/WAF/CloudFront &amp;rarr; API Gateway &amp;rarr; ECS+Fargate or EKS behind a service mesh &amp;rarr; RDS/DynamoDB/Redis, with CloudWatch/X-Ray tying it together.</p><p class="deeper">Full answer: <a href="/interview-prep#cloud" target="_top">interview-prep → cloud</a></p>`
+    },
+    {
+      q:"Scaling to ~100k users",
+      a:`<p>Real CDN caching policy + edge SSR + read replicas before sharding + Redis for hot reads + stateless horizontal app tier.</p><p class="deeper">Full answer: <a href="/interview-prep#cloud" target="_top">interview-prep → cloud</a></p>`
+    },
+    {
+      q:"Lambda cold starts",
+      a:`<p>Measure Init Duration first. Lean bundle, clients outside the handler, more memory (= more CPU), provisioned concurrency for latency-critical paths. Keep-warm pings don't help concurrency spikes.</p><p class="deeper">Full answer: <a href="/interview-prep#cloud" target="_top">interview-prep → cloud</a></p>`
+    }
+  ]
+},
+{
+  id:"architecture", title:"Architecture & Reliability",
+  questions:[
+    {
+      q:"Circuit breaker",
+      a:`<p>CLOSED &amp;rarr; OPEN (fail fast after N failures) &amp;rarr; HALF_OPEN (one probe after cooldown) — stops hammering a dependency that's already down.</p><p class="deeper">Full answer: <a href="/interview-prep#arch" target="_top">interview-prep → arch</a></p>`
+    },
+    {
+      q:"Retry pattern",
+      a:`<p>Exponential backoff + jitter + a hard retry budget — never retry a non-idempotent write without an idempotency key.</p><p class="deeper">Full answer: <a href="/interview-prep#arch" target="_top">interview-prep → arch</a></p>`
+    },
+    {
+      q:"Bulkhead pattern",
+      a:`<p>Isolate resources (pools, concurrency limits) per dependency, so one failing dependency can't starve capacity everything else needs.</p><p class="deeper">Full answer: <a href="/interview-prep#arch" target="_top">interview-prep → arch</a></p>`
+    },
+    {
+      q:"SLA vs. SLO vs. SLI",
+      a:`<p>SLI: the measurement. SLO: the internal target. SLA: the external, contractual promise — looser than the SLO on purpose.</p><p class="deeper">Full answer: <a href="/interview-prep#arch" target="_top">interview-prep → arch</a></p>`
+    },
+    {
+      q:"Rate limiting algorithms",
+      a:`<p>Token bucket (allows bursts, best default) &amp;middot; leaky bucket (smooths to constant rate) &amp;middot; sliding window (accurate, more state).</p><p class="deeper">Full answer: <a href="/interview-prep#arch" target="_top">interview-prep → arch</a></p>`
+    },
+    {
+      q:"SQS vs. SNS",
+      a:`<p>Queue (SQS): point-to-point, one consumer per message. Topic (SNS): one-to-many fan-out — commonly combined.</p><p class="deeper">Full answer: <a href="/interview-prep#arch" target="_top">interview-prep → arch</a></p>`
+    },
+    {
+      q:"Microservices vs. monorepo vs. microfrontends",
+      a:`<p>Three independent axes: repo structure, backend runtime, frontend runtime — a monorepo doesn't imply microservices, and vice versa.</p><p class="deeper">Full answer: <a href="/interview-prep#arch" target="_top">interview-prep → arch</a></p>`
+    },
+    {
+      q:"API Gateway vs. service mesh",
+      a:`<p>Gateway: north-south (external &amp;rarr; system). Mesh: east-west (service &amp;rarr; service), mTLS/retries/traffic-splitting via sidecars.</p><p class="deeper">Full answer: <a href="/interview-prep#arch" target="_top">interview-prep → arch</a></p>`
+    },
+    {
+      q:"Node service architecture",
+      a:`<p>Layered modules with dependencies pointing inward, DI, stateless processes, slow work behind a queue, retries + idempotency + observability. Modular monolith first.</p><p class="deeper">Full answer: <a href="/interview-prep#arch" target="_top">interview-prep → arch</a></p>`
+    },
+    {
+      q:"Reliable RabbitMQ",
+      a:`<p>Three hops: publisher confirms, durable queue + persistent messages (quorum), manual ack after durable state. It is at-least-once, so the consumer must be idempotent. DLQ for poison messages.</p><p class="deeper">Full answer: <a href="/interview-prep#arch" target="_top">interview-prep → arch</a></p>`
+    },
+    {
+      q:"SSE on the wire",
+      a:`<p>&lt;code&gt;text/event-stream&lt;/code&gt;; &lt;code&gt;data:&lt;/code&gt;/&lt;code&gt;event:&lt;/code&gt;/&lt;code&gt;id:&lt;/code&gt; blocks ended by a blank line. Heartbeats vs idle timeouts (ALB 60s, Heroku 55s), disable proxy buffering, &lt;code&gt;Last-Event-ID&lt;/code&gt; to resume, Redis pub/sub across instances.</p><p class="deeper">Full answer: <a href="/interview-prep#arch" target="_top">interview-prep → arch</a></p>`
+    },
+    {
+      q:"Why queue + SSE, not polling",
+      a:`<p>Queue moves long work off the request; SSE pushes progress; Redis fans out across API instances. Polling is simpler but wasteful and delayed. State both sides.</p><p class="deeper">Full answer: <a href="/interview-prep#arch" target="_top">interview-prep → arch</a></p>`
+    }
+  ]
+},
+{
+  id:"security", title:"Security",
+  questions:[
+    {
+      q:"OAuth 2.0 at a glance",
+      a:`<p>Delegated authorization — a client gets a scoped access token to act on a user's behalf without ever seeing their password.</p><p class="deeper">Full answer: <a href="/interview-prep#security" target="_top">interview-prep → security</a></p>`
+    },
+    {
+      q:"JWT structure &amp; risk",
+      a:`<p>header.payload.signature — stateless and self-contained, which is also the risk: can't revoke before expiry without a denylist.</p><p class="deeper">Full answer: <a href="/interview-prep#security" target="_top">interview-prep → security</a></p>`
+    },
+    {
+      q:"RBAC done right",
+      a:`<p>AuthN vs AuthZ. Check permissions (not "is admin") on the server, deny by default, and always check the OBJECT (ownership/tenant): BOLA is the classic bug. CORS is not access control.</p><p class="deeper">Full answer: <a href="/interview-prep#security" target="_top">interview-prep → security</a></p>`
+    },
+    {
+      q:"Securing AI-written code",
+      a:`<p>Same gates plus: verify new dependencies (hallucinated packages), tests you wrote, secret scanning, least-privilege tool tokens, treat tool output as untrusted (prompt injection).</p><p class="deeper">Full answer: <a href="/interview-prep#security" target="_top">interview-prep → security</a></p>`
+    }
+  ]
+},
+{
+  id:"css", title:"CSS",
+  questions:[
+    {
+      q:"Box model",
+      a:`<p>content &amp;rarr; padding &amp;rarr; border &amp;rarr; margin, nested outward. box-sizing: border-box makes width include padding+border.</p><p class="deeper">Full answer: <a href="/interview-prep#css" target="_top">interview-prep → css</a></p>`
+    },
+    {
+      q:"Positioning schemes",
+      a:`<p>static (default, no offset) &amp;middot; relative (offset, space preserved) &amp;middot; absolute (out of flow) &amp;middot; fixed (viewport) &amp;middot; sticky (hybrid).</p><p class="deeper">Full answer: <a href="/interview-prep#css" target="_top">interview-prep → css</a></p>`
+    },
+    {
+      q:"Specificity",
+      a:`<p>Inline &amp;gt; ID &amp;gt; class/attribute/pseudo-class &amp;gt; element/pseudo-element. Later rule wins only when specificity ties.</p><p class="deeper">Full answer: <a href="/interview-prep#css" target="_top">interview-prep → css</a></p>`
+    },
+    {
+      q:"Responsive design",
+      a:`<p>rem/em for scale, Flexbox (1D) vs. Grid (2D) for layout, clamp() to often skip a breakpoint entirely.</p><p class="deeper">Full answer: <a href="/interview-prep#css" target="_top">interview-prep → css</a></p>`
+    },
+    {
+      q:"Compositor-thread animation",
+      a:`<p>Animate transform/opacity, never width/height — skips layout+paint entirely, runs on a thread separate from JS.</p><p class="deeper">Full answer: <a href="/interview-prep#css" target="_top">interview-prep → css</a></p>`
+    },
+    {
+      q:"em vs. rem",
+      a:`<p>rem: relative to the root font size (predictable). em: relative to the element's own or parent font size (compounds). Prefer rem for spacing and type.</p><p class="deeper">Full answer: <a href="/interview-prep#css" target="_top">interview-prep → css</a></p>`
+    },
+    {
+      q:"Flexbox vs. Grid",
+      a:`<p>Flexbox: one dimension, content-driven. Grid: two dimensions, layout-driven. They compose: grid for the page, flex inside components.</p><p class="deeper">Full answer: <a href="/interview-prep#css" target="_top">interview-prep → css</a></p>`
+    },
+    {
+      q:"Container queries",
+      a:`<p>Style a component by its container's size, not the viewport: reusable components that adapt wherever they are placed.</p><p class="deeper">Full answer: <a href="/interview-prep#css" target="_top">interview-prep → css</a></p>`
+    },
+    {
+      q:"Tailwind v4: utility-first + source scanning",
+      a:`<p>Compose small single-purpose classes. v4 is CSS-first (&lt;code&gt;@import "tailwindcss"&lt;/code&gt;) with automatic source detection (no &lt;code&gt;content&lt;/code&gt; array; &lt;code&gt;@source&lt;/code&gt; for extras) and generates only used CSS. Dynamic class names built by string concatenation are missed.</p><p class="deeper">Full answer: <a href="/interview-prep#css" target="_top">interview-prep → css</a></p>`
+    },
+    {
+      q:"Tailwind: mobile-first",
+      a:`<p>Unprefixed = all sizes; &lt;code&gt;md:&lt;/code&gt; = min-width and up. Style the smallest screen first and layer on.</p><p class="deeper">Full answer: <a href="/interview-prep#css" target="_top">interview-prep → css</a></p>`
+    },
+    {
+      q:"Tailwind: @apply, theme, dark mode",
+      a:`<p>@apply sparingly (prefer a component). v4 theme = &lt;code&gt;@theme { --color-brand: ... }&lt;/code&gt; (adds to defaults; &lt;code&gt;--color-*: initial&lt;/code&gt; replaces). Dark mode: &lt;code&gt;prefers-color-scheme&lt;/code&gt; by default, or &lt;code&gt;@custom-variant dark&lt;/code&gt; for a class toggle.</p><p class="deeper">Full answer: <a href="/interview-prep#css" target="_top">interview-prep → css</a></p>`
+    },
+    {
+      q:"Conditional Tailwind classes",
+      a:`<p>Use clsx/cva for variants and tailwind-merge to resolve conflicts; keep full class names literal so the scanner finds them.</p><p class="deeper">Full answer: <a href="/interview-prep#css" target="_top">interview-prep → css</a></p>`
+    }
+  ]
+},
+{
+  id:"testing", title:"Testing",
+  questions:[
+    {
+      q:"Testing Trophy",
+      a:`<p>Static analysis (base) &amp;rarr; unit &amp;rarr; integration (biggest slice, best confidence-to-cost) &amp;rarr; E2E (top, smallest, critical paths only).</p><p class="deeper">Full answer: <a href="/interview-prep#testing" target="_top">interview-prep → testing</a></p>`
+    },
+    {
+      q:"Flaky test causes",
+      a:`<p>Manual sleeps instead of auto-waiting queries, shared/non-deterministic data, real timers, and state leaking between tests.</p><p class="deeper">Full answer: <a href="/interview-prep#testing" target="_top">interview-prep → testing</a></p>`
+    },
+    {
+      q:"getBy / queryBy / findBy",
+      a:`<p>getBy: present now (throws). queryBy: returns null, use for absence. findBy: waits for it to appear.</p><p class="deeper">Full answer: <a href="/interview-prep#testing" target="_top">interview-prep → testing</a></p>`
+    },
+    {
+      q:"act() vs. waitFor()",
+      a:`<p>act flushes React updates (RTL wraps it for you). waitFor polls until an assertion passes. Prefer &lt;code&gt;findBy&lt;/code&gt;; never side effects inside waitFor.</p><p class="deeper">Full answer: <a href="/interview-prep#testing" target="_top">interview-prep → testing</a></p>`
+    }
+  ]
+},
+{
+  id:"system-design", title:"System Design",
+  questions:[
+    {
+      q:"Member portal at scale",
+      a:`<p>Requirements &amp;rarr; capacity &amp;rarr; boundaries &amp;rarr; data model &amp;rarr; caching &amp;rarr; async &amp;rarr; reliability &amp;rarr; security &amp;rarr; observability, in that order.</p><p class="deeper">Full answer: <a href="/interview-prep#sysdesign" target="_top">interview-prep → sysdesign</a></p>`
+    },
+    {
+      q:"Saga pattern",
+      a:`<p>A sequence of local transactions, each with a compensating transaction — the alternative to cross-service ACID once each service owns its own DB.</p><p class="deeper">Full answer: <a href="/interview-prep#sysdesign" target="_top">interview-prep → sysdesign</a></p>`
+    },
+    {
+      q:"Transactional Outbox",
+      a:`<p>Write the event to an outbox table in the same DB transaction as the business write — solves the dual-write problem, event is never silently lost.</p><p class="deeper">Full answer: <a href="/interview-prep#sysdesign" target="_top">interview-prep → sysdesign</a></p>`
+    },
+    {
+      q:"Liveness vs. readiness probes",
+      a:`<p>Liveness: should this pod be killed and restarted? Readiness: should it receive traffic right now? Confusing them causes mass-restart outages.</p><p class="deeper">Full answer: <a href="/interview-prep#sysdesign" target="_top">interview-prep → sysdesign</a></p>`
+    },
+    {
+      q:"L4 vs. L7 load balancing",
+      a:`<p>L7 (ALB): routes on HTTP content, WebSocket/auth support. L4 (NLB): raw TCP, ultra-low latency, millions of req/s.</p><p class="deeper">Full answer: <a href="/interview-prep#sysdesign" target="_top">interview-prep → sysdesign</a></p>`
+    },
+    {
+      q:"GraphQL federation",
+      a:`<p>Router plans across subgraphs; &lt;code&gt;@key&lt;/code&gt; entities; batched &lt;code&gt;_entities&lt;/code&gt; + DataLoader to avoid N+1; nullable fields for partial failure; mutations may live outside the graph.</p><p class="deeper">Full answer: <a href="/interview-prep#sysdesign" target="_top">interview-prep → sysdesign</a></p>`
+    },
+    {
+      q:"CQRS + Event Sourcing",
+      a:`<p>CQRS: separate write model and read projections (eventual consistency). Event sourcing: store events, rebuild state. Worth it for audit-heavy, complex domains, not simple CRUD.</p><p class="deeper">Full answer: <a href="/interview-prep#sysdesign" target="_top">interview-prep → sysdesign</a></p>`
+    },
+    {
+      q:"Hexagonal architecture",
+      a:`<p>Core defines ports (interfaces); adapters implement them for Postgres, HTTP, queues. Dependencies point inward; test the core with fakes.</p><p class="deeper">Full answer: <a href="/interview-prep#sysdesign" target="_top">interview-prep → sysdesign</a></p>`
+    },
+    {
+      q:"DynamoDB design",
+      a:`<p>Access patterns first. High-cardinality partition key, sort key for ranges, GSIs for other patterns. Hot partition fixes: better key, write sharding, caching.</p><p class="deeper">Full answer: <a href="/interview-prep#sysdesign" target="_top">interview-prep → sysdesign</a></p>`
+    }
+  ]
+},
+{
+  id:"scale-design", title:"System Design at Scale",
+  questions:[
+    {
+      q:"Opening the question",
+      a:`<p>Clarify functional + non-functional scope first — 2–3 core workflows, concrete scale/availability/latency numbers — before any box-drawing.</p><p class="deeper">Full answer: <a href="/system-design-scale#framing:0" target="_top">system-design-scale → framing:0</a></p>`
+    },
+    {
+      q:"Back-of-envelope estimate",
+      a:`<p>DAU &amp;times; requests/day &amp;divide; 86,400 for average req/s, &amp;times;3–5 for peak — a 2-minute calculation that justifies every later decision.</p><p class="deeper">Full answer: <a href="/system-design-scale#framing:1" target="_top">system-design-scale → framing:1</a></p>`
+    },
+    {
+      q:"Choosing the web framework",
+      a:`<p>Next.js's per-route rendering choice (SSG/ISR/SSR/streaming) is the actual argument — not "it's popular."</p><p class="deeper">Full answer: <a href="/system-design-scale#client:0" target="_top">system-design-scale → client:0</a></p>`
+    },
+    {
+      q:"Session vs. JWT",
+      a:`<p>Hybrid: short-lived JWT access token for stateless checks + a revocable server-side refresh token — best of both.</p><p class="deeper">Full answer: <a href="/system-design-scale#auth:0" target="_top">system-design-scale → auth:0</a></p>`
+    },
+    {
+      q:"Monolith &amp;rarr; microservices",
+      a:`<p>Start modular monolith; split only for independent deploy cadence, a genuinely different scaling profile, or separate team ownership.</p><p class="deeper">Full answer: <a href="/system-design-scale#services:0" target="_top">system-design-scale → services:0</a></p>`
+    },
+    {
+      q:"SQL vs. NoSQL decision",
+      a:`<p>PostgreSQL is the default for core data; NoSQL earns its place for a specific access pattern — not "scale" alone.</p><p class="deeper">Full answer: <a href="/system-design-scale#data:0" target="_top">system-design-scale → data:0</a></p>`
+    },
+    {
+      q:"Scaling the database",
+      a:`<p>Index correctly &amp;rarr; read replicas &amp;rarr; connection pooling &amp;rarr; sharding, strictly in that order of how early you reach for them.</p><p class="deeper">Full answer: <a href="/system-design-scale#data:1" target="_top">system-design-scale → data:1</a></p>`
+    },
+    {
+      q:"Full-stack caching waterfall",
+      a:`<p>Browser &amp;rarr; CDN &amp;rarr; API Gateway &amp;rarr; Redis &amp;rarr; DB query cache — a request only reaches the DB once everything in front of it has missed.</p><p class="deeper">Full answer: <a href="/system-design-scale#caching:0" target="_top">system-design-scale → caching:0</a></p>`
+    },
+    {
+      q:"Defense-in-depth security",
+      a:`<p>TLS everywhere (incl. internal mTLS), encryption at rest, secrets manager, least-privilege IAM, WAF, and audit logging on sensitive-data access.</p><p class="deeper">Full answer: <a href="/system-design-scale#security:0" target="_top">system-design-scale → security:0</a></p>`
+    },
+    {
+      q:"Pacing the 30–45 min answer",
+      a:`<p>~5 min requirements, 10–15 high-level architecture, 15–20 wherever the interviewer steers depth, 5 min trade-offs and honest uncertainty.</p><p class="deeper">Full answer: <a href="/system-design-scale#together:2" target="_top">system-design-scale → together:2</a></p>`
+    }
+  ]
+},
+{
+  id:"optimization", title:"Performance Optimization",
+  questions:[
+    {
+      q:"The optimization loop",
+      a:`<p>Measure &amp;rarr; profile &amp;rarr; fix the single biggest bottleneck &amp;rarr; validate against the same metric &amp;rarr; repeat. Never optimize by intuition.</p><p class="deeper">Full answer: <a href="/performance-optimization#mindset:0" target="_top">performance-optimization → mindset:0</a></p>`
+    },
+    {
+      q:"Core Web Vitals fixes",
+      a:`<p>LCP: fast TTFB + priority image. INP: break up long tasks. CLS: reserve space before content loads.</p><p class="deeper">Full answer: <a href="/performance-optimization#client:0" target="_top">performance-optimization → client:0</a></p>`
+    },
+    {
+      q:"Non-blocking main thread",
+      a:`<p>Compositor-only CSS (transform/opacity) for animation; Web Workers + requestIdleCallback for heavy computation.</p><p class="deeper">Full answer: <a href="/performance-optimization#client:2" target="_top">performance-optimization → client:2</a></p>`
+    },
+    {
+      q:"CDN + protocol layer",
+      a:`<p>Long max-age+immutable for static, short TTL + stale-while-revalidate for cacheable dynamic; HTTP/3 helps most on lossy mobile.</p><p class="deeper">Full answer: <a href="/performance-optimization#network:0" target="_top">performance-optimization → network:0</a></p>`
+    },
+    {
+      q:"Avoiding N+1 at the API layer",
+      a:`<p>DataLoader batches every synchronous .load() call into one query per tick — same fix whether it's REST or GraphQL underneath.</p><p class="deeper">Full answer: <a href="/performance-optimization#api:1" target="_top">performance-optimization → api:1</a></p>`
+    },
+    {
+      q:"Node.js event-loop hygiene",
+      a:`<p>Offload CPU-bound work to worker_threads — a blocking sync call freezes every concurrent request, not just its own.</p><p class="deeper">Full answer: <a href="/performance-optimization#server:0" target="_top">performance-optimization → server:0</a></p>`
+    },
+    {
+      q:"Redis vs. CDN vs. in-process cache",
+      a:`<p>In-process: fastest, per-instance, gone on restart. Redis: shared, survives restarts. CDN: edge, same content across many users.</p><p class="deeper">Full answer: <a href="/performance-optimization#caching:0" target="_top">performance-optimization → caching:0</a></p>`
+    },
+    {
+      q:"Diagnosing a slow query",
+      a:`<p>EXPLAIN ANALYZE's estimated-vs-actual row gap is the tell — stale stats vs. a genuinely missing or unused index.</p><p class="deeper">Full answer: <a href="/performance-optimization#database:0" target="_top">performance-optimization → database:0</a></p>`
+    },
+    {
+      q:"Finding the real bottleneck",
+      a:`<p>Golden signals say which service is unhealthy; a distributed trace says exactly why one slow request was slow.</p><p class="deeper">Full answer: <a href="/performance-optimization#observability:0" target="_top">performance-optimization → observability:0</a></p>`
+    },
+    {
+      q:"Latency numbers to know cold",
+      a:`<p>RAM ~100ns, Redis ~1ms, SSD ~1ms, same-region network ~1-2ms, cross-continent ~100-150ms — memory beats disk by ~100,000&amp;times;.</p><p class="deeper">Full answer: <a href="/performance-optimization#reference:0" target="_top">performance-optimization → reference:0</a></p>`
+    }
+  ]
+},
+{
+  id:"next-js", title:"Next.js",
+  questions:[
+    {
+      q:"Server vs. Client Components",
+      a:`<p>Server: default, zero JS shipped, can read data and secrets directly. Client: &lt;code&gt;"use client"&lt;/code&gt; for state, effects, handlers. Push the boundary down to the smallest interactive leaf; props crossing it must be serialisable.</p><p class="deeper">Full answer: <a href="/interview-prep#nextjs" target="_top">interview-prep → nextjs</a></p>`
+    },
+    {
+      q:"page.tsx vs. layout.tsx",
+      a:`<p>page = the route's own UI. layout = shared wrapper that persists across child navigation (no remount, no &lt;code&gt;searchParams&lt;/code&gt;). template = like a layout but remounts every navigation.</p><p class="deeper">Full answer: <a href="/interview-prep#nextjs" target="_top">interview-prep → nextjs</a></p>`
+    },
+    {
+      q:"SSR vs. SSG vs. ISR vs. CSR",
+      a:`<p>SSG: built once. ISR: SSG + revalidate on a timer or on demand. SSR: per request, for personalised or fresh data. CSR: in the browser. Choose per route by freshness vs. personalisation.</p><p class="deeper">Full answer: <a href="/interview-prep#nextjs" target="_top">interview-prep → nextjs</a></p>`
+    },
+    {
+      q:"Caching layers",
+      a:`<p>Request memoization (one render) &amp;middot; Data Cache (fetch results) &amp;middot; Full Route Cache (built HTML/RSC) &amp;middot; Router Cache (client). v14 cached fetch by default; v15 does NOT; v16 with Cache Components is explicit: &lt;code&gt;"use cache"&lt;/code&gt; + &lt;code&gt;cacheLife&lt;/code&gt;/&lt;code&gt;cacheTag&lt;/code&gt;, &lt;code&gt;revalidateTag(tag, 'max')&lt;/code&gt;, &lt;code&gt;updateTag&lt;/code&gt; for read-your-writes.</p><p class="deeper">Full answer: <a href="/interview-prep#nextjs" target="_top">interview-prep → nextjs</a></p>`
+    },
+    {
+      q:"Version differences",
+      a:`<p>13: App Router. 14: Server Actions stable. 15: React 19, async &lt;code&gt;params&lt;/code&gt;/&lt;code&gt;cookies()&lt;/code&gt;, uncached-by-default fetch. 16: Turbopack default, &lt;code&gt;middleware&lt;/code&gt; becomes &lt;code&gt;proxy&lt;/code&gt;, Cache Components. &lt;strong&gt;Know YOUR version.&lt;/strong&gt;</p><p class="deeper">Full answer: <a href="/interview-prep#nextjs" target="_top">interview-prep → nextjs</a></p>`
+    },
+    {
+      q:"Route Handler vs. Server Action",
+      a:`<p>Handler: a public HTTP endpoint (webhooks, third-party clients). Action: a mutation called from your own UI. Both must validate input and check authorisation.</p><p class="deeper">Full answer: <a href="/interview-prep#nextjs" target="_top">interview-prep → nextjs</a></p>`
+    },
+    {
+      q:"Server Actions security",
+      a:`<p>Treat every action as a public endpoint: re-validate input and re-check the caller's permission inside it, however safe the &lt;code&gt;"use server"&lt;/code&gt; boundary looks.</p><p class="deeper">Full answer: <a href="/interview-prep#nextjs" target="_top">interview-prep → nextjs</a></p>`
+    },
+    {
+      q:"Streaming + Suspense",
+      a:`<p>Send the shell immediately and stream slow parts behind Suspense boundaries: better TTFB and perceived speed than one blocking render.</p><p class="deeper">Full answer: <a href="/interview-prep#nextjs" target="_top">interview-prep → nextjs</a></p>`
+    },
+    {
+      q:"Filters in the URL",
+      a:`<p>Query, filters, sort, page live in the URL: shareable, back-button aware, readable on the server. Reset to page 1 on any filter change; &lt;code&gt;useSearchParams&lt;/code&gt; needs a Suspense boundary.</p><p class="deeper">Full answer: <a href="/interview-prep#nextjs" target="_top">interview-prep → nextjs</a></p>`
+    },
+    {
+      q:"next/image and next/font",
+      a:`<p>Image: responsive sizes, modern formats, lazy load, reserved space, &lt;code&gt;priority&lt;/code&gt; for the LCP image. Font: self-hosted at build, no layout shift, no extra request.</p><p class="deeper">Full answer: <a href="/interview-prep#nextjs" target="_top">interview-prep → nextjs</a></p>`
+    },
+    {
+      q:"Middleware / proxy",
+      a:`<p>Next 16 renamed &lt;code&gt;middleware.ts&lt;/code&gt; to &lt;code&gt;proxy.ts&lt;/code&gt; (Node runtime). Redirects, rewrites, optimistic auth gates; keep it light and still authorise where data is read.</p><p class="deeper">Full answer: <a href="/interview-prep#nextjs" target="_top">interview-prep → nextjs</a></p>`
+    },
+    {
+      q:"Edge vs. Node runtime",
+      a:`<p>Edge: instant start, small API surface. Node: full APIs and libraries. Node is the default and the direction of travel; pick Edge only for tiny latency-sensitive logic, and run compute close to the data.</p><p class="deeper">Full answer: <a href="/interview-prep#nextjs" target="_top">interview-prep → nextjs</a></p>`
+    },
+    {
+      q:"Prefetching",
+      a:`<p>&lt;code&gt;&amp;lt;Link&amp;gt;&lt;/code&gt; prefetches routes in the viewport; &lt;code&gt;router.push&lt;/code&gt; does not. Use Link for anything that is a real link.</p><p class="deeper">Full answer: <a href="/interview-prep#nextjs" target="_top">interview-prep → nextjs</a></p>`
+    },
+    {
+      q:"Parallel and intercepting routes",
+      a:`<p>Parallel: named slots (&lt;code&gt;@slot&lt;/code&gt;) rendered together. Intercepting: show a route in a modal over the current page while keeping a shareable URL.</p><p class="deeper">Full answer: <a href="/interview-prep#nextjs" target="_top">interview-prep → nextjs</a></p>`
+    },
+    {
+      q:"generateStaticParams",
+      a:`<p>Pre-build dynamic routes at build time; &lt;code&gt;dynamicParams&lt;/code&gt; decides whether unknown params render on demand or 404.</p><p class="deeper">Full answer: <a href="/interview-prep#nextjs" target="_top">interview-prep → nextjs</a></p>`
+    }
+  ]
+},
+{
+  id:"coding", title:"Coding Exercises",
+  questions:[
+    {
+      q:"Accessible modal",
+      a:`<p>Portal, move focus in, trap Tab, Escape closes, restore focus to the trigger, &lt;code&gt;role="dialog"&lt;/code&gt; + &lt;code&gt;aria-modal&lt;/code&gt; + label. Prefer Radix or native &lt;code&gt;&amp;lt;dialog&amp;gt;&lt;/code&gt;.</p><p class="deeper">Full answer: <a href="/interview-prep#coding" target="_top">interview-prep → coding</a></p>`
+    },
+    {
+      q:"Accessible tabs",
+      a:`<p>Roving tabindex: only the selected tab is tabbable, arrows/Home/End move, &lt;code&gt;aria-selected/controls/labelledby&lt;/code&gt;.</p><p class="deeper">Full answer: <a href="/interview-prep#coding" target="_top">interview-prep → coding</a></p>`
+    },
+    {
+      q:"Todo + localStorage",
+      a:`<p>Stable ids, immutable updates, lazy initial state read in try/catch; in Next read storage after mount to avoid hydration mismatch.</p><p class="deeper">Full answer: <a href="/interview-prep#coding" target="_top">interview-prep → coding</a></p>`
+    }
+  ]
+}
+];
+
+window.__STUDY__ = {"key":"interview-cheatsheet","core":"the 2-Hour Review"};
+</script>
+<script src="/study/engine.js"></script>
+</body>
+</html>

@@ -1,14 +1,14 @@
 import StaticPrepClient from '../components/StaticPrepClient';
-import content from './content.json';
 
 export const metadata = {
   title: 'Node.js Interview Mastery',
+  description: "Node.js architecture, the event loop, streams, worker threads, scaling, security and testing with node:test, from fundamentals to production.",
 };
 
 export default function Page() {
   return (
     <StaticPrepClient
-      html={(content as { html: string }).html}
+      src="/study/nodejs.html"
       title="Node.js Interview Mastery"
       loadingLabel="Loading study guide…"
     />

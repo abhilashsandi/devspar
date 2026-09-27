@@ -1,14 +1,14 @@
 import StaticPrepClient from '../components/StaticPrepClient';
-import content from './content.json';
 
 export const metadata = {
   title: 'CSS & Tailwind Interview Mastery',
+  description: "CSS fundamentals, Flexbox and Grid, Tailwind v4 (@theme, @source, container queries), cascade layers and design-system patterns.",
 };
 
 export default function Page() {
   return (
     <StaticPrepClient
-      html={(content as { html: string }).html}
+      src="/study/tailwind-css.html"
       title="CSS & Tailwind Interview Mastery"
       loadingLabel="Loading study guide…"
     />

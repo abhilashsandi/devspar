@@ -1,14 +1,14 @@
 import StaticPrepClient from '../components/StaticPrepClient';
-import content from './content.json';
 
 export const metadata = {
   title: 'Next.js Interview Mastery',
+  description: "Next.js 16: the App Router, Server Components, Cache Components, proxy.ts, Server Actions, caching and deployment, with diagrams.",
 };
 
 export default function Page() {
   return (
     <StaticPrepClient
-      html={(content as { html: string }).html}
+      src="/study/nextjs.html"
       title="Next.js Interview Mastery"
       loadingLabel="Loading study guide…"
     />

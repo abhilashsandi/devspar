@@ -1,0 +1,1615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Coding Practice — Interview Prep</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F6F4EF;
+    --panel:#FFFFFF;
+    --panel-2:#FBF9F4;
+    --border:#E4E0D4;
+    --text:#211F1B;
+    --muted:#716B5E;
+    --accent:#2F7A72;
+    --accent-ink:#F3FBF9;
+    --accent-soft:#EDF6F4;
+    --gold:#B8792F;
+    --gold-soft:#F5E9D8;
+    --code-bg:#EFECE2;
+    --danger:#B5502F;
+    --shadow: 0 1px 2px rgba(30,26,18,0.05);
+    --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#15181A;
+      --panel:#1B1F21;
+      --panel-2:#202426;
+      --border:#2C3133;
+      --text:#E9E6DE;
+      --muted:#9A968A;
+      --accent:#5FBFB2;
+      --accent-ink:#0B1716;
+      --accent-soft:#1E3230;
+      --gold:#D9A15C;
+      --gold-soft:#332918;
+      --code-bg:#20262A;
+      --danger:#D98866;
+      --shadow: 0 1px 2px rgba(0,0,0,0.4);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#15181A;
+    --panel:#1B1F21;
+    --panel-2:#202426;
+    --border:#2C3133;
+    --text:#E9E6DE;
+    --muted:#9A968A;
+    --accent:#5FBFB2;
+    --accent-ink:#0B1716;
+    --accent-soft:#1E3230;
+    --gold:#D9A15C;
+    --gold-soft:#332918;
+    --code-bg:#20262A;
+    --danger:#D98866;
+    --shadow: 0 1px 2px rgba(0,0,0,0.4);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--accent);}
+
+  .app{
+    display:flex;
+    min-height:100vh;
+  }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    width:260px;
+    flex:0 0 260px;
+    border-right:1px solid var(--border);
+    padding:28px 16px 24px;
+    position:sticky;
+    top:0;
+    height:100vh;
+    overflow-y:auto;
+  }
+  .brand{
+    font-family:var(--mono);
+    font-size:13px;
+    letter-spacing:0.02em;
+    color:var(--muted);
+    padding:0 8px 18px;
+    border-bottom:1px solid var(--border);
+    margin-bottom:14px;
+  }
+  .brand b{color:var(--text);font-weight:600;}
+  .nav-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    width:100%;
+    text-align:left;
+    padding:10px 10px;
+    border-radius:8px;
+    border:1px solid transparent;
+    background:transparent;
+    color:var(--text);
+    font-family:var(--sans);
+    font-size:14.5px;
+    cursor:pointer;
+    margin-bottom:2px;
+  }
+  .nav-item:hover{background:var(--panel-2);}
+  .nav-item.active{
+    background:var(--accent-soft);
+    border-color:var(--accent);
+    color:var(--text);
+    font-weight:600;
+  }
+  .nav-num{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--muted);
+    width:18px;
+    flex:0 0 18px;
+  }
+  .nav-item.active .nav-num{color:var(--accent);}
+  .nav-label{flex:1;}
+  .nav-count{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--muted);
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    padding:1px 6px;
+    border-radius:999px;
+  }
+  .progress-box{
+    margin-top:20px;
+    padding:14px 12px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:var(--panel-2);
+  }
+  .progress-box .label{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--muted);
+    margin-bottom:8px;
+  }
+  .progress-track{
+    height:6px;
+    border-radius:999px;
+    background:var(--border);
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    background:var(--accent);
+    width:0%;
+    transition:width .25s ease;
+  }
+  .progress-num{
+    margin-top:8px;
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--text);
+  }
+  .reset-btn{
+    margin-top:10px;
+    width:100%;
+    font-family:var(--sans);
+    font-size:12px;
+    color:var(--muted);
+    background:transparent;
+    border:1px solid var(--border);
+    border-radius:7px;
+    padding:6px 8px;
+    cursor:pointer;
+  }
+  .reset-btn:hover{color:var(--danger);border-color:var(--danger);}
+
+  /* ---------- Main ---------- */
+  .main{
+    flex:1;
+    min-width:0;
+    padding:36px 40px 80px;
+    max-width:1200px;
+  }
+  .hero{
+    margin-bottom:34px;
+  }
+  .hero .eyebrow-free{
+    font-family:var(--mono);
+    font-size:13px;
+    color:var(--accent);
+    margin:0 0 10px;
+  }
+  .hero h1{
+    font-family:var(--mono);
+    font-size:30px;
+    line-height:1.25;
+    margin:0 0 12px;
+    font-weight:600;
+    letter-spacing:-0.01em;
+  }
+  .hero p{
+    color:var(--muted);
+    max-width:62ch;
+    margin:0 0 6px;
+    font-size:15px;
+  }
+  .hero .source-note{
+    font-size:13px;
+    color:var(--muted);
+    border-left:2px solid var(--border);
+    padding-left:12px;
+    margin-top:16px;
+  }
+
+  .section-head{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    margin:44px 0 16px;
+    padding-bottom:10px;
+    border-bottom:1px solid var(--border);
+  }
+  .section-head .num{
+    font-family:var(--mono);
+    color:var(--accent);
+    font-size:14px;
+  }
+  .section-head h2{
+    font-family:var(--mono);
+    font-size:19px;
+    margin:0;
+    font-weight:600;
+  }
+  .section-head .count{
+    margin-left:auto;
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--muted);
+  }
+
+  .qcard{
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:var(--panel);
+    margin-bottom:12px;
+    overflow:hidden;
+  }
+  .qhead{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    padding:14px 16px;
+    cursor:pointer;
+    user-select:none;
+  }
+  .qcheck{
+    margin-top:3px;
+    flex:0 0 auto;
+    width:18px;height:18px;
+    border-radius:5px;
+    border:1.5px solid var(--border);
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    background:var(--panel);
+  }
+  .qcheck.done{
+    background:var(--accent);
+    border-color:var(--accent);
+  }
+  .qcheck.done::after{
+    content:"✓";
+    color:var(--accent-ink);
+    font-size:12px;
+    font-weight:700;
+  }
+  .qtext{
+    flex:1;
+    font-size:15px;
+    font-weight:500;
+  }
+  .qtext.done-text{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--border);}
+  .qchevron{
+    flex:0 0 auto;
+    color:var(--muted);
+    font-family:var(--mono);
+    font-size:13px;
+    transform:rotate(0deg);
+    transition:transform .15s ease;
+    margin-top:2px;
+  }
+  .qcard.open .qchevron{transform:rotate(90deg);}
+  .qbody{
+    display:none;
+    padding:2px 16px 20px 46px;
+    border-top:1px solid var(--border);
+    font-size:14.5px;
+  }
+  .qcard.open .qbody{display:block; padding-top:14px;}
+  .qbody p{margin:0 0 12px;}
+  .qbody ul{margin:0 0 12px; padding-left:20px;}
+  .qbody li{margin-bottom:6px;}
+  .qbody strong{color:var(--text);}
+  code{
+    font-family:var(--mono);
+    background:var(--code-bg);
+    padding:1px 5px;
+    border-radius:4px;
+    font-size:0.92em;
+  }
+  pre{
+    font-family:var(--mono);
+    background:var(--code-bg);
+    padding:12px 14px;
+    border-radius:8px;
+    overflow-x:auto;
+    font-size:13px;
+    margin:0 0 14px;
+    border:1px solid var(--border);
+  }
+  .diagram{
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:14px;
+    margin:0 0 14px;
+    overflow-x:auto;
+  }
+  .diagram svg{display:block; margin:0 auto; max-width:100%; height:auto;}
+  .tag{
+    display:inline-block;
+    font-family:var(--mono);
+    font-size:10.5px;
+    color:var(--gold);
+    background:var(--gold-soft);
+    border:1px solid var(--gold);
+    border-radius:5px;
+    padding:1px 6px;
+    margin-bottom:10px;
+  }
+  table.cmp{
+    width:100%;
+    border-collapse:collapse;
+    margin:0 0 14px;
+    font-size:13.5px;
+  }
+  table.cmp th, table.cmp td{
+    border:1px solid var(--border);
+    padding:7px 10px;
+    text-align:left;
+    vertical-align:top;
+  }
+  table.cmp th{
+    background:var(--panel-2);
+    font-family:var(--mono);
+    font-size:12px;
+    font-weight:600;
+  }
+
+  ::selection{background:var(--accent-soft);}
+
+  @media (max-width: 820px){
+    .sidebar{
+      width:100%;
+      flex:none;
+      height:auto;
+      position:relative;
+      border-right:none;
+      border-bottom:1px solid var(--border);
+    }
+    .app{flex-direction:column;}
+    .main{padding:24px 18px 60px; max-width:100%;}
+  }
+
+  .tbadge{display:inline-block; font-family:var(--mono); font-size:11px; letter-spacing:.04em; color:var(--gold); background:var(--gold-soft); border:1px solid var(--gold); border-radius:99px; padding:2px 10px; margin-bottom:10px;}
+  .deeper{margin-top:14px; padding-top:10px; border-top:1px dashed var(--border); font-size:13.5px; line-height:1.9;}
+  a.go{color:var(--accent); text-decoration:none; border-bottom:1px solid var(--accent-soft); white-space:nowrap;}
+  a.go:hover{border-bottom-color:var(--accent);}
+
+  .search{width:100%; box-sizing:border-box; margin:0 0 14px; padding:9px 11px; font:inherit; font-size:13.5px; color:var(--text); background:var(--panel); border:1px solid var(--border); border-radius:8px;}
+  .search:focus{outline:2px solid var(--accent); outline-offset:1px;}
+  .qmain{flex:1; min-width:0; display:flex; flex-direction:column; gap:4px;}
+  .qchips{display:flex; gap:6px; flex-wrap:wrap;}
+  .qsec,.qcore{font-family:var(--mono); font-size:10.5px; padding:1px 7px; border-radius:99px; border:1px solid var(--border); color:var(--muted); background:var(--panel-2);}
+  .qcore{color:var(--gold); border-color:var(--gold); background:var(--gold-soft);}
+  .qsum{font-size:13.5px; color:var(--muted); line-height:1.5;}
+  .qcard.open .qsum{display:none;}
+  .qcard.focused{box-shadow:0 0 0 2px var(--accent);}
+  .qcheck:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+  mark{background:var(--gold-soft); color:var(--text); border-radius:3px; padding:0 1px;}
+  .toolbar{display:flex; flex-wrap:wrap; align-items:center; gap:10px 16px; margin:-4px 0 16px; font-size:13px; color:var(--muted);}
+  .toolbar .tmeta{font-family:var(--mono); font-size:12px; margin-right:auto;}
+  .toolbar .tgroup{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
+  .toolbar button{font:inherit; font-size:12.5px; color:var(--text); background:var(--panel); border:1px solid var(--border); border-radius:7px; padding:5px 10px; cursor:pointer;}
+  .toolbar button:hover{border-color:var(--accent);}
+  .toolbar label{display:flex; gap:5px; align-items:center; cursor:pointer; white-space:nowrap;}
+  .toolbar input{accent-color:var(--accent);}
+  .empty{color:var(--muted); font-size:14px; padding:18px; border:1px dashed var(--border); border-radius:10px;}
+  .pager{display:flex; justify-content:space-between; gap:12px; margin-top:26px;}
+  .pager button{font:inherit; font-size:13.5px; color:var(--accent); background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:10px 14px; cursor:pointer; max-width:48%; text-align:left;}
+  .pager button:last-child{text-align:right;}
+  .pager button:hover{border-color:var(--accent);}
+  .back-btn{position:fixed; right:22px; bottom:22px; z-index:10; font:inherit; font-size:13.5px; font-weight:600; color:var(--accent-ink); background:var(--accent); border:0; border-radius:99px; padding:10px 16px; cursor:pointer; box-shadow:0 4px 14px rgba(0,0,0,.18);}
+  .nav-item.complete .nav-count{color:var(--accent); border-color:var(--accent);}
+  .keys{display:inline-block; margin-top:6px;}
+  kbd{font-family:var(--mono); font-size:11px; padding:0 5px; border:1px solid var(--border); border-bottom-width:2px; border-radius:4px; background:var(--panel);}
+  @media (max-width: 820px){ .keys{display:none;} .toolbar .tmeta{width:100%;} }
+  .hero-actions{margin-top:14px;}
+  .fc-start,.toolbar .flash-btn{font:inherit; font-weight:600; color:var(--accent-ink); background:var(--accent); border:1px solid var(--accent); border-radius:8px; cursor:pointer;}
+  .fc-start{font-size:14px; padding:9px 16px;}
+  .toolbar .flash-btn{color:var(--accent-ink);}
+  .fc-start:hover,.toolbar .flash-btn:hover{filter:brightness(1.08);}
+  body.fc-lock{overflow:hidden;}
+  .fc{position:fixed; inset:0; z-index:50; background:rgba(10,12,14,.55); display:flex; align-items:center; justify-content:center; padding:24px;}
+  .fc[hidden]{display:none;}
+  .fc-dialog{width:min(920px,100%); max-height:100%; display:flex; flex-direction:column; background:var(--bg); border:1px solid var(--border); border-radius:14px; box-shadow:0 20px 60px rgba(0,0,0,.35); outline:none;}
+  .fc-head{display:flex; justify-content:space-between; align-items:flex-start; gap:12px; padding:16px 20px 10px;}
+  .fc-title{font-family:var(--mono); font-size:14px; font-weight:600;}
+  .fc-count{font-family:var(--mono); font-size:12px; color:var(--muted); margin-top:3px;}
+  .fc-tools{display:flex; gap:12px; align-items:center; font-size:13px; color:var(--muted);}
+  .fc-tools label{display:flex; gap:5px; align-items:center; cursor:pointer;}
+  .fc-tools input{accent-color:var(--accent);}
+  .fc-tools button{font:inherit; font-size:15px; color:var(--muted); background:transparent; border:1px solid var(--border); border-radius:7px; width:32px; height:32px; cursor:pointer;}
+  .fc-bar{height:4px; background:var(--border); margin:0 20px;}
+  .fc-bar i{display:block; height:100%; width:0; background:var(--accent); transition:width .2s ease;}
+  .fc-body{flex:1; overflow-y:auto; padding:22px 24px; min-height:220px;}
+  .fc-q{font-family:var(--sans); font-size:21px; line-height:1.4; margin:10px 0 16px; font-weight:600;}
+  .fc-prompt{color:var(--muted); font-size:14px; border:1px dashed var(--border); border-radius:10px; padding:26px 18px; text-align:center;}
+  .fc .qbody.fc-a{display:block; border-top:1px solid var(--border); padding:16px 0 0; font-size:14.5px;}
+  .fc-done h3{font-family:var(--mono); margin:0 0 8px;}
+  .fc-done .fc-sub{color:var(--muted); margin:14px 0 6px;}
+  .fc-done ul{padding-left:20px; font-size:14px;}
+  .fc-actions{display:flex; gap:10px; justify-content:flex-end; padding:12px 20px; border-top:1px solid var(--border); flex-wrap:wrap;}
+  .fc-actions button{font:inherit; font-size:14px; color:var(--text); background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:9px 16px; cursor:pointer;}
+  .fc-actions button.primary{color:var(--accent-ink); background:var(--accent); border-color:var(--accent); font-weight:600;}
+  .fc-actions button.again{border-color:var(--gold); color:var(--gold);}
+  .fc-actions button:first-child{margin-right:auto;}
+  .fc-actions kbd{margin-left:6px; background:transparent; border-color:currentColor; opacity:.75;}
+  .fc-keys{font-size:11.5px; color:var(--muted); padding:0 20px 14px; text-align:right;}
+  @media (max-width: 820px){ .fc{padding:0;} .fc-dialog{height:100%; border-radius:0;} .fc-keys{display:none;} .fc-q{font-size:18px;} }
+
+  .lede{font-size:15px; color:var(--muted);}
+  .callout{background:var(--accent-soft); border:1px solid var(--accent); border-radius:9px; padding:11px 14px; margin:0 0 14px;}
+  .note{font-size:13px; color:var(--muted);}
+  .codelabel{font-family:var(--mono); font-size:12px; color:var(--accent); margin:10px 0 4px;}
+  .verified{font-size:12.5px; color:var(--muted); border-top:1px dashed var(--border); padding-top:8px; margin-top:12px;}
+  .diagram.lightbg{background:#F8FAFC; border-color:#CBD5E1;}
+  .diagram.lightbg .codelabel{color:#334155;}
+  .quizopts{display:block; font-weight:400; font-size:13px; color:var(--muted); margin-top:4px; line-height:1.55;}
+  ol.quiz{padding-left:26px;} ol.quiz li{margin-bottom:5px;}
+  ol.quiz li.right{color:var(--accent); font-weight:600;}
+  hr{border:0; border-top:1px dashed var(--border); margin:14px 0;}
+  a.fc-start.alt{display:inline-block; text-decoration:none; margin-left:8px; background:var(--panel); color:var(--accent); border:1px solid var(--accent);}
+
+  /* study-v3: compact phone menu + cross-guide search results */
+  .nav-toggle{display:none;}
+  .ghits{margin-top:22px;}
+  .gh-head{display:flex; justify-content:space-between; gap:10px; font-family:var(--mono); font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin:0 0 8px;}
+  .gh{display:block; text-decoration:none; color:var(--text); background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:10px 14px; margin-bottom:8px;}
+  .gh:hover{border-color:var(--accent);}
+  .gh-t{display:block; font-weight:600; font-size:14.5px;}
+  .gh-m{display:block; font-family:var(--mono); font-size:11.5px; color:var(--accent); margin:2px 0;}
+  .gh-s{display:block; font-size:13px; color:var(--muted);}
+  .gh-note{font-size:13px; color:var(--muted);}
+  @media (max-width: 820px){
+    .sidebar{position:sticky; top:0; z-index:30; display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:10px 14px; background:var(--bg);}
+    .sidebar .brand{display:none;}
+    .sidebar .search{flex:1 1 130px; width:auto; min-width:0; margin:0;}
+    .nav-toggle{display:flex; align-items:center; justify-content:space-between; gap:8px; flex:0 1 54%; min-width:0; padding:9px 12px; font:inherit; font-size:13.5px; font-weight:600; color:var(--text); background:var(--accent-soft); border:1px solid var(--accent); border-radius:8px; cursor:pointer;}
+    .nav-toggle span{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+    .nav-toggle i{font-style:normal; color:var(--accent); transition:transform .15s;}
+    .sidebar.open .nav-toggle i{transform:rotate(180deg);}
+    .nav-panel{display:none; flex:1 0 100%; max-height:calc(100vh - 96px); overflow-y:auto; border-top:1px solid var(--border); padding-top:8px;}
+    .sidebar.open .nav-panel{display:block;}
+    .hero{margin-top:0;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="sidebar" id="sidebar">
+    <div class="brand"><b>Coding Practice</b><br>algorithms · React · HackerRank</div>
+    <input class="search" id="searchInput" type="search" placeholder="Search all guides   /" aria-label="Search all guides">
+    <button class="nav-toggle" id="navToggle" type="button" aria-expanded="false" aria-controls="navPanel"><span id="navToggleLbl">Sections</span><i>▾</i></button>
+    <div class="nav-panel" id="navPanel">
+    <div id="navList"></div>
+    <div class="progress-box">
+      <div class="label">REVIEWED</div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-num" id="progressNum">0 / 0</div>
+      <button class="reset-btn" id="resetBtn">Reset progress</button>
+    </div>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="hero">
+      <p class="eyebrow-free">Prep guide</p>
+      <h1>Coding practice</h1>
+      <p>Algorithms, data-structure exercises, React coding tasks and HackerRank-style problems, each with the approach, code and trade-offs. The runnable step-through modules remain in the interactive labs.</p>
+      <div class="hero-actions"><button id="fcCore" class="fc-start" type="button">▶ Flashcards</button>
+      <button id="fcWeak" class="fc-start alt" type="button" hidden>↻ Review weak cards</button><a class="fc-start alt" href="/coding-questions/labs" target="_top">Open the interactive labs →</a></div>
+      <div class="source-note"><span id="heroMeta"></span><br><span class="keys"><kbd>/</kbd> search · <kbd>j</kbd> <kbd>k</kbd> move · <kbd>o</kbd> open · <kbd>x</kbd> mark reviewed · <kbd>n</kbd> <kbd>p</kbd> next / previous section · <kbd>Esc</kbd> clear</span></div>
+    </div>
+    <div id="content"></div>
+    <button id="backBtn" class="back-btn" hidden></button>
+    <div id="fc" class="fc" hidden>
+      <div class="fc-dialog" role="dialog" aria-modal="true" aria-label="Flashcards" tabindex="-1">
+        <div class="fc-head">
+          <div><div class="fc-title"></div><div class="fc-count"></div></div>
+          <div class="fc-tools"><label><input type="checkbox" id="fcShuffle"> Shuffle</label><button data-fc="close" aria-label="Close flashcards">✕</button></div>
+        </div>
+        <div class="fc-bar"><i></i></div>
+        <div class="fc-body"></div>
+        <div class="fc-actions"></div>
+        <div class="fc-keys"><kbd>Space</kbd> reveal · <kbd>1</kbd> again · <kbd>2</kbd> got it (marks reviewed) · <kbd>←</kbd> <kbd>→</kbd> back / skip · <kbd>Esc</kbd> close</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+const DATA = [
+{
+  id:"coding-arrays", title:"Arrays & Strings",
+  questions:[
+    {
+      q:"What is the modulus operator used for? (odd/even check)",
+      a:`<pre>function isEven(n) {
+  return n % 2 === 0;
+}</pre>
+      <p><code>%</code> returns the remainder of a division. Any number divided by 2 leaves a remainder of 0 (even) or 1 (odd) — a one-line, very common building block, so watch for the candidate handling negative numbers correctly too (<code>-3 % 2</code> is <code>-1</code> in JS, not <code>1</code>).</p>`
+    },
+    {
+      q:"Implement a function to flatten a deeply nested array, iteratively and recursively.",
+      a:`<p>In real code, reach for the built-in <code>Array.prototype.flat(Infinity)</code>. For an interview, show the mechanics with a manual recursive version, and mention the iterative alternative to show awareness of call-stack depth limits on pathologically deep input.</p>
+      <pre>// Recursive
+function flattenRecursive(arr) {
+  return arr.reduce(
+    (flat, item) => flat.concat(Array.isArray(item) ? flattenRecursive(item) : item),
+    []
+  );
+}
+
+// Iterative, explicit stack — avoids call-stack limits
+function flattenIterative(arr) {
+  const stack = [...arr];
+  const result = [];
+  while (stack.length) {
+    const next = stack.pop();
+    if (Array.isArray(next)) stack.push(...next);
+    else result.unshift(next);
+  }
+  return result;
+}</pre>`
+    },
+    {
+      q:"Given an array of integers, find two numbers that add up to a target value — walk through your approach.",
+      a:`<p>The brute-force answer checks every pair, which is O(n&sup2;). The faster approach trades space for time: walk the array once, and for each number ask "have I already seen the value that would complete this pair?" A hash map answers that in O(1), turning the whole thing into a single O(n) pass.</p>
+<p>For each element, compute its complement (<code>target - nums[i]</code>) and check the map before inserting the current number. Because you check before you insert, you naturally avoid using the same element twice.</p>
+<pre>function twoSum(nums, target) {
+  const numMap = new Map();
+
+  for (let i = 0; i &lt; nums.length; i++) {
+    const complement = target - nums[i];
+    if (numMap.has(complement)) {
+      return [numMap.get(complement), i];
+    }
+    numMap.set(nums[i], i);
+  }
+
+  return [];
+}</pre>
+<p><strong>Complexity:</strong> O(n) time — one pass, O(1) map look-ups. O(n) space — worst case you store every element before finding the pair.</p>
+<p>Before coding, clarify whether duplicates are allowed and whether the same element can be reused — it changes whether you check-then-insert or insert-then-check. Mention the sort + two-pointer alternative too: it drops space to O(1) but costs O(n log n) for the sort, a trade-off worth naming out loud.</p>
+<p><strong>Common follow-ups</strong></p>
+<ul>
+<li>How would you solve Two Sum II, where the input array is already sorted? (Two pointers from both ends, O(1) extra space.)</li>
+<li>Extend this to 3-Sum: find all triplets that sum to zero.</li>
+</ul>`
+    },
+    {
+      q:"How would you check whether a string of brackets — (), [], {} — is validly matched?",
+      a:`<p>The moment you need to match the most recently opened item first, that's a signal for a stack. Walk the string once: push an opening bracket's expected closer onto the stack, and on a closing bracket, pop and compare.</p>
+<p>A small trick keeps the comparison simple: instead of pushing the opening bracket itself, push what you <em>expect</em> to see next (its matching closer). Then a mismatch is just a direct equality check against the character you're looking at.</p>
+<pre>function isValid(s) {
+  const stack = [];
+  const map = { '(': ')', '[': ']', '{': '}' };
+
+  for (let i = 0; i &lt; s.length; i++) {
+    if (map[s[i]]) {
+      stack.push(map[s[i]]);
+    } else {
+      if (s[i] !== stack.pop()) {
+        return false;
+      }
+    }
+  }
+
+  return stack.length === 0;
+}</pre>
+<p><strong>Complexity:</strong> O(n) time — one scan of the string. O(n) space — the stack can hold at most n/2 entries (all opening brackets, in the worst case).</p>
+<p>Call out the edge cases as you go: an empty string is valid, a string that opens with a closing bracket should fail fast (the pop returns <code>undefined</code>, which never equals a real character), and odd-length strings can never balance.</p>
+<p><strong>Common follow-ups</strong></p>
+<ul>
+<li>What if the string can contain non-bracket characters that should just be skipped?</li>
+<li>How would you find the minimum number of insertions needed to make an invalid string valid?</li>
+</ul>`
+    },
+    {
+      q:"Given a list of intervals, merge all overlapping ones — how do you approach it?",
+      a:`<p>The key move is sorting by start time first. Once intervals are ordered, any two that overlap must be neighbors — so a single left-to-right scan, always comparing the current interval to the last one you've already merged, is enough.</p>
+<pre>function merge(intervals) {
+  if (!intervals.length) return [];
+
+  intervals.sort((a, b) => a[0] - b[0]);
+  const result = [intervals[0]];
+
+  for (let i = 1; i &lt; intervals.length; i++) {
+    const current    = intervals[i];
+    const lastMerged = result[result.length - 1];
+
+    if (current[0] &lt;= lastMerged[1]) {
+      lastMerged[1] = Math.max(lastMerged[1], current[1]);
+    } else {
+      result.push(current);
+    }
+  }
+
+  return result;
+}</pre>
+<p><strong>Complexity:</strong> O(n log n) time — dominated by the sort; the merge scan itself is O(n). O(n) space for the output.</p>
+<p>Use <code>Math.max</code>, not a plain overwrite, when extending the last merged interval's end — a shorter interval can be fully contained inside a longer one (e.g. <code>[1,10]</code> and <code>[2,3]</code>), and a naive overwrite would shrink your merged range incorrectly. Ask up front whether the input is already sorted; if not, sorting is mandatory.</p>
+<p><strong>Common follow-ups</strong></p>
+<ul>
+<li>Insert Interval: given an already-sorted, non-overlapping list and one new interval, insert and merge in place.</li>
+<li>Meeting Rooms II: find the minimum number of rooms needed to host all the given meetings.</li>
+</ul>`
+    },
+    {
+      q:"How would you group a list of strings so that anagrams of each other end up together?",
+      a:`<p>Two strings are anagrams if they contain the same characters in some order — which means sorting each string's characters produces a canonical "fingerprint" that's identical for every anagram in the group. Use that fingerprint as a hash map key and bucket the originals under it.</p>
+<pre>function groupAnagrams(strs) {
+  const map = new Map();
+
+  for (const str of strs) {
+    const sorted = str
+      .split('')
+      .sort()
+      .join('');
+
+    if (!map.has(sorted)) {
+      map.set(sorted, []);
+    }
+    map.get(sorted).push(str);
+  }
+
+  return Array.from(map.values());
+}</pre>
+<p><strong>Complexity:</strong> O(n · k log k) time, where n is the number of strings and k is their average length — each string costs a sort. O(n · k) space to store every character across every bucket.</p>
+<p>If k can be large, mention the alternative: a 26-length character-frequency count as the key instead of a sorted string. That's O(k) per word instead of O(k log k), which matters once strings get long.</p>
+<p><strong>Common follow-ups</strong></p>
+<ul>
+<li>Find all anagrams of a pattern within a larger string (a sliding-window variant, not a sort).</li>
+<li>How would this change for Unicode or multi-byte characters?</li>
+</ul>`
+    },
+    {
+      q:"Return an array where each output[i] is the product of every element except nums[i] — and you can't use division.",
+      a:`<p>Without division, the trick is to build the answer from two directions: a left-to-right pass that fills each slot with the product of everything to its left, then a right-to-left pass that multiplies in the product of everything to its right. Combined, each slot ends up holding the product of all its neighbors.</p>
+<pre>function productExceptSelf(nums) {
+  const n = nums.length;
+  const result = new Array(n).fill(1);
+
+  let left = 1;
+  for (let i = 0; i &lt; n; i++) {
+    result[i] = left;
+    left *= nums[i];
+  }
+
+  let right = 1;
+  for (let i = n - 1; i &gt;= 0; i--) {
+    result[i] *= right;
+    right *= nums[i];
+  }
+
+  return result;
+}</pre>
+<p><strong>Complexity:</strong> O(n) time — two linear passes. O(1) extra space, since the output array itself isn't counted and no auxiliary array is needed.</p>
+<p>Frame the insight explicitly: <code>result[i] = prefix_product[i-1] &times; suffix_product[i+1]</code>. If division were allowed you could just divide the total product by <code>nums[i]</code>, but that breaks the moment the array contains a zero — worth mentioning even though the interviewer ruled division out.</p>
+<p><strong>Common follow-ups</strong></p>
+<ul>
+<li>How does your approach handle an array containing one or more zeros?</li>
+<li>Can this be done in a true single pass? (You can't compute prefix and suffix products simultaneously without extra space — good to reason through out loud.)</li>
+</ul>`
+    },
+    {
+      q:"Find the length of the longest substring without repeating characters — how do you solve it?",
+      a:`<p>This is a sliding-window problem: keep a window <code>[left, right]</code> that always contains unique characters, and grow it greedily. A <code>Set</code> tracks what's currently inside the window with O(1) membership checks.</p>
+<p>Expand <code>right</code> one character at a time. If that character is already in the window, shrink from <code>left</code> — evicting characters — until the duplicate is gone, then add the new character and record the window size.</p>
+<pre>function lengthOfLongestSubstring(s) {
+  let maxLength = 0;
+  let left = 0;
+  const set = new Set();
+
+  for (let right = 0; right &lt; s.length; right++) {
+    while (set.has(s[right])) {
+      set.delete(s[left]);
+      left++;
+    }
+    set.add(s[right]);
+    maxLength = Math.max(maxLength, right - left + 1);
+  }
+
+  return maxLength;
+}</pre>
+<p><strong>Complexity:</strong> O(n) time — each character is added to and removed from the set at most once, so <code>left</code> and <code>right</code> together advance at most 2n steps. O(min(n, m)) space, where m is the alphabet size (e.g. 128 for ASCII).</p>
+<p>Recognizing "longest/best contiguous subarray or substring under a constraint" as the trigger for sliding window is the real skill being tested here. A follow-up optimization: a <code>Map&lt;char, lastIndex&gt;</code> instead of a <code>Set</code> lets you jump <code>left</code> directly past the duplicate instead of evicting one character at a time.</p>
+<p><strong>Common follow-ups</strong></p>
+<ul>
+<li>Longest substring with at most K distinct characters.</li>
+<li>Minimum window substring — same technique, but shrinking to find a minimum instead of a maximum.</li>
+</ul>`
+    },
+    {
+      q:"Given an array (1-indexed), under what conditions can it be rearranged so every odd position holds an odd value and every even position holds an even value?",
+      a:`<p>This one is mostly about reasoning through the position counts before writing any code. If the array length n is <strong>even</strong>, there are exactly n/2 odd positions and n/2 even positions — so a valid arrangement exists if and only if the count of odd elements equals the count of even elements.</p>
+<p>If n is <strong>odd</strong>, position 1 and the last position are both odd, so odd positions outnumber even positions by exactly one. A valid arrangement then requires exactly one more odd element than even elements.</p>
+<pre>function canArrangeByParity(arr) {
+  const n = arr.length;
+  const oddCount = arr.filter(x => x % 2 !== 0).length;
+  const evenCount = n - oddCount;
+
+  if (n % 2 === 0) {
+    return oddCount === evenCount;
+  }
+  return oddCount - evenCount === 1;
+}</pre>
+<p><strong>Complexity:</strong> O(n) time — one pass to count odd/even elements. O(1) extra space.</p>
+<p>The interview value here is in stating the position-parity argument out loud before coding: n even splits positions 50/50, n odd is biased toward odd positions by exactly one slot — so a "count(even) − count(odd) = 1" claim for an even-length array, or an exact-equality claim for an odd-length array, should be flagged as wrong on inspection, without even running an example.</p>`
+    },
+    {
+      q:"Given a list of server uptime intervals within a monitoring window [1, t], how would you compute total downtime?",
+      a:`<p>The intervals can overlap, so naively summing <code>(end - start + 1)</code> per interval would double-count shared time. A sweep-line handles overlaps cleanly: treat each interval as a +1 event at its start and a −1 event at <code>end + 1</code>, sort all events by time, and scan left to right accumulating time while at least one interval is "active."</p>
+<pre>type SweepEvent = { time: number; delta: 1 | -1 };
+
+function getTotalDowntime(interval: number[][], t: number): number {
+    if (interval.length === 0) return t;
+    const events = buildSweepEvents(interval);
+    const uptime = computeUptime(events);
+    return t - uptime;
+}
+
+function buildSweepEvents(interval: number[][]): SweepEvent[] {
+    const events: SweepEvent[] = [];
+    for (const [start, end] of interval) {
+        events.push({ time: start, delta: 1 });
+        events.push({ time: end + 1, delta: -1 });
+    }
+    events.sort((a, b) => a.time - b.time || a.delta - b.delta);
+    return events;
+}
+
+function computeUptime(events: SweepEvent[]): number {
+    let uptime = 0;
+    let active = 0;
+    let prevTime = 1;
+    for (const { time, delta } of events) {
+        if (active &gt; 0) uptime += time - prevTime;
+        active += delta;
+        prevTime = time;
+    }
+    return uptime;
+}</pre>
+<p><strong>Complexity:</strong> O(n log n) time, dominated by sorting the 2n events. O(n) space for the event list.</p>
+<p>The <code>end + 1</code> offset is the detail that trips people up — since intervals are inclusive, an interval covering <code>[3, 5]</code> should stop being "active" starting at time 6, not time 5. Sorting on <code>delta</code> as a tiebreaker (so a −1 at a given time is processed after a +1 at the same time, or vice versa depending on how you define inclusivity at the boundary) is also worth calling out explicitly.</p>`
+    },
+    {
+      q:"How do you implement binary search, and what are the common variants?",
+      a:`<pre>// index of target in a sorted array, or -1
+function binarySearch(a, target) {
+  let lo = 0, hi = a.length - 1;
+  while (lo &lt;= hi) {
+    const mid = lo + Math.floor((hi - lo) / 2);     // avoids overflow in fixed-width languages
+    if (a[mid] === target) return mid;
+    if (a[mid] &lt; target) lo = mid + 1; else hi = mid - 1;
+  }
+  return -1;
+}
+
+// lower bound: first index with a[i] &gt;= x  (also the insert position)
+function lowerBound(a, x) {
+  let lo = 0, hi = a.length;
+  while (lo &lt; hi) {
+    const mid = lo + ((hi - lo) &gt;&gt; 1);
+    if (a[mid] &lt; x) lo = mid + 1; else hi = mid;
+  }
+  return lo;
+}</pre><ul><li><strong>O(log n)</strong> time, O(1) space; the input must be sorted (or monotonic).</li><li><strong>Search on the answer:</strong> when a yes/no check is monotonic (capacity to ship in D days, minimum speed to finish), binary search the value range.</li><li><strong>Rotated sorted array:</strong> at each step one half is sorted; decide which half contains the target.</li><li><strong>Off-by-one rules:</strong> pick one loop invariant (<code>lo &lt;= hi</code> with <code>hi = mid - 1</code>, or <code>lo &lt; hi</code> with <code>hi = mid</code>) and stay consistent.</li></ul><p><strong>Interview tip:</strong> Say the invariant out loud ("the answer is always in [lo, hi)"); it prevents most bugs.</p>`
+    },
+    {
+      q:"What are the two-pointer and sliding-window techniques?",
+      a:`<p class="lede">Both turn an O(n²) scan over pairs or subarrays into O(n) by moving indices monotonically instead of restarting.</p><pre>// two pointers on a sorted array: pair with a given sum
+function pairWithSum(a, target) {
+  let i = 0, j = a.length - 1;
+  while (i &lt; j) {
+    const s = a[i] + a[j];
+    if (s === target) return [i, j];
+    if (s &lt; target) i++; else j--;
+  }
+  return null;
+}
+
+// fixed window: max sum of any k consecutive numbers
+function maxSumK(a, k) {
+  let sum = 0, best = -Infinity;
+  for (let i = 0; i &lt; a.length; i++) {
+    sum += a[i];
+    if (i &gt;= k) sum -= a[i - k];          // slide: drop the element leaving the window
+    if (i &gt;= k - 1) best = Math.max(best, sum);
+  }
+  return best;
+}
+
+// variable window: shortest subarray with sum &gt;= target (positive numbers)
+function minLen(a, target) {
+  let left = 0, sum = 0, best = Infinity;
+  for (let right = 0; right &lt; a.length; right++) {
+    sum += a[right];
+    while (sum &gt;= target) { best = Math.min(best, right - left + 1); sum -= a[left++]; }
+  }
+  return best === Infinity ? 0 : best;
+}</pre><ul><li><strong>Two pointers</strong> need order or structure (sorted array, palindrome, partitioning); move the pointer that can improve the answer.</li><li><strong>Sliding window</strong> keeps a running summary (sum, character counts in a map) and adds one element on the right, removes one on the left.</li><li>Recognise it from "contiguous subarray or substring", "longest / shortest / at most K distinct".</li></ul><p><strong>Interview tip:</strong> State the invariant of the window (for example "no repeated characters inside it") and why each index only moves forward, which is what proves O(n).</p>`
+    }
+  ]
+},
+{
+  id:"coding-impl", title:"Implementations & Async",
+  questions:[
+    {
+      q:"Implement Promise.all from scratch — what does it need to guarantee?",
+      a:`<p><code>Promise.all</code> needs to resolve with a single array once every input promise has resolved, preserving the <em>input</em> order regardless of which promise actually settles first — and it needs to reject immediately the moment any one of them rejects.</p>
+<p>The trick to preserving order is writing each result to <code>results[index]</code> rather than pushing, so a slow promise at index 0 doesn't get overtaken by a fast one at index 2. A counter tracks how many have resolved so far, acting as a completion barrier.</p>
+<pre>function myPromiseAll(promises) {
+  return new Promise((resolve, reject) => {
+    if (!Array.isArray(promises)) {
+      return reject(new TypeError('Argument must be an array'));
+    }
+
+    let resolvedCount = 0;
+    const results = new Array(promises.length);
+
+    if (promises.length === 0) {
+      return resolve(results);
+    }
+
+    promises.forEach((promise, index) => {
+      Promise.resolve(promise)
+        .then(value => {
+          results[index] = value;
+          resolvedCount++;
+          if (resolvedCount === promises.length) {
+            resolve(results);
+          }
+        })
+        .catch(error => reject(error));
+    });
+  });
+}</pre>
+<p><strong>Complexity:</strong> O(n) time to attach handlers to n promises (actual wall-clock resolution time is bounded by the slowest promise, not n). O(n) space for the results array.</p>
+<p>Wrapping each item in <code>Promise.resolve()</code> matters — it lets the function accept plain, non-promise values too, matching native behavior. Also handle the empty-array case explicitly: <code>Promise.all([])</code> should resolve immediately with <code>[]</code>, since the forEach loop would otherwise never fire.</p>
+<p><strong>Common follow-ups</strong></p>
+<ul>
+<li>Implement <code>Promise.allSettled</code> — it never rejects, and instead collects <code>{status, value/reason}</code> for every promise.</li>
+<li>Implement <code>Promise.race</code>, which resolves or rejects with whichever promise settles first.</li>
+</ul>`
+    },
+    {
+      q:"Implement React's useCallback from scratch — what is it actually memoizing, and why does that matter?",
+      a:`<p><code>useCallback</code> memoizes a <em>function reference</em>, not a value: it returns the same function object across re-renders as long as its dependencies haven't changed. That matters because every render otherwise creates a brand-new function, and a new reference is enough to make a memoized child (<code>React.memo</code>) or a <code>useEffect</code> dependency re-run unnecessarily.</p>
+<p><code>useRef</code> is the right storage primitive here — it persists a mutable value across renders without itself triggering a re-render. Store both the cached function and the dependency array it was built with, so the next render can compare.</p>
+<pre>import { useRef } from 'react';
+
+function useCustomCallback(fn, deps) {
+  const cacheRef = useRef(null);
+
+  if (
+    !cacheRef.current ||
+    !areDepsEqual(cacheRef.current.deps, deps)
+  ) {
+    cacheRef.current = { fn, deps };
+  }
+
+  return cacheRef.current.fn;
+}
+
+function areDepsEqual(prevDeps, nextDeps) {
+  if (prevDeps.length !== nextDeps.length) return false;
+  return prevDeps.every(
+    (dep, i) => Object.is(dep, nextDeps[i])
+  );
+}</pre>
+<p><strong>Complexity:</strong> O(d) time and space per render, where d is the number of dependencies — comparing and storing d values. In practice d is small enough that this is effectively O(1).</p>
+<p>Draw the explicit connection: <code>useCallback(fn, deps)</code> is really just <code>useMemo(() =&gt; fn, deps)</code> — one memoizes a function, the other memoizes an arbitrary value. Use <code>Object.is</code> rather than <code>===</code> for the comparison, since it correctly handles <code>NaN</code> and distinguishes <code>+0</code> from <code>-0</code>, matching React's real internal behavior.</p>
+<p><strong>Common follow-ups</strong></p>
+<ul>
+<li>When would you deliberately <em>not</em> use useCallback? (When the child isn't memoized — the bookkeeping overhead outweighs any benefit.)</li>
+<li>How does useMemo differ from useCallback under the hood?</li>
+</ul>`
+    },
+    {
+      q:"In a hand-written Promise implementation, what happens when a .then() callback throws?",
+      a:`<p>The thrown error must <strong>reject the promise returned by that <code>.then()</code></strong> and propagate down the chain to the first <code>.catch()</code> or rejection handler, exactly as with native promises. That means every callback is invoked inside a <code>try/catch</code> in the implementation, and the caught error is passed to the derived promise's reject function.</p>
+<pre>class MyPromise {
+  constructor(executor) {
+    this.state = 'pending'; this.value = undefined; this.handlers = [];
+    const settle = (state, value) =&gt; {
+      if (this.state !== 'pending') return;          // a promise settles only once
+      this.state = state; this.value = value;
+      queueMicrotask(() =&gt; this.handlers.forEach((h) =&gt; h()));   // callbacks run asynchronously, as microtasks
+    };
+    const resolve = (v) =&gt; settle('fulfilled', v);
+    const reject = (e) =&gt; settle('rejected', e);
+    try { executor(resolve, reject); } catch (e) { reject(e); }   // a throwing executor rejects too
+  }
+
+  then(onFulfilled, onRejected) {
+    return new MyPromise((resolve, reject) =&gt; {
+      const run = () =&gt; {
+        const cb = this.state === 'fulfilled' ? onFulfilled : onRejected;
+        if (typeof cb !== 'function') {               // pass value or error through the chain
+          return this.state === 'fulfilled' ? resolve(this.value) : reject(this.value);
+        }
+        try { resolve(cb(this.value)); }              // a returned value resolves the next promise
+        catch (e) { reject(e); }                      // a thrown error rejects it: this is the propagation
+      };
+      if (this.state === 'pending') this.handlers.push(run); else queueMicrotask(run);
+    });
+  }
+  catch(onRejected) { return this.then(undefined, onRejected); }
+}</pre>
+<ul>
+<li><strong>Missing handlers pass through:</strong> <code>.then(fn)</code> with no rejection handler forwards the error to the next link, which is why one <code>.catch()</code> at the end catches failures from every earlier step.</li>
+<li><strong>Callbacks are asynchronous</strong> (microtasks) even if the promise is already settled, so ordering matches native promises.</li>
+<li><strong>Simplification:</strong> a spec-compliant version also unwraps returned thenables (the Promises/A+ resolution procedure), which this sketch omits.</li>
+</ul>`
+    },
+    {
+      q:"How do you approach a dynamic programming problem?",
+      a:`<ol><li><strong>Define the state:</strong> what does <code>dp[i]</code> (or <code>dp[i][j]</code>) mean, in one sentence.</li><li><strong>Write the transition:</strong> how the state is built from smaller states.</li><li><strong>Set base cases</strong> and the <strong>order</strong> of computation (or memoize a recursive version).</li><li><strong>Answer:</strong> which cell holds it; then look for a way to keep only the last row or two.</li></ol><pre>// Coin change: fewest coins to make amount, or -1
+function coinChange(coins, amount) {
+  const dp = new Array(amount + 1).fill(Infinity);
+  dp[0] = 0;                                         // base: zero coins make zero
+  for (let a = 1; a &lt;= amount; a++) {
+    for (const c of coins) if (c &lt;= a) dp[a] = Math.min(dp[a], dp[a - c] + 1);   // transition
+  }
+  return dp[amount] === Infinity ? -1 : dp[amount];
+}
+coinChange([1, 2, 5], 11);   // 3  (5 + 5 + 1)
+
+// Top-down with memo: same recurrence, computed on demand
+const memo = new Map();
+const fib = (n) =&gt; n &lt; 2 ? n : memo.get(n) ?? (memo.set(n, fib(n - 1) + fib(n - 2)), memo.get(n));</pre><ul><li><strong>Use DP when</strong> the problem has overlapping subproblems and optimal substructure. Signs: "minimum / maximum / count the ways", choices at each step, brute force is exponential.</li><li><strong>Top-down (memoization)</strong> is quicker to write; <strong>bottom-up (tabulation)</strong> avoids recursion depth and allows space optimisation.</li><li>Classic set: climbing stairs, house robber, coin change, longest common subsequence, knapsack, edit distance.</li><li>Coin change here is <code>O(amount × coins)</code> time and <code>O(amount)</code> space.</li></ul><p><strong>Interview tip:</strong> Interviewers care about the state definition and the transition; write those in words before any code.</p>`
+    },
+    {
+      q:"How do you reverse a linked list and detect a cycle?",
+      a:`<pre>class Node { constructor(val, next = null) { this.val = val; this.next = next; } }
+
+// reverse in place: O(n) time, O(1) space
+function reverse(head) {
+  let prev = null, cur = head;
+  while (cur) {
+    const next = cur.next;    // remember the rest
+    cur.next = prev;          // flip the pointer
+    prev = cur;
+    cur = next;
+  }
+  return prev;                // new head
+}
+
+// cycle detection (Floyd): slow moves 1, fast moves 2; they meet inside a cycle
+function hasCycle(head) {
+  let slow = head, fast = head;
+  while (fast &amp;&amp; fast.next) {
+    slow = slow.next;
+    fast = fast.next.next;
+    if (slow === fast) return true;
+  }
+  return false;
+}
+
+// middle node: when fast reaches the end, slow is in the middle
+function middle(head) {
+  let slow = head, fast = head;
+  while (fast &amp;&amp; fast.next) { slow = slow.next; fast = fast.next.next; }
+  return slow;
+}</pre><ul><li>The slow/fast pair also finds the <strong>start of the cycle</strong> (reset one pointer to the head, move both one step at a time) and the k-th node from the end (advance one pointer k steps first).</li><li>A dummy head node removes special cases when inserting or deleting at the front.</li><li>Arrays beat linked lists for cache locality and random access; linked lists win for cheap insert or remove given a node reference (LRU caches, queues).</li></ul><p><strong>Interview tip:</strong> Draw the three pointers (<code>prev</code>, <code>cur</code>, <code>next</code>) after each step; it is the easiest way to avoid losing the rest of the list.</p>`
+    },
+    {
+      q:"How do you build an LRU cache with O(1) get and put?",
+      a:`<p class="lede">Least-recently-used eviction needs two things at O(1): find an entry by key, and move it to "most recent". The classic design is a hash map plus a doubly linked list. In JavaScript, a <code>Map</code> does both because it remembers insertion order.</p><pre>class LRUCache {
+  constructor(capacity) { this.cap = capacity; this.map = new Map(); }
+
+  get(key) {
+    if (!this.map.has(key)) return undefined;
+    const value = this.map.get(key);
+    this.map.delete(key);          // re-insert: now the most recent entry
+    this.map.set(key, value);
+    return value;
+  }
+
+  put(key, value) {
+    if (this.map.has(key)) this.map.delete(key);
+    this.map.set(key, value);
+    if (this.map.size &gt; this.cap) {
+      const oldest = this.map.keys().next().value;   // first key = least recently used
+      this.map.delete(oldest);
+    }
+  }
+}
+
+const c = new LRUCache(2);
+c.put('a', 1); c.put('b', 2); c.get('a'); c.put('c', 3);   // evicts 'b'</pre><ul><li><strong>Language-independent version:</strong> hash map from key to list node, plus a doubly linked list ordered by recency; move the node to the head on access, drop the tail on overflow.</li><li><strong>Extensions:</strong> TTLs, size-based eviction, thread safety (a lock or a single-threaded event loop), and LFU (least frequently used) as a variation.</li><li>Real systems: Redis <code>maxmemory-policy allkeys-lru</code>, browser caches, database buffer pools.</li></ul><p><strong>Interview tip:</strong> Mention why a plain object is not enough: you need insertion-order iteration and O(1) delete, which <code>Map</code> guarantees.</p>`
+    }
+  ]
+},
+{
+  id:"coding-react", title:"React Exercises",
+  questions:[
+    {
+      q:"What's your approach to implementing a live search / filter feature in React?",
+      a:`<div class="diagram"><svg viewBox="0 0 560 130" width="560">
+    <rect x="10" y="15" width="150" height="38" rx="7" fill="var(--panel)" stroke="var(--border)"/><text x="85" y="39" text-anchor="middle" font-family="var(--mono)" font-size="10.5" fill="var(--text)">full items[]</text>
+    <rect x="200" y="15" width="150" height="38" rx="7" fill="var(--gold-soft)" stroke="var(--gold)"/><text x="275" y="39" text-anchor="middle" font-family="var(--mono)" font-size="10.5" fill="var(--text)">query state</text>
+    <path d="M160 34 L200 34" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#a10)"/>
+    <path d="M350 34 L390 34" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#a10)"/>
+    <rect x="390" y="15" width="160" height="38" rx="7" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="470" y="39" text-anchor="middle" font-family="var(--mono)" font-size="10.5" fill="var(--text)">useEffect filters</text>
+    <path d="M470 53 L470 85 L280 85" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#a10)"/>
+    <rect x="120" y="90" width="160" height="34" rx="7" fill="var(--panel)" stroke="var(--border)"/><text x="200" y="112" text-anchor="middle" font-family="var(--mono)" font-size="10.5" fill="var(--text)">filtered[] → rendered list</text>
+    <defs><marker id="a10" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--muted)"/></marker></defs>
+  </svg></div>
+      <pre>const [items] = useState(fullList);
+const [query, setQuery] = useState("");
+const [filtered, setFiltered] = useState(fullList);
+
+useEffect(() => {
+  setFiltered(
+    items.filter(i => i.name.toLowerCase().includes(query.toLowerCase()))
+  );
+}, [query, items]);</pre>
+      <p>Three pieces of state: the source list, the search term, and the derived filtered list. Note this could also be done without the extra state/effect at all — just compute <code>filtered</code> directly during render, which avoids an unnecessary re-render on every keystroke. Worth asking why they chose <code>useEffect</code> here.</p>`
+    },
+    {
+      q:"Why does React need a key prop on list items?",
+      a:`<div class="diagram"><svg viewBox="0 0 560 150" width="560">
+    <text x="120" y="18" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--muted)">before</text>
+    <text x="440" y="18" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--muted)">after inserting one item at the top</text>
+    <rect x="70" y="30" width="100" height="26" rx="6" fill="var(--panel)" stroke="var(--border)"/><text x="120" y="48" text-anchor="middle" font-family="var(--mono)" font-size="10.5" fill="var(--text)">key=A</text><rect x="70" y="62" width="100" height="26" rx="6" fill="var(--panel)" stroke="var(--border)"/><text x="120" y="80" text-anchor="middle" font-family="var(--mono)" font-size="10.5" fill="var(--text)">key=B</text><rect x="70" y="94" width="100" height="26" rx="6" fill="var(--panel)" stroke="var(--border)"/><text x="120" y="112" text-anchor="middle" font-family="var(--mono)" font-size="10.5" fill="var(--text)">key=C</text>
+    <rect x="390" y="20" width="100" height="24" rx="6" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="440" y="37" text-anchor="middle" font-family="var(--mono)" font-size="10" fill="var(--text)">key=X</text><rect x="390" y="48" width="100" height="24" rx="6" fill="var(--panel)" stroke="var(--border)"/><text x="440" y="65" text-anchor="middle" font-family="var(--mono)" font-size="10" fill="var(--text)">key=A</text><rect x="390" y="76" width="100" height="24" rx="6" fill="var(--panel)" stroke="var(--border)"/><text x="440" y="93" text-anchor="middle" font-family="var(--mono)" font-size="10" fill="var(--text)">key=B</text><rect x="390" y="104" width="100" height="24" rx="6" fill="var(--panel)" stroke="var(--border)"/><text x="440" y="121" text-anchor="middle" font-family="var(--mono)" font-size="10" fill="var(--text)">key=C</text>
+    <text x="440" y="140" text-anchor="middle" font-family="var(--mono)" font-size="10" fill="var(--accent)">key lets React see: only X is new — A, B, C just moved down</text>
+  </svg></div>
+      <p>When a list re-renders, React needs to know which items are the <em>same</em> item (just moved or updated) versus which are new or removed, so it can update the DOM minimally instead of tearing everything down and rebuilding it. <code>key</code> is that identity hint. Using an array index as the key is a common trap — it breaks once items are reordered, inserted, or removed, since the "identity" shifts with position instead of following the actual item.</p>
+      <pre>// Bad: index as key on a reorderable list
+{items.map((item, i) => &lt;Row key={i} item={item} /&gt;)}
+
+// Good: stable identity
+{items.map(item => &lt;Row key={item.id} item={item} /&gt;)}</pre>
+      <p><strong>Good interview signal:</strong> this whole mechanism is called <em>reconciliation</em> — React diffs the new element tree against the previous one, and without a good key it may misattribute internal state (like input focus) to the wrong item, or unmount/remount unnecessarily.</p>`
+    },
+    {
+      q:"Why use React Fragments?",
+      a:`<pre>function Row() {
+  return (
+    &lt;&gt;
+      &lt;td&gt;Name&lt;/td&gt;
+      &lt;td&gt;Email&lt;/td&gt;
+    &lt;/&gt;
+  );
+}</pre>
+      <p>A component must return one root element. Wrapping in a <code>&lt;div&gt;</code> works, but adds a DOM node you didn't want — which can actually break layouts (e.g. a <code>&lt;div&gt;</code> between <code>&lt;tr&gt;</code> and <code>&lt;td&gt;</code> is invalid HTML). <code>&lt;Fragment&gt;</code> / <code>&lt;&gt;&lt;/&gt;</code> groups children for React without adding anything to the actual DOM tree.</p>`
+    },
+    {
+      q:"Fetch data and render it in a table — walk through loading, error, and empty states.",
+      a:`<p>Define the data type and component state, fetch inside <code>useEffect</code>, handle loading and error states explicitly, and render with <code>map</code>. Verify the response shape before rendering nested properties — <code>fetch</code> only rejects on network failure, not on a 4xx/5xx response, so an <code>!response.ok</code> check is required.</p>
+      <p><strong>Common follow-ups</strong></p>
+      <ul>
+        <li><strong>How would you add pagination?</strong> Move it server-side — request a page/cursor and size, keep local state to the current page and loading status; cursor-based pagination scales better than offset-based for large, changing datasets.</li>
+        <li><strong>How would you debounce a search filter?</strong> Debounce the input value (see the JavaScript track's debounce question), combined with <code>AbortController</code> so a slow, now-stale request can't overwrite newer input.</li>
+        <li><strong>How would you handle an empty state?</strong> Treat "loading," "error," and "succeeded with zero results" as three distinct, explicit states — collapsing them into one blank table is a common, confusing mistake.</li>
+        <li><strong>How would you test this component?</strong> React Testing Library: mock the fetch call, assert the loading state appears first, then the rendered rows, then the error state on a rejected/non-OK mock — assert on what the user sees, not internal state.</li>
+      </ul>`
+    },
+    {
+      q:"Build a progress bar that fills over time in React (setInterval plus useEffect). What are the pitfalls?",
+      a:`<p>Keep a <code>progress</code> number in state, advance it on an interval, and clean up the interval when the component unmounts or finishes.</p>
+<pre>function ProgressBar({ durationMs = 5000, onDone }) {
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() =&gt; {
+    const start = performance.now();
+    const id = setInterval(() =&gt; {
+      const pct = Math.min(100, ((performance.now() - start) / durationMs) * 100);
+      setProgress(pct);
+      if (pct &gt;= 100) { clearInterval(id); onDone?.(); }
+    }, 100);
+    return () =&gt; clearInterval(id);            // cleanup on unmount or when durationMs changes
+  }, [durationMs]);
+
+  return (
+    &lt;div role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress)}
+         style={{ background: '#eee', height: 8, borderRadius: 4 }}&gt;
+      &lt;div style={{ width: progress + '%', height: '100%', background: '#2F7A72', transition: 'width 100ms linear' }} /&gt;
+    &lt;/div&gt;
+  );
+}</pre>
+<ul>
+<li><strong>Derive progress from elapsed time</strong> (<code>performance.now()</code>) instead of adding a fixed step per tick; intervals drift and get throttled in background tabs.</li>
+<li><strong>Always clear the interval</strong> in the cleanup, or you get a leak and updates on an unmounted component.</li>
+<li><strong>Avoid stale state:</strong> if you use the functional form (<code>setProgress(p => p + 1)</code>), the interval callback does not need <code>progress</code> in the dependency array.</li>
+<li><strong>Accessibility:</strong> <code>role="progressbar"</code> with <code>aria-valuenow</code>. For very smooth animation use CSS transitions or <code>requestAnimationFrame</code>.</li>
+<li>A <em>real</em> progress bar should be driven by actual work (for example server events), not a timer.</li>
+</ul>`
+    },
+    {
+      q:"Build a Tic-Tac-Toe game in React with win detection and (optionally) move history / time travel.",
+      a:`<p><strong>Model the game as data:</strong> keep a <code>history</code> array of board snapshots and a <code>step</code> index. The current board is derived (<code>history[step]</code>), whose next player is derived from the step parity, and the winner is computed from the board, never stored.</p>
+<pre>const LINES = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+function winner(sq) {
+  for (const [a, b, c] of LINES) if (sq[a] &amp;&amp; sq[a] === sq[b] &amp;&amp; sq[a] === sq[c]) return sq[a];
+  return null;
+}
+
+function Game() {
+  const [history, setHistory] = useState([Array(9).fill(null)]);
+  const [step, setStep] = useState(0);
+  const board = history[step];
+  const next = step % 2 === 0 ? 'X' : 'O';
+  const won = winner(board);
+  const draw = !won &amp;&amp; board.every(Boolean);
+
+  function play(i) {
+    if (board[i] || won) return;
+    const nextBoard = board.slice();                       // never mutate state
+    nextBoard[i] = next;
+    setHistory([...history.slice(0, step + 1), nextBoard]); // playing after time travel discards the future
+    setStep(step + 1);
+  }
+
+  return (
+    &lt;&gt;
+      &lt;p&gt;{won ? 'Winner: ' + won : draw ? 'Draw' : 'Next: ' + next}&lt;/p&gt;
+      &lt;div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 60px)' }}&gt;
+        {board.map((v, i) =&gt; &lt;button key={i} onClick={() =&gt; play(i)} aria-label={'square ' + (i + 1)}&gt;{v}&lt;/button&gt;)}
+      &lt;/div&gt;
+      &lt;ol&gt;{history.map((_, s) =&gt; &lt;li key={s}&gt;&lt;button onClick={() =&gt; setStep(s)}&gt;{s ? 'Go to move ' + s : 'Go to start'}&lt;/button&gt;&lt;/li&gt;)}&lt;/ol&gt;
+    &lt;/&gt;
+  );
+}</pre>
+<ul>
+<li><strong>Derived state:</strong> next player, winner and draw are computed each render, so they cannot fall out of sync.</li>
+<li><strong>Immutability:</strong> copy the board before changing it; mutating breaks history snapshots and memoisation.</li>
+<li><strong>Time travel</strong> is just changing <code>step</code>; truncating history on a new move is the key detail.</li>
+<li>Extensions: highlight the winning line (return it from <code>winner</code>), sort the history, or a simple AI.</li>
+</ul>`
+    },
+    {
+      q:"Build an accessible modal dialog in React (portal, focus trap, Escape to close).",
+      a:`<p>Requirements: render outside the DOM flow with a portal, move focus into the dialog on open and <strong>return it to the trigger on close</strong>, trap Tab inside, close on Escape (and optionally overlay click), and expose <code>role="dialog"</code>, <code>aria-modal="true"</code> and an accessible name.</p>
+<pre>function Modal({ open, onClose, title, children }) {
+  const ref = useRef(null);
+  const openerRef = useRef(null);
+
+  useEffect(() =&gt; {
+    if (!open) return;
+    openerRef.current = document.activeElement;             // remember the trigger
+    const focusable = () =&gt; ref.current.querySelectorAll(
+      'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    (focusable()[0] ?? ref.current).focus();
+
+    function onKey(e) {
+      if (e.key === 'Escape') return onClose();
+      if (e.key !== 'Tab') return;
+      const els = focusable();
+      const first = els[0], last = els[els.length - 1];
+      if (e.shiftKey &amp;&amp; document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey &amp;&amp; document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+    document.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';                 // lock background scroll
+    return () =&gt; {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = '';
+      openerRef.current?.focus();                            // restore focus
+    };
+  }, [open, onClose]);
+
+  if (!open) return null;
+  return createPortal(
+    &lt;div className="overlay" onMouseDown={(e) =&gt; e.target === e.currentTarget &amp;&amp; onClose()}&gt;
+      &lt;div ref={ref} role="dialog" aria-modal="true" aria-labelledby="modal-title" tabIndex={-1}&gt;
+        &lt;h2 id="modal-title"&gt;{title}&lt;/h2&gt;
+        {children}
+        &lt;button onClick={onClose}&gt;Close&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;,
+    document.body
+  );
+}</pre>
+<ul>
+<li><strong>Portal</strong> avoids z-index and overflow clipping from ancestors.</li>
+<li><strong>Focus management is the hard part.</strong> In production, prefer a tested primitive (Radix Dialog, React Aria) or the native <code>&lt;dialog&gt;</code> element with <code>showModal()</code>, which provides focus trapping and Escape handling.</li>
+<li>Also set <code>inert</code> or <code>aria-hidden</code> on the rest of the page, and keep <code>onClose</code> stable (<code>useCallback</code>) to avoid re-running the effect.</li>
+</ul>`
+    },
+    {
+      q:"Build a Todo list in React with add, toggle and delete, persisted to localStorage.",
+      a:`<p>Use one array of todo objects with stable ids, update it immutably, and sync it to <code>localStorage</code>. Initialise state lazily from storage, and guard for server rendering and parse errors.</p>
+<pre>function useLocalStorage(key, initial) {
+  const [value, setValue] = useState(() =&gt; {
+    try {
+      const raw = window.localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : initial;
+    } catch { return initial; }                              // corrupt JSON or storage unavailable
+  });
+  useEffect(() =&gt; {
+    try { window.localStorage.setItem(key, JSON.stringify(value)); } catch {}
+  }, [key, value]);
+  return [value, setValue];
+}
+
+function Todos() {
+  const [todos, setTodos] = useLocalStorage('todos', []);
+  const [text, setText] = useState('');
+
+  const add = (e) =&gt; {
+    e.preventDefault();
+    if (!text.trim()) return;
+    setTodos((t) =&gt; [...t, { id: crypto.randomUUID(), text: text.trim(), done: false }]);
+    setText('');
+  };
+  const toggle = (id) =&gt; setTodos((t) =&gt; t.map((x) =&gt; (x.id === id ? { ...x, done: !x.done } : x)));
+  const remove = (id) =&gt; setTodos((t) =&gt; t.filter((x) =&gt; x.id !== id));
+
+  return (
+    &lt;&gt;
+      &lt;form onSubmit={add}&gt;&lt;input value={text} onChange={(e) =&gt; setText(e.target.value)} aria-label="New todo" /&gt;&lt;button&gt;Add&lt;/button&gt;&lt;/form&gt;
+      &lt;ul&gt;
+        {todos.map((t) =&gt; (
+          &lt;li key={t.id}&gt;
+            &lt;label&gt;&lt;input type="checkbox" checked={t.done} onChange={() =&gt; toggle(t.id)} /&gt; {t.text}&lt;/label&gt;
+            &lt;button onClick={() =&gt; remove(t.id)} aria-label={'Delete ' + t.text}&gt;x&lt;/button&gt;
+          &lt;/li&gt;
+        ))}
+      &lt;/ul&gt;
+    &lt;/&gt;
+  );
+}</pre>
+<ul>
+<li><strong>Stable keys:</strong> use an id, never the array index, so toggling and deleting do not mix up rows.</li>
+<li><strong>Functional updates</strong> (<code>setTodos(t =&gt; ...)</code>) avoid stale state.</li>
+<li><strong>Lazy initial state</strong> reads storage once instead of on every render.</li>
+<li><strong>In Next.js,</strong> <code>localStorage</code> does not exist on the server; reading it during the first render causes a hydration mismatch, so read it in an effect or after mount.</li>
+<li>Extensions: edit in place, filters (all/active/done), and cross-tab sync with the <code>storage</code> event.</li>
+</ul>`
+    },
+    {
+      q:"Build accessible Tabs in React with a roving tabindex and arrow-key navigation.",
+      a:`<p>Follow the WAI-ARIA tabs pattern: a <code>tablist</code> of <code>tab</code> buttons and one visible <code>tabpanel</code>. Only the selected tab is in the Tab order (<code>tabIndex=0</code>); the rest are <code>-1</code> and reached with the arrow keys. This is the <strong>roving tabindex</strong>.</p>
+<pre>function Tabs({ tabs }) {                 // tabs: [{ id, label, content }]
+  const [active, setActive] = useState(0);
+  const refs = useRef([]);
+
+  function onKeyDown(e) {
+    let next = active;
+    if (e.key === 'ArrowRight') next = (active + 1) % tabs.length;
+    else if (e.key === 'ArrowLeft') next = (active - 1 + tabs.length) % tabs.length;
+    else if (e.key === 'Home') next = 0;
+    else if (e.key === 'End') next = tabs.length - 1;
+    else return;
+    e.preventDefault();
+    setActive(next);
+    refs.current[next].focus();           // move focus with selection (automatic activation)
+  }
+
+  return (
+    &lt;&gt;
+      &lt;div role="tablist" aria-label="Sections" onKeyDown={onKeyDown}&gt;
+        {tabs.map((t, i) =&gt; (
+          &lt;button key={t.id} ref={(el) =&gt; (refs.current[i] = el)}
+                  role="tab" id={'tab-' + t.id} aria-controls={'panel-' + t.id}
+                  aria-selected={i === active} tabIndex={i === active ? 0 : -1}
+                  onClick={() =&gt; setActive(i)}&gt;{t.label}&lt;/button&gt;
+        ))}
+      &lt;/div&gt;
+      {tabs.map((t, i) =&gt; (
+        &lt;div key={t.id} role="tabpanel" id={'panel-' + t.id} aria-labelledby={'tab-' + t.id} hidden={i !== active} tabIndex={0}&gt;
+          {t.content}
+        &lt;/div&gt;
+      ))}
+    &lt;/&gt;
+  );
+}</pre>
+<ul>
+<li><strong>Roving tabindex:</strong> one Tab stop for the whole tablist; arrows move within it. Tab then moves into the panel.</li>
+<li><strong>Automatic vs manual activation:</strong> above, selection follows focus. For expensive panels, use manual activation (Enter or Space to select).</li>
+<li>Wire <code>aria-selected</code>, <code>aria-controls</code> and <code>aria-labelledby</code> so screen readers announce "tab, selected, 1 of 3".</li>
+<li>Or use a tested primitive such as Radix Tabs.</li>
+</ul>`
+    },
+    {
+      q:"How do you fetch data with the React use() hook and Suspense, and how do you handle errors?",
+      a:`<p>In React 19, <code>use(promise)</code> reads a promise during render. If it is still pending, React <strong>suspends</strong> the component and shows the nearest <code>&lt;Suspense&gt;</code> fallback; when it resolves, rendering continues with the value. If it rejects, the nearest <strong>error boundary</strong> catches it.</p>
+<pre>// The promise must be STABLE across renders: create it outside the component
+// or receive it from a parent / Server Component, never inline in render.
+function UserList({ usersPromise }) {
+  const users = use(usersPromise);                    // suspends until resolved
+  return &lt;ul&gt;{users.map((u) =&gt; &lt;li key={u.id}&gt;{u.name}&lt;/li&gt;)}&lt;/ul&gt;;
+}
+
+function Page() {
+  const [usersPromise] = useState(() =&gt; fetchUsers()); // created once
+  return (
+    &lt;ErrorBoundary fallback={&lt;p&gt;Something went wrong&lt;/p&gt;}&gt;
+      &lt;Suspense fallback={&lt;p&gt;Loading...&lt;/p&gt;}&gt;
+        &lt;UserList usersPromise={usersPromise} /&gt;
+      &lt;/Suspense&gt;
+    &lt;/ErrorBoundary&gt;
+  );
+}</pre>
+<ul>
+<li><strong>Creating a new promise on every render</strong> causes an infinite suspend loop. Cache the promise (state, a data library, or a framework such as Next.js passing it from a Server Component).</li>
+<li><strong>Unlike hooks, <code>use</code> can be called conditionally</strong> and inside loops; it can also read context (<code>use(Context)</code>).</li>
+<li><strong>Loading and error UI move out of the component</strong> into Suspense and error boundaries, so the component contains only the happy path.</li>
+<li><strong>Waterfalls:</strong> sequential <code>use</code> calls in one component fetch one after another. Start independent fetches early and pass the promises down.</li>
+<li>Wrap updates in <code>startTransition</code> to keep showing old content instead of falling back to the spinner on re-fetch.</li>
+</ul>`
+    }
+  ]
+},
+{
+  id:"coding-vanilla", title:"Vanilla JS & APIs",
+  questions:[
+    {
+      q:"Walk through building the add-expense flow for a vanilla-JS expense tracker — validation, state, and rendering.",
+      a:`<p>Three pieces need to work together: form validation before anything is accepted, an in-memory array as the single source of truth for expenses, and DOM updates (a new table row, plus a recalculated percentage breakdown) driven off that array whenever it changes.</p>
+<p>Wrap the setup in <code>DOMContentLoaded</code> so element look-ups never race the page's own parsing. Validate name, amount, and category independently, with a clear message for each failure, before ever touching state.</p>
+<pre>'use strict';
+function onDomReady() {
+    const expenseNameInput = document.getElementById('expenseName');
+    const expenseAmountInput = document.getElementById('expenseAmount');
+    const expenseCategorySelect = document.getElementById('expenseCategory');
+    const addButton = document.getElementById('add-button');
+    const expensesTableBody = document.getElementById('expensesTableBody');
+    const CATEGORIES = ['Food', 'Travel', 'Shopping', 'Other'];
+    let expenses = [];
+
+    function validateExpense(name, amount, category) {
+        if (!name || name.trim() === '') {
+            alert('Expense Name required');
+            return false;
+        }
+        if (amount === '' || isNaN(amount) || Number(amount) &lt;= 0) {
+            alert('Expense Amount required and should be greater than 0');
+            return false;
+        }
+        if (!category) {
+            alert('Please Choose Expense Type');
+            return false;
+        }
+        return true;
+    }
+
+    addButton.addEventListener('click', () => {
+        const name = expenseNameInput.value;
+        const amount = expenseAmountInput.value;
+        const category = expenseCategorySelect.value;
+        if (!validateExpense(name, amount, category)) return;
+        expenses.push({ name, amount: Number(amount), category });
+        // append a row to expensesTableBody, then recompute each
+        // category's share of the total and update its breakdown bar
+    });
+}
+document.addEventListener('DOMContentLoaded', onDomReady);</pre>
+<p><strong>Complexity:</strong> O(1) per add for validation and the push itself; recomputing the percentage breakdown is O(k) in the number of categories (constant here), and re-rendering the full table is O(n) in the number of expenses.</p>
+<p>Match validation messages and comparisons exactly if you're working against an automated test suite — string-matching graders are often case- and whitespace-sensitive. After a valid push, treat rendering as a pure function of the <code>expenses</code> array: re-derive the row and the per-category percentages from state rather than mutating the DOM ad hoc, so the UI can never drift out of sync with the underlying data.</p>`
+    },
+    {
+      q:"Query a paginated REST API, filter results client-side, and compute an average — how would you structure that?",
+      a:`<p>Two separate concerns here: pulling <em>all</em> the data despite the API paginating it, and then filtering/aggregating once you have it. Loop through pages with a <code>do...while</code> so you always fetch at least once, and stop once you've passed the API's reported <code>total_pages</code>.</p>
+<p>Not every filter is necessarily supported by the API's query parameters — when one field is server-filterable (e.g. by sex) but another isn't (e.g. by event name), filter what you can server-side to cut payload size, then finish the rest client-side once all pages are in memory.</p>
+<pre>async function fetchAllRunnersBySex(sex: string): Promise&lt;Runner[]&gt; {
+    const allRunners: Runner[] = [];
+    let currentPage = 1;
+    let totalPages = 1;
+    do {
+        const pageResult = await fetchMarathonPage(sex, currentPage);
+        totalPages = pageResult.total_pages;
+        allRunners.push(...pageResult.data);
+        currentPage++;
+    } while (currentPage &lt;= totalPages);
+    return allRunners;
+}
+
+async function averageHeartBeat(marathon: string, sex: string): Promise&lt;number&gt; {
+    try {
+        const runnersBySex = await fetchAllRunnersBySex(sex);
+        const matching = runnersBySex.filter(r => r.marathon_name === marathon);
+        if (matching.length === 0) return 0;
+
+        const sum = matching.reduce((s, r) => s + r.avgheartbeat, 0);
+        return Math.floor(sum / matching.length);
+    } catch (error) {
+        return 0;
+    }
+}</pre>
+<p><strong>Complexity:</strong> O(p) network round trips, where p is the number of pages, plus O(n) to filter and reduce over all n fetched records. O(n) space to hold every page's results in memory before filtering.</p>
+<p>Wrap the whole thing in a <code>try/catch</code> with a sane fallback (zero, here) rather than letting a network failure propagate as an unhandled rejection — especially important when the environment's fetch support is inconsistent (e.g. falling back to a library like axios when global <code>fetch</code> isn't available). Guard the empty-match case explicitly too, since dividing by a zero-length array produces <code>NaN</code>, not a clean zero.</p>
+<p><strong>Common follow-ups</strong></p>
+<ul>
+<li>How would you avoid re-fetching all pages on every call — what would you cache, and how would you invalidate it?</li>
+<li>How would this change if the API let you filter by marathon name server-side too?</li>
+</ul>`
+    }
+  ]
+},
+{
+  id:"deep-practice", title:"Deep Dive: More Exercises",
+  questions:[
+    {
+      q:"Run async tasks with a concurrency limit (a promise pool).",
+      a:`<p class="lede">Task: given many async jobs, run at most <code>limit</code> at a time and return results in the original order. Real uses: calling a rate-limited API for 10,000 ids, uploading files, crawling.</p><pre>async function promisePool(tasks, limit) {
+  const results = new Array(tasks.length);
+  let next = 0;
+  async function worker() {
+    while (next &lt; tasks.length) {
+      const i = next++;                 // claim the next index (safe: JS runs this synchronously)
+      results[i] = await tasks[i]();
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(limit, tasks.length) }, worker));
+  return results;
+}
+
+const sleep = (ms, v) =&gt; () =&gt; new Promise((r) =&gt; setTimeout(() =&gt; r(v), ms));
+await promisePool([sleep(30, 'a'), sleep(10, 'b'), sleep(20, 'c')], 2);   // ['a', 'b', 'c']</pre><ul><li><strong>Idea:</strong> start <code>limit</code> workers; each keeps pulling the next task until none are left.</li><li>Results are stored by index, so order is preserved even though tasks finish out of order.</li><li>This version rejects on the first failure (like <code>Promise.all</code>). For "keep going", wrap each task and store <code>{ status, value | reason }</code>.</li><li>Complexity: total time is roughly the sum of task durations divided by the limit.</li></ul><p><strong>Interview tip:</strong> Follow-ups: add a timeout per task, retries with backoff, or cancellation with an AbortSignal.</p>`
+    },
+    {
+      q:"Implement a small EventEmitter (on, off, once, emit).",
+      a:`<pre>class Emitter {
+  #listeners = new Map();                       // event -&gt; Set of functions
+
+  on(event, fn) {
+    if (!this.#listeners.has(event)) this.#listeners.set(event, new Set());
+    this.#listeners.get(event).add(fn);
+    return () =&gt; this.off(event, fn);           // return an unsubscribe function
+  }
+  off(event, fn) {
+    this.#listeners.get(event)?.delete(fn);
+  }
+  once(event, fn) {
+    const wrapper = (...args) =&gt; { this.off(event, wrapper); fn(...args); };
+    return this.on(event, wrapper);
+  }
+  emit(event, ...args) {
+    const fns = this.#listeners.get(event);
+    if (!fns) return false;
+    for (const fn of [...fns]) fn(...args);     // copy: listeners may unsubscribe while we loop
+    return true;
+  }
+}
+
+const bus = new Emitter();
+const stop = bus.on('save', (doc) =&gt; console.log('saved', doc.id));
+bus.once('save', () =&gt; console.log('first save only'));
+bus.emit('save', { id: 1 });   // both run
+bus.emit('save', { id: 2 });   // only the first listener
+stop();</pre><ul><li>A <code>Set</code> avoids duplicate registrations and gives O(1) removal.</li><li>Iterating over a copy prevents skipped listeners when one removes itself (as <code>once</code> does).</li><li>Returning an unsubscribe function is the pattern React effects expect for cleanup.</li><li>Extensions: wildcard events, listener limits with a leak warning, async listeners with error handling.</li></ul><p><strong>Interview tip:</strong> Interviewers check two edge cases: removing during emit, and <code>once</code> being removable with <code>off</code> (use the returned unsubscribe).</p>`
+    },
+    {
+      q:"Implement memoize with a cache key and optional expiry.",
+      a:`<pre>function memoize(fn, { key = (...args) =&gt; JSON.stringify(args), ttl = Infinity } = {}) {
+  const cache = new Map();
+  return function memoized(...args) {
+    const k = key(...args);
+    const hit = cache.get(k);
+    if (hit &amp;&amp; Date.now() - hit.at &lt; ttl) return hit.value;
+    const value = fn.apply(this, args);
+    cache.set(k, { value, at: Date.now() });
+    if (value instanceof Promise) value.catch(() =&gt; cache.delete(k));   // do not cache failures
+    return value;
+  };
+}
+
+let calls = 0;
+const slowSquare = memoize((n) =&gt; { calls++; return n * n; });
+slowSquare(4); slowSquare(4);     // calls === 1
+
+const getUser = memoize((id) =&gt; fetch('/api/users/' + id).then((r) =&gt; r.json()), { ttl: 60_000 });</pre><ul><li><strong>The cache key</strong> is the hard part: <code>JSON.stringify</code> works for plain arguments but not for functions, class instances or argument order in objects. Accept a custom key function.</li><li><strong>Caching the promise</strong> (not the resolved value) also de-duplicates concurrent calls: two callers share one request.</li><li><strong>Delete failed promises</strong> so an error is not cached forever.</li><li><strong>Bound the cache</strong> in long-running processes (LRU or TTL), or it becomes a memory leak.</li></ul><p><strong>Interview tip:</strong> Mention that React's <code>cache()</code> and <code>useMemo</code> are memoization with different lifetimes (per request vs per component).</p>`
+    },
+    {
+      q:"Find the k most frequent elements.",
+      a:`<pre>// O(n) with bucket sort: bucket[f] holds the values that appear f times
+function topKFrequent(nums, k) {
+  const count = new Map();
+  for (const n of nums) count.set(n, (count.get(n) ?? 0) + 1);
+
+  const buckets = Array.from({ length: nums.length + 1 }, () =&gt; []);
+  for (const [value, freq] of count) buckets[freq].push(value);
+
+  const out = [];
+  for (let f = buckets.length - 1; f &gt; 0 &amp;&amp; out.length &lt; k; f--) out.push(...buckets[f]);
+  return out.slice(0, k);
+}
+
+topKFrequent([1, 1, 1, 2, 2, 3], 2);   // [1, 2]</pre><table class="cmp"><tr><th>Approach</th><th>Time</th><th>When</th></tr><tr><td>Sort by frequency</td><td>O(n log n)</td><td>simplest to write</td></tr><tr><td>Min-heap of size k</td><td>O(n log k)</td><td>k much smaller than the number of distinct values, or streaming data</td></tr><tr><td>Bucket sort by count</td><td>O(n)</td><td>frequencies are bounded by n (always true here)</td></tr></table><ul><li>Step one is always a frequency map; the choice is how you pick the top k from it.</li><li>Ties: say how you would break them (smaller value first, first seen) if the problem cares.</li><li>For a stream too big to count exactly, mention approximate structures (Count-Min Sketch plus a heap).</li></ul><p><strong>Interview tip:</strong> Give the heap answer first if the interviewer mentions streaming; bucket sort if they ask for linear time.</p>`
+    },
+    {
+      q:"Count the islands in a grid (graph traversal with DFS or BFS).",
+      a:`<pre>// grid of '1' (land) and '0' (water); islands connect up, down, left, right
+function numIslands(grid) {
+  const rows = grid.length, cols = grid[0]?.length ?? 0;
+  let islands = 0;
+  const sink = (r, c) =&gt; {
+    const stack = [[r, c]];                 // iterative DFS: no recursion-depth limit
+    while (stack.length) {
+      const [y, x] = stack.pop();
+      if (y &lt; 0 || x &lt; 0 || y &gt;= rows || x &gt;= cols || grid[y][x] !== '1') continue;
+      grid[y][x] = '0';                     // mark visited
+      stack.push([y + 1, x], [y - 1, x], [y, x + 1], [y, x - 1]);
+    }
+  };
+  for (let r = 0; r &lt; rows; r++)
+    for (let c = 0; c &lt; cols; c++)
+      if (grid[r][c] === '1') { islands++; sink(r, c); }
+  return islands;
+}
+
+numIslands([
+  ['1', '1', '0', '0'],
+  ['1', '0', '0', '1'],
+  ['0', '0', '1', '1'],
+]);   // 2</pre><ul><li><strong>Pattern:</strong> scan every cell; each unvisited land cell starts a new component, and a flood fill marks the whole component.</li><li><strong>O(rows × cols)</strong> time: every cell is visited a constant number of times.</li><li>This mutates the input; copy the grid or keep a <code>visited</code> set if that is not allowed.</li><li>Same template: connected components, flood fill, counting regions in an image, friend circles (union-find is another option).</li></ul><p><strong>Interview tip:</strong> Choose iterative DFS or BFS for large grids; recursive DFS can overflow the call stack on a 1000×1000 grid.</p>`
+    },
+    {
+      q:"Find the shortest path in a grid with obstacles (BFS).",
+      a:`<pre>// 0 = open, 1 = wall; returns the number of steps from start to goal, or -1
+function shortestPath(grid, [sr, sc], [gr, gc]) {
+  const rows = grid.length, cols = grid[0].length;
+  const dist = Array.from({ length: rows }, () =&gt; new Array(cols).fill(-1));
+  const queue = [[sr, sc]];
+  dist[sr][sc] = 0;
+  for (let head = 0; head &lt; queue.length; head++) {      // index pointer: O(1) dequeue
+    const [r, c] = queue[head];
+    if (r === gr &amp;&amp; c === gc) return dist[r][c];
+    for (const [dr, dc] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      const nr = r + dr, nc = c + dc;
+      if (nr &gt;= 0 &amp;&amp; nc &gt;= 0 &amp;&amp; nr &lt; rows &amp;&amp; nc &lt; cols &amp;&amp; grid[nr][nc] === 0 &amp;&amp; dist[nr][nc] === -1) {
+        dist[nr][nc] = dist[r][c] + 1;
+        queue.push([nr, nc]);
+      }
+    }
+  }
+  return -1;
+}
+
+shortestPath([
+  [0, 0, 0],
+  [1, 1, 0],
+  [0, 0, 0],
+], [0, 0], [2, 0]);   // 6</pre><ul><li><strong>BFS finds shortest paths when every step costs the same</strong>, because it explores in rings of increasing distance.</li><li>Mark cells visited when you <em>enqueue</em> them, not when you dequeue, or the queue fills with duplicates.</li><li>Using <code>queue.shift()</code> is O(n) per call in JavaScript; the head index keeps it O(1).</li><li>Weighted edges need Dijkstra (a priority queue); a good distance estimate turns it into A*.</li></ul><p><strong>Interview tip:</strong> To return the path itself, store each cell's parent and walk back from the goal.</p>`
+    },
+    {
+      q:"Flatten a nested object into dot-notation keys (and back).",
+      a:`<pre>function flatten(obj, prefix = '', out = {}) {
+  for (const [k, v] of Object.entries(obj)) {
+    const key = prefix ? \`\${prefix}.\${k}\` : k;
+    if (v &amp;&amp; typeof v === 'object' &amp;&amp; !Array.isArray(v) &amp;&amp; Object.keys(v).length) flatten(v, key, out);
+    else out[key] = v;
+  }
+  return out;
+}
+
+function unflatten(flat) {
+  const out = {};
+  for (const [path, value] of Object.entries(flat)) {
+    const parts = path.split('.');
+    let node = out;
+    parts.slice(0, -1).forEach((p) =&gt; { node = node[p] ??= {}; });
+    node[parts.at(-1)] = value;
+  }
+  return out;
+}
+
+flatten({ user: { name: 'Ada', address: { city: 'Pune' } }, tags: ['a'] });
+// { 'user.name': 'Ada', 'user.address.city': 'Pune', tags: ['a'] }</pre><ul><li>Clarify the rules first: are arrays flattened (<code>tags.0</code>) or kept? What about empty objects, <code>null</code>, and dates?</li><li>Real uses: form libraries (<code>errors["address.city"]</code>), i18n message keys, config files, query-string encoding.</li><li>For very deep input, an explicit stack avoids recursion limits.</li><li>Keys that themselves contain dots need escaping, or a different separator.</li></ul><p><strong>Interview tip:</strong> Asking about arrays, null and empty objects before coding is exactly what the interviewer wants to see.</p>`
+    }
+  ]
+}
+];
+
+window.__STUDY__ = {"key":"coding-questions","core":"the 2-Hour Review"};
+</script>
+<script src="/study/engine.js"></script>
+</body>
+</html>

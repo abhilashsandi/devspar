@@ -1,14 +1,14 @@
 import StaticPrepClient from '../components/StaticPrepClient';
-import content from './content.json';
 
 export const metadata = {
   title: 'System Design — Interview Prep',
+  description: "Architectural styles, microservices, messaging, sagas, real outages, AWS building blocks and five fully worked system designs.",
 };
 
 export default function Page() {
   return (
     <StaticPrepClient
-      html={(content as { html: string }).html}
+      src="/study/system-design.html"
       title="System Design — Interview Prep"
       loadingLabel="Loading study guide…"
     />

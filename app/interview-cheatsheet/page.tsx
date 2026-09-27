@@ -1,14 +1,14 @@
 import StaticPrepClient from '../components/StaticPrepClient';
-import content from './content.json';
 
 export const metadata = {
   title: 'Interview Cheatsheet',
+  description: "A last-two-hours revision plan and a one-line answer for every topic, with a 30-minute must-know pass.",
 };
 
 export default function InterviewCheatsheetPage() {
   return (
     <StaticPrepClient
-      html={(content as { html: string }).html}
+      src="/study/interview-cheatsheet.html"
       title="Interview Cheatsheet"
       loadingLabel="Loading cheatsheet…"
     />

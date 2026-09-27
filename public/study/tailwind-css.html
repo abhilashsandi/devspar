@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CSS &amp; Tailwind Interview Mastery</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F6F4EF;
+    --panel:#FFFFFF;
+    --panel-2:#FBF9F4;
+    --border:#E4E0D4;
+    --text:#211F1B;
+    --muted:#716B5E;
+    --accent:#2F7A72;
+    --accent-ink:#F3FBF9;
+    --accent-soft:#EDF6F4;
+    --gold:#B8792F;
+    --gold-soft:#F5E9D8;
+    --code-bg:#EFECE2;
+    --danger:#B5502F;
+    --shadow: 0 1px 2px rgba(30,26,18,0.05);
+    --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#15181A;
+      --panel:#1B1F21;
+      --panel-2:#202426;
+      --border:#2C3133;
+      --text:#E9E6DE;
+      --muted:#9A968A;
+      --accent:#5FBFB2;
+      --accent-ink:#0B1716;
+      --accent-soft:#1E3230;
+      --gold:#D9A15C;
+      --gold-soft:#332918;
+      --code-bg:#20262A;
+      --danger:#D98866;
+      --shadow: 0 1px 2px rgba(0,0,0,0.4);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#15181A;
+    --panel:#1B1F21;
+    --panel-2:#202426;
+    --border:#2C3133;
+    --text:#E9E6DE;
+    --muted:#9A968A;
+    --accent:#5FBFB2;
+    --accent-ink:#0B1716;
+    --accent-soft:#1E3230;
+    --gold:#D9A15C;
+    --gold-soft:#332918;
+    --code-bg:#20262A;
+    --danger:#D98866;
+    --shadow: 0 1px 2px rgba(0,0,0,0.4);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--accent);}
+
+  .app{
+    display:flex;
+    min-height:100vh;
+  }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    width:260px;
+    flex:0 0 260px;
+    border-right:1px solid var(--border);
+    padding:28px 16px 24px;
+    position:sticky;
+    top:0;
+    height:100vh;
+    overflow-y:auto;
+  }
+  .brand{
+    font-family:var(--mono);
+    font-size:13px;
+    letter-spacing:0.02em;
+    color:var(--muted);
+    padding:0 8px 18px;
+    border-bottom:1px solid var(--border);
+    margin-bottom:14px;
+  }
+  .brand b{color:var(--text);font-weight:600;}
+  .nav-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    width:100%;
+    text-align:left;
+    padding:10px 10px;
+    border-radius:8px;
+    border:1px solid transparent;
+    background:transparent;
+    color:var(--text);
+    font-family:var(--sans);
+    font-size:14.5px;
+    cursor:pointer;
+    margin-bottom:2px;
+  }
+  .nav-item:hover{background:var(--panel-2);}
+  .nav-item.active{
+    background:var(--accent-soft);
+    border-color:var(--accent);
+    color:var(--text);
+    font-weight:600;
+  }
+  .nav-num{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--muted);
+    width:18px;
+    flex:0 0 18px;
+  }
+  .nav-item.active .nav-num{color:var(--accent);}
+  .nav-label{flex:1;}
+  .nav-count{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--muted);
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    padding:1px 6px;
+    border-radius:999px;
+  }
+  .progress-box{
+    margin-top:20px;
+    padding:14px 12px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:var(--panel-2);
+  }
+  .progress-box .label{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--muted);
+    margin-bottom:8px;
+  }
+  .progress-track{
+    height:6px;
+    border-radius:999px;
+    background:var(--border);
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    background:var(--accent);
+    width:0%;
+    transition:width .25s ease;
+  }
+  .progress-num{
+    margin-top:8px;
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--text);
+  }
+  .reset-btn{
+    margin-top:10px;
+    width:100%;
+    font-family:var(--sans);
+    font-size:12px;
+    color:var(--muted);
+    background:transparent;
+    border:1px solid var(--border);
+    border-radius:7px;
+    padding:6px 8px;
+    cursor:pointer;
+  }
+  .reset-btn:hover{color:var(--danger);border-color:var(--danger);}
+
+  /* ---------- Main ---------- */
+  .main{
+    flex:1;
+    min-width:0;
+    padding:36px 40px 80px;
+    max-width:1200px;
+  }
+  .hero{
+    margin-bottom:34px;
+  }
+  .hero .eyebrow-free{
+    font-family:var(--mono);
+    font-size:13px;
+    color:var(--accent);
+    margin:0 0 10px;
+  }
+  .hero h1{
+    font-family:var(--mono);
+    font-size:30px;
+    line-height:1.25;
+    margin:0 0 12px;
+    font-weight:600;
+    letter-spacing:-0.01em;
+  }
+  .hero p{
+    color:var(--muted);
+    max-width:62ch;
+    margin:0 0 6px;
+    font-size:15px;
+  }
+  .hero .source-note{
+    font-size:13px;
+    color:var(--muted);
+    border-left:2px solid var(--border);
+    padding-left:12px;
+    margin-top:16px;
+  }
+
+  .section-head{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    margin:44px 0 16px;
+    padding-bottom:10px;
+    border-bottom:1px solid var(--border);
+  }
+  .section-head .num{
+    font-family:var(--mono);
+    color:var(--accent);
+    font-size:14px;
+  }
+  .section-head h2{
+    font-family:var(--mono);
+    font-size:19px;
+    margin:0;
+    font-weight:600;
+  }
+  .section-head .count{
+    margin-left:auto;
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--muted);
+  }
+
+  .qcard{
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:var(--panel);
+    margin-bottom:12px;
+    overflow:hidden;
+  }
+  .qhead{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    padding:14px 16px;
+    cursor:pointer;
+    user-select:none;
+  }
+  .qcheck{
+    margin-top:3px;
+    flex:0 0 auto;
+    width:18px;height:18px;
+    border-radius:5px;
+    border:1.5px solid var(--border);
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    background:var(--panel);
+  }
+  .qcheck.done{
+    background:var(--accent);
+    border-color:var(--accent);
+  }
+  .qcheck.done::after{
+    content:"✓";
+    color:var(--accent-ink);
+    font-size:12px;
+    font-weight:700;
+  }
+  .qtext{
+    flex:1;
+    font-size:15px;
+    font-weight:500;
+  }
+  .qtext.done-text{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--border);}
+  .qchevron{
+    flex:0 0 auto;
+    color:var(--muted);
+    font-family:var(--mono);
+    font-size:13px;
+    transform:rotate(0deg);
+    transition:transform .15s ease;
+    margin-top:2px;
+  }
+  .qcard.open .qchevron{transform:rotate(90deg);}
+  .qbody{
+    display:none;
+    padding:2px 16px 20px 46px;
+    border-top:1px solid var(--border);
+    font-size:14.5px;
+  }
+  .qcard.open .qbody{display:block; padding-top:14px;}
+  .qbody p{margin:0 0 12px;}
+  .qbody ul{margin:0 0 12px; padding-left:20px;}
+  .qbody li{margin-bottom:6px;}
+  .qbody strong{color:var(--text);}
+  code{
+    font-family:var(--mono);
+    background:var(--code-bg);
+    padding:1px 5px;
+    border-radius:4px;
+    font-size:0.92em;
+  }
+  pre{
+    font-family:var(--mono);
+    background:var(--code-bg);
+    padding:12px 14px;
+    border-radius:8px;
+    overflow-x:auto;
+    font-size:13px;
+    margin:0 0 14px;
+    border:1px solid var(--border);
+  }
+  .diagram{
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:14px;
+    margin:0 0 14px;
+    overflow-x:auto;
+  }
+  .diagram svg{display:block; margin:0 auto; max-width:100%; height:auto;}
+  .tag{
+    display:inline-block;
+    font-family:var(--mono);
+    font-size:10.5px;
+    color:var(--gold);
+    background:var(--gold-soft);
+    border:1px solid var(--gold);
+    border-radius:5px;
+    padding:1px 6px;
+    margin-bottom:10px;
+  }
+  table.cmp{
+    width:100%;
+    border-collapse:collapse;
+    margin:0 0 14px;
+    font-size:13.5px;
+  }
+  table.cmp th, table.cmp td{
+    border:1px solid var(--border);
+    padding:7px 10px;
+    text-align:left;
+    vertical-align:top;
+  }
+  table.cmp th{
+    background:var(--panel-2);
+    font-family:var(--mono);
+    font-size:12px;
+    font-weight:600;
+  }
+
+  ::selection{background:var(--accent-soft);}
+
+  @media (max-width: 820px){
+    .sidebar{
+      width:100%;
+      flex:none;
+      height:auto;
+      position:relative;
+      border-right:none;
+      border-bottom:1px solid var(--border);
+    }
+    .app{flex-direction:column;}
+    .main{padding:24px 18px 60px; max-width:100%;}
+  }
+
+  .tbadge{display:inline-block; font-family:var(--mono); font-size:11px; letter-spacing:.04em; color:var(--gold); background:var(--gold-soft); border:1px solid var(--gold); border-radius:99px; padding:2px 10px; margin-bottom:10px;}
+  .deeper{margin-top:14px; padding-top:10px; border-top:1px dashed var(--border); font-size:13.5px; line-height:1.9;}
+  a.go{color:var(--accent); text-decoration:none; border-bottom:1px solid var(--accent-soft); white-space:nowrap;}
+  a.go:hover{border-bottom-color:var(--accent);}
+
+  .search{width:100%; box-sizing:border-box; margin:0 0 14px; padding:9px 11px; font:inherit; font-size:13.5px; color:var(--text); background:var(--panel); border:1px solid var(--border); border-radius:8px;}
+  .search:focus{outline:2px solid var(--accent); outline-offset:1px;}
+  .qmain{flex:1; min-width:0; display:flex; flex-direction:column; gap:4px;}
+  .qchips{display:flex; gap:6px; flex-wrap:wrap;}
+  .qsec,.qcore{font-family:var(--mono); font-size:10.5px; padding:1px 7px; border-radius:99px; border:1px solid var(--border); color:var(--muted); background:var(--panel-2);}
+  .qcore{color:var(--gold); border-color:var(--gold); background:var(--gold-soft);}
+  .qsum{font-size:13.5px; color:var(--muted); line-height:1.5;}
+  .qcard.open .qsum{display:none;}
+  .qcard.focused{box-shadow:0 0 0 2px var(--accent);}
+  .qcheck:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+  mark{background:var(--gold-soft); color:var(--text); border-radius:3px; padding:0 1px;}
+  .toolbar{display:flex; flex-wrap:wrap; align-items:center; gap:10px 16px; margin:-4px 0 16px; font-size:13px; color:var(--muted);}
+  .toolbar .tmeta{font-family:var(--mono); font-size:12px; margin-right:auto;}
+  .toolbar .tgroup{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
+  .toolbar button{font:inherit; font-size:12.5px; color:var(--text); background:var(--panel); border:1px solid var(--border); border-radius:7px; padding:5px 10px; cursor:pointer;}
+  .toolbar button:hover{border-color:var(--accent);}
+  .toolbar label{display:flex; gap:5px; align-items:center; cursor:pointer; white-space:nowrap;}
+  .toolbar input{accent-color:var(--accent);}
+  .empty{color:var(--muted); font-size:14px; padding:18px; border:1px dashed var(--border); border-radius:10px;}
+  .pager{display:flex; justify-content:space-between; gap:12px; margin-top:26px;}
+  .pager button{font:inherit; font-size:13.5px; color:var(--accent); background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:10px 14px; cursor:pointer; max-width:48%; text-align:left;}
+  .pager button:last-child{text-align:right;}
+  .pager button:hover{border-color:var(--accent);}
+  .back-btn{position:fixed; right:22px; bottom:22px; z-index:10; font:inherit; font-size:13.5px; font-weight:600; color:var(--accent-ink); background:var(--accent); border:0; border-radius:99px; padding:10px 16px; cursor:pointer; box-shadow:0 4px 14px rgba(0,0,0,.18);}
+  .nav-item.complete .nav-count{color:var(--accent); border-color:var(--accent);}
+  .keys{display:inline-block; margin-top:6px;}
+  kbd{font-family:var(--mono); font-size:11px; padding:0 5px; border:1px solid var(--border); border-bottom-width:2px; border-radius:4px; background:var(--panel);}
+  @media (max-width: 820px){ .keys{display:none;} .toolbar .tmeta{width:100%;} }
+  .hero-actions{margin-top:14px;}
+  .fc-start,.toolbar .flash-btn{font:inherit; font-weight:600; color:var(--accent-ink); background:var(--accent); border:1px solid var(--accent); border-radius:8px; cursor:pointer;}
+  .fc-start{font-size:14px; padding:9px 16px;}
+  .toolbar .flash-btn{color:var(--accent-ink);}
+  .fc-start:hover,.toolbar .flash-btn:hover{filter:brightness(1.08);}
+  body.fc-lock{overflow:hidden;}
+  .fc{position:fixed; inset:0; z-index:50; background:rgba(10,12,14,.55); display:flex; align-items:center; justify-content:center; padding:24px;}
+  .fc[hidden]{display:none;}
+  .fc-dialog{width:min(920px,100%); max-height:100%; display:flex; flex-direction:column; background:var(--bg); border:1px solid var(--border); border-radius:14px; box-shadow:0 20px 60px rgba(0,0,0,.35); outline:none;}
+  .fc-head{display:flex; justify-content:space-between; align-items:flex-start; gap:12px; padding:16px 20px 10px;}
+  .fc-title{font-family:var(--mono); font-size:14px; font-weight:600;}
+  .fc-count{font-family:var(--mono); font-size:12px; color:var(--muted); margin-top:3px;}
+  .fc-tools{display:flex; gap:12px; align-items:center; font-size:13px; color:var(--muted);}
+  .fc-tools label{display:flex; gap:5px; align-items:center; cursor:pointer;}
+  .fc-tools input{accent-color:var(--accent);}
+  .fc-tools button{font:inherit; font-size:15px; color:var(--muted); background:transparent; border:1px solid var(--border); border-radius:7px; width:32px; height:32px; cursor:pointer;}
+  .fc-bar{height:4px; background:var(--border); margin:0 20px;}
+  .fc-bar i{display:block; height:100%; width:0; background:var(--accent); transition:width .2s ease;}
+  .fc-body{flex:1; overflow-y:auto; padding:22px 24px; min-height:220px;}
+  .fc-q{font-family:var(--sans); font-size:21px; line-height:1.4; margin:10px 0 16px; font-weight:600;}
+  .fc-prompt{color:var(--muted); font-size:14px; border:1px dashed var(--border); border-radius:10px; padding:26px 18px; text-align:center;}
+  .fc .qbody.fc-a{display:block; border-top:1px solid var(--border); padding:16px 0 0; font-size:14.5px;}
+  .fc-done h3{font-family:var(--mono); margin:0 0 8px;}
+  .fc-done .fc-sub{color:var(--muted); margin:14px 0 6px;}
+  .fc-done ul{padding-left:20px; font-size:14px;}
+  .fc-actions{display:flex; gap:10px; justify-content:flex-end; padding:12px 20px; border-top:1px solid var(--border); flex-wrap:wrap;}
+  .fc-actions button{font:inherit; font-size:14px; color:var(--text); background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:9px 16px; cursor:pointer;}
+  .fc-actions button.primary{color:var(--accent-ink); background:var(--accent); border-color:var(--accent); font-weight:600;}
+  .fc-actions button.again{border-color:var(--gold); color:var(--gold);}
+  .fc-actions button:first-child{margin-right:auto;}
+  .fc-actions kbd{margin-left:6px; background:transparent; border-color:currentColor; opacity:.75;}
+  .fc-keys{font-size:11.5px; color:var(--muted); padding:0 20px 14px; text-align:right;}
+  @media (max-width: 820px){ .fc{padding:0;} .fc-dialog{height:100%; border-radius:0;} .fc-keys{display:none;} .fc-q{font-size:18px;} }
+
+  .lede{font-size:15px; color:var(--muted);}
+  .callout{background:var(--accent-soft); border:1px solid var(--accent); border-radius:9px; padding:11px 14px; margin:0 0 14px;}
+  .note{font-size:13px; color:var(--muted);}
+  .codelabel{font-family:var(--mono); font-size:12px; color:var(--accent); margin:10px 0 4px;}
+  .verified{font-size:12.5px; color:var(--muted); border-top:1px dashed var(--border); padding-top:8px; margin-top:12px;}
+  .diagram.lightbg{background:#F8FAFC; border-color:#CBD5E1;}
+  .diagram.lightbg .codelabel{color:#334155;}
+  .quizopts{display:block; font-weight:400; font-size:13px; color:var(--muted); margin-top:4px; line-height:1.55;}
+  ol.quiz{padding-left:26px;} ol.quiz li{margin-bottom:5px;}
+  ol.quiz li.right{color:var(--accent); font-weight:600;}
+  hr{border:0; border-top:1px dashed var(--border); margin:14px 0;}
+  a.fc-start.alt{display:inline-block; text-decoration:none; margin-left:8px; background:var(--panel); color:var(--accent); border:1px solid var(--accent);}
+
+  /* study-v3: compact phone menu + cross-guide search results */
+  .nav-toggle{display:none;}
+  .ghits{margin-top:22px;}
+  .gh-head{display:flex; justify-content:space-between; gap:10px; font-family:var(--mono); font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin:0 0 8px;}
+  .gh{display:block; text-decoration:none; color:var(--text); background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:10px 14px; margin-bottom:8px;}
+  .gh:hover{border-color:var(--accent);}
+  .gh-t{display:block; font-weight:600; font-size:14.5px;}
+  .gh-m{display:block; font-family:var(--mono); font-size:11.5px; color:var(--accent); margin:2px 0;}
+  .gh-s{display:block; font-size:13px; color:var(--muted);}
+  .gh-note{font-size:13px; color:var(--muted);}
+  @media (max-width: 820px){
+    .sidebar{position:sticky; top:0; z-index:30; display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:10px 14px; background:var(--bg);}
+    .sidebar .brand{display:none;}
+    .sidebar .search{flex:1 1 130px; width:auto; min-width:0; margin:0;}
+    .nav-toggle{display:flex; align-items:center; justify-content:space-between; gap:8px; flex:0 1 54%; min-width:0; padding:9px 12px; font:inherit; font-size:13.5px; font-weight:600; color:var(--text); background:var(--accent-soft); border:1px solid var(--accent); border-radius:8px; cursor:pointer;}
+    .nav-toggle span{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+    .nav-toggle i{font-style:normal; color:var(--accent); transition:transform .15s;}
+    .sidebar.open .nav-toggle i{transform:rotate(180deg);}
+    .nav-panel{display:none; flex:1 0 100%; max-height:calc(100vh - 96px); overflow-y:auto; border-top:1px solid var(--border); padding-top:8px;}
+    .sidebar.open .nav-panel{display:block;}
+    .hero{margin-top:0;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="sidebar" id="sidebar">
+    <div class="brand"><b>CSS &amp; Tailwind</b><br>layout · responsive · utility-first</div>
+    <input class="search" id="searchInput" type="search" placeholder="Search all guides   /" aria-label="Search all guides">
+    <button class="nav-toggle" id="navToggle" type="button" aria-expanded="false" aria-controls="navPanel"><span id="navToggleLbl">Sections</span><i>▾</i></button>
+    <div class="nav-panel" id="navPanel">
+    <div id="navList"></div>
+    <div class="progress-box">
+      <div class="label">REVIEWED</div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-num" id="progressNum">0 / 0</div>
+      <button class="reset-btn" id="resetBtn">Reset progress</button>
+    </div>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="hero">
+      <p class="eyebrow-free">Prep guide</p>
+      <h1>CSS and Tailwind interview mastery</h1>
+      <p>CSS fundamentals, Flexbox and Grid, responsive design, and Tailwind concepts (utility-first, JIT, variants, theming). Start with the <strong>Quick Reference</strong>, then practise with flashcards.</p>
+      <div class="hero-actions"><button id="fcCore" class="fc-start" type="button">▶ Flashcards: all ★ core questions</button>
+      <button id="fcWeak" class="fc-start alt" type="button" hidden>↻ Review weak cards</button></div>
+      <div class="source-note"><span id="heroMeta"></span><br><span class="keys"><kbd>/</kbd> search · <kbd>j</kbd> <kbd>k</kbd> move · <kbd>o</kbd> open · <kbd>x</kbd> mark reviewed · <kbd>n</kbd> <kbd>p</kbd> next / previous section · <kbd>Esc</kbd> clear</span></div>
+    </div>
+    <div id="content"></div>
+    <button id="backBtn" class="back-btn" hidden></button>
+    <div id="fc" class="fc" hidden>
+      <div class="fc-dialog" role="dialog" aria-modal="true" aria-label="Flashcards" tabindex="-1">
+        <div class="fc-head">
+          <div><div class="fc-title"></div><div class="fc-count"></div></div>
+          <div class="fc-tools"><label><input type="checkbox" id="fcShuffle"> Shuffle</label><button data-fc="close" aria-label="Close flashcards">✕</button></div>
+        </div>
+        <div class="fc-bar"><i></i></div>
+        <div class="fc-body"></div>
+        <div class="fc-actions"></div>
+        <div class="fc-keys"><kbd>Space</kbd> reveal · <kbd>1</kbd> again · <kbd>2</kbd> got it (marks reviewed) · <kbd>←</kbd> <kbd>→</kbd> back / skip · <kbd>Esc</kbd> close</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+const DATA = [
+{
+  id:"quickref", title:"Quick Reference",
+  questions:[
+    {
+      q:"Cheat sheet: Tailwind v4: What Changed",
+      a:`<table class="cmp"><tr><th>Question</th><th>One-line answer</th></tr><tr><td><a class="go" href="#v4:0" data-go="v4:0">What changed from Tailwind v3 to v4, and what breaks when you upgrade?</a></td><td>Tailwind v4 moved configuration into CSS and removed most setup.</td></tr><tr><td><a class="go" href="#v4:1" data-go="v4:1">How do you define design tokens with @theme in Tailwind v4?</a></td><td>In v4 the theme is a set of CSS variables declared inside @theme .</td></tr><tr><td><a class="go" href="#v4:2" data-go="v4:2">How do you add custom utilities and variants in Tailwind v4 (@utility, @custom-variant, @apply)?</a></td><td>@utility replaces @layer utilities and @layer components for anything you want to use as a class with variants.</td></tr></table>`
+    },
+    {
+      q:"Cheat sheet: CSS Fundamentals",
+      a:`<table class="cmp"><tr><th>Question</th><th>One-line answer</th></tr><tr><td><a class="go" href="#s1:0" data-go="s1:0">Explain the CSS box model, and the difference between content-box and border-box.</a></td><td>Before Tailwind, the fundamentals: the box model, the cascade, and specificity.</td></tr><tr><td><a class="go" href="#s1:1" data-go="s1:1">How is CSS specificity calculated, and how does the cascade resolve conflicting rules?</a></td><td>Specificity is a four-part score: (inline styles, IDs, classes/attributes/pseudo-classes, elements/pseudo-elements).</td></tr><tr><td><a class="go" href="#s1:2" data-go="s1:2">What is the difference between em and rem units?</a></td><td>em is relative to the font-size of its own element (compounding when nested); rem is relative to the root (&lt;html&gt;) font-size only — always the same absolute value no matter how deeply nested.</td></tr><tr><td><a class="go" href="#s1:4" data-go="s1:4">What creates a stacking context, and why does z-index sometimes not work?</a></td><td>z-index only competes with siblings inside the same stacking context .</td></tr><tr><td><a class="go" href="#s1:5" data-go="s1:5">What are CSS custom properties, and how do they differ from Sass variables?</a></td><td>Custom properties ( --brand: #2f7a72 ) are real CSS values that live in the DOM: they cascade, inherit, and can change at runtime.</td></tr><tr><td><a class="go" href="#s1:6" data-go="s1:6">What do :is(), :where() and :has() do, and how do they affect specificity?</a></td><td>Interview tip: Specificity is (ids, classes/attributes/pseudo-classes, elements): :where contributes nothing, which is why reset and base styles use it.</td></tr><tr><td><a class="go" href="#s1:7" data-go="s1:7">How does clamp() give you fluid typography and spacing?</a></td><td>clamp(min, preferred, max) picks the preferred value but never goes below the minimum or above the maximum, so a size scales smoothly with the viewport without any breakpoint.</td></tr></table>`
+    },
+    {
+      q:"Cheat sheet: Flexbox & Grid",
+      a:`<table class="cmp"><tr><th>Question</th><th>One-line answer</th></tr><tr><td><a class="go" href="#s2:0" data-go="s2:0">When would you reach for Flexbox vs CSS Grid?</a></td><td>Flexbox is one-dimensional (a single row or column) and content-driven — great for distributing items along one axis, like a navbar or a button group.</td></tr><tr><td><a class="go" href="#s2:1" data-go="s2:1">How do the Tailwind utilities map onto Flexbox properties?</a></td><td>Each Tailwind utility is a thin, memorable alias for the underlying CSS property/value.</td></tr><tr><td><a class="go" href="#s2:2" data-go="s2:2">How do you build a responsive grid that goes from 1 to 2 to 4 columns with Tailwind?</a></td><td>Stack Tailwind's mobile-first responsive prefixes onto grid-cols-* — each breakpoint only overrides what changes above it.</td></tr></table>`
+    },
+    {
+      q:"Cheat sheet: Responsive Design",
+      a:`<table class="cmp"><tr><th>Question</th><th>One-line answer</th></tr><tr><td><a class="go" href="#s3:0" data-go="s3:0">What does "mobile-first" responsive design mean, and how does it show up in Tailwind's breakpoint syntax?</a></td><td>Mobile-first means your base (unprefixed) styles target the smallest screen, and each breakpoint prefix (sm:, md:, lg:, xl:, 2xl:) adds an override for "this size and up" — not "only at this size." Interview tip: A common…</td></tr><tr><td><a class="go" href="#s3:1" data-go="s3:1">What is a CSS container query, and how does it differ from a media query?</a></td><td>A media query responds to the viewport size.</td></tr></table>`
+    },
+    {
+      q:"Cheat sheet: Tailwind Core Concepts",
+      a:`<table class="cmp"><tr><th>Question</th><th>One-line answer</th></tr><tr><td><a class="go" href="#s4:0" data-go="s4:0">What does "utility-first" actually mean, and what problem does it solve compared to traditional semantic CSS?</a></td><td>Instead of naming a class (.card, .btn-primary) and writing custom CSS for it, you apply small utilities (p-4, rounded-lg, bg-blue-500) directly in the markup.</td></tr><tr><td><a class="go" href="#s4:1" data-go="s4:1">How does Tailwind generate only the CSS you use (v3 JIT vs. v4 automatic source detection)?</a></td><td>Tailwind never ships every possible utility.</td></tr><tr><td><a class="go" href="#s4:2" data-go="s4:2">What are arbitrary values in Tailwind, and when are they appropriate?</a></td><td>Square-bracket syntax lets you use a one-off value outside the design system's predefined scale, without writing custom CSS.</td></tr></table>`
+    },
+    {
+      q:"Cheat sheet: Responsive & State Variants",
+      a:`<table class="cmp"><tr><th>Question</th><th>One-line answer</th></tr><tr><td><a class="go" href="#s5:0" data-go="s5:0">How do hover:, focus:, and group-hover: differ?</a></td><td>hover: and focus: apply a utility only when that specific element is in that pseudo-class state.</td></tr><tr><td><a class="go" href="#s5:1" data-go="s5:1">How does dark: mode work in Tailwind, and what are the two strategies for triggering it?</a></td><td>dark: is a variant like hover: or md: : the style applies when dark mode is "on".</td></tr><tr><td><a class="go" href="#s5:2" data-go="s5:2">Which state and structural variants does Tailwind offer beyond hover: (group, peer, has, data, aria)?</a></td><td>Variants stack ( md:hover:bg-blue-600 ) and combine with dark: .</td></tr></table>`
+    },
+    {
+      q:"Cheat sheet: Customization & Theming",
+      a:`<table class="cmp"><tr><th>Question</th><th>One-line answer</th></tr><tr><td><a class="go" href="#s6:0" data-go="s6:0">What does @apply do, and when should (and shouldn't) you reach for it?</a></td><td>@apply lets you compose multiple existing utility classes into a single custom CSS class, inside an actual CSS file.</td></tr><tr><td><a class="go" href="#s6:1" data-go="s6:1">How do you extend Tailwind's default theme (colors, spacing, fonts) without losing the defaults?</a></td><td>Tailwind v4 (CSS-first): declare theme variables in an @theme block.</td></tr><tr><td><a class="go" href="#s6:2" data-go="s6:2">Quiz (v3 config): What happens if you define colors directly under \`theme: { colors: {...} }\` instead of \`theme: { extend: { colors: {...} } }\`? </a></td><td>Nothing different — they behave identically It merges your colors with the defaults It REPLACES Tailwind's entire default color palette with only what you defined It only affects dark mode colors Answer: C.</td></tr></table>`
+    },
+    {
+      q:"Cheat sheet: Performance & Best Practices",
+      a:`<table class="cmp"><tr><th>Question</th><th>One-line answer</th></tr><tr><td><a class="go" href="#s7:0" data-go="s7:0">Why does Tailwind's production CSS bundle stay small regardless of how large the app grows?</a></td><td>Because of the source-scanning model (v3 JIT, v4 automatic source detection): the final CSS only contains the utility classes that literally appear as strings somewhere in the scanned source files.</td></tr><tr><td><a class="go" href="#s7:1" data-go="s7:1">What is the trade-off of extracting repeated utility strings into a React component vs. using @apply?</a></td><td>Both solve 'don't repeat this long className string everywhere,' but a component extraction (e.g.</td></tr><tr><td><a class="go" href="#s7:2" data-go="s7:2">How would you keep a long list of conditional Tailwind classes readable and correct?</a></td><td>Use a small utility library (clsx or tailwind-merge/cva) instead of manually concatenating strings and ternaries — string concatenation is error-prone (extra/missing spaces) and doesn't resolve conflicting utilities (e.g.</td></tr></table>`
+    },
+    {
+      q:"Cheat sheet: Deep Dive: Layout & Cascade",
+      a:`<table class="cmp"><tr><th>Question</th><th>One-line answer</th></tr><tr><td><a class="go" href="#deep-layout:0" data-go="deep-layout:0">What are cascade layers (@layer), and how does Tailwind v4 use them?</a></td><td>Cascade layers let you decide which group of styles wins before specificity is compared.</td></tr><tr><td><a class="go" href="#deep-layout:1" data-go="deep-layout:1">CSS Grid in depth: auto-fit vs auto-fill, minmax and template areas.</a></td><td>minmax(220px, 1fr) means "at least 220px, share the leftover space".</td></tr><tr><td><a class="go" href="#deep-layout:2" data-go="deep-layout:2">What is subgrid, and what problem does it solve?</a></td><td>Nested grids normally define their own tracks, so content inside sibling cards cannot line up.</td></tr></table>`
+    },
+    {
+      q:"Cheat sheet: Deep Dive: Design Systems",
+      a:`<table class="cmp"><tr><th>Question</th><th>One-line answer</th></tr><tr><td><a class="go" href="#deep-ds:0" data-go="deep-ds:0">How do you build variant-driven components with Tailwind (cn, tailwind-merge, cva)?</a></td><td>clsx builds a class string from conditions; tailwind-merge resolves conflicts so the last class in a group wins ( twMerge('px-2 p-3') gives 'p-3' ).</td></tr><tr><td><a class="go" href="#deep-ds:1" data-go="deep-ds:1">How do you implement runtime themes (light, dark, brand) with CSS variables and Tailwind v4?</a></td><td>Semantic names ( surface , ink , brand ) mean components never change when a theme is added; only variables do.</td></tr></table>`
+    }
+  ]
+},
+{
+  id:"v4", title:"Tailwind v4: What Changed",
+  questions:[
+    {
+      q:"What changed from Tailwind v3 to v4, and what breaks when you upgrade?",
+      a:`<p class="lede">Tailwind v4 moved configuration into CSS and removed most setup. The idea is the same (utility classes), but the plumbing is different, and interviewers now expect you to know both.</p><table class="cmp"><tr><th>Topic</th><th>Tailwind v3</th><th>Tailwind v4</th></tr><tr><td>Entry point</td><td><code>@tailwind base; @tailwind components; @tailwind utilities;</code></td><td><code>@import "tailwindcss";</code></td></tr><tr><td>Configuration</td><td><code>tailwind.config.js</code> (JavaScript)</td><td><code>@theme { --color-brand: ...; }</code> in your CSS</td></tr><tr><td>Finding classes</td><td><code>content: [...]</code> globs you maintain</td><td>Automatic source detection (skips <code>.gitignore</code>d files); add paths with <code>@source</code></td></tr><tr><td>Dark mode</td><td><code>darkMode: 'class'</code></td><td><code>@custom-variant dark (...)</code> (default follows the OS)</td></tr><tr><td>Custom utilities</td><td><code>@layer utilities { .x {} }</code></td><td><code>@utility x { ... }</code></td></tr><tr><td>Container queries</td><td>plugin</td><td>built in: <code>@container</code>, <code>@md:flex-row</code></td></tr><tr><td>PostCSS plugin</td><td><code>tailwindcss</code></td><td><code>@tailwindcss/postcss</code> (or the Vite plugin)</td></tr></table><ul><li><strong>Upgrade tool:</strong> <code>npx @tailwindcss/upgrade</code> migrates the config and most class names.</li><li><strong>Renamed scale utilities</strong> (for example the shadow, blur and rounded sizes shifted by one step) and <strong>removed opacity utilities</strong> (write <code>bg-black/50</code> instead of <code>bg-opacity-50</code>).</li><li><strong>Modern browsers only:</strong> v4 relies on newer CSS features, so check your browser support target before upgrading.</li></ul><p><strong>Interview tip:</strong> If you have not upgraded a project yet, say so: "v3 config is a JS file with a content array; v4 is CSS-first with automatic detection".</p>`
+    },
+    {
+      q:"How do you define design tokens with @theme in Tailwind v4?",
+      a:`<p class="lede">In v4 the theme is a set of CSS variables declared inside <code>@theme</code>. Each variable name lives in a <em>namespace</em> that decides which utilities exist, so adding a token creates the matching classes.</p><pre>@import "tailwindcss";
+
+@theme {
+  --color-brand-500: oklch(0.62 0.19 259);   /* bg-brand-500, text-brand-500, ... */
+  --font-display: "Satoshi", sans-serif;      /* font-display */
+  --breakpoint-3xl: 120rem;                   /* 3xl:grid-cols-6 */
+  --spacing: 0.25rem;                         /* base unit for p-4, m-2, gap-6 */
+}</pre><table class="cmp"><tr><th>Namespace</th><th>Generates</th></tr><tr><td><code>--color-*</code></td><td><code>bg-*</code>, <code>text-*</code>, <code>border-*</code>, ...</td></tr><tr><td><code>--font-*</code></td><td><code>font-*</code> families</td></tr><tr><td><code>--breakpoint-*</code></td><td>responsive variants such as <code>3xl:</code></td></tr><tr><td><code>--shadow-*</code>, <code>--radius-*</code></td><td><code>shadow-*</code>, <code>rounded-*</code></td></tr></table><ul><li>Adding variables <strong>extends</strong> the default theme. To replace a namespace, reset it first: <code>--color-*: initial;</code> (or <code>--*: initial;</code> for everything).</li><li>Every token is also a real CSS variable (<code>var(--color-brand-500)</code>), so plain CSS, arbitrary values and inline styles can use it.</li><li>Need the old JavaScript config? <code>@config "./tailwind.config.js"</code> still loads it.</li></ul><p><strong>Interview tip:</strong> Contrast it with v3: the token list moved from a JS object to CSS variables, which is why runtime theming (swapping variables per theme) got easier.</p>`
+    },
+    {
+      q:"How do you add custom utilities and variants in Tailwind v4 (@utility, @custom-variant, @apply)?",
+      a:`<pre>/* a custom utility that works with variants: hover:tab-4, md:tab-4 */
+@utility tab-4 {
+  tab-size: 4;
+}
+
+/* a custom variant, e.g. an in-app dark toggle on &lt;html data-theme="dark"&gt; */
+@custom-variant dark (&amp;:where([data-theme=dark], [data-theme=dark] *));
+
+/* reuse existing utilities in your own CSS (sparingly) */
+.btn {
+  @apply rounded-lg px-4 py-2 font-medium;
+}</pre><ul><li><strong><code>@utility</code></strong> replaces <code>@layer utilities</code> and <code>@layer components</code> for anything you want to use as a class with variants.</li><li><strong><code>@custom-variant</code></strong> defines when a prefix applies (a selector or a media query).</li><li><strong><code>@apply</code></strong> inlines utilities into CSS. Prefer components (a React <code>&lt;Button&gt;</code>) over <code>@apply</code> for reuse, and keep <code>@apply</code> for third-party markup you cannot add classes to.</li></ul><p><strong>Interview tip:</strong> A good one-liner: "utilities for one-off styling, a component for repetition, <code>@theme</code> for tokens".</p>`
+    }
+  ]
+},
+{
+  id:"s1", title:"CSS Fundamentals",
+  questions:[
+    {
+      q:"Explain the CSS box model, and the difference between content-box and border-box.",
+      a:`<p class="lede">Before Tailwind, the fundamentals: the box model, the cascade, and specificity. Interviewers use these to check whether you understand what a utility class is actually doing under the hood.</p><p>Every element is a box made of content, padding, border, and margin. box-sizing controls how width/height are calculated relative to those layers.</p><ul><li><strong>content-box (default):</strong> width/height apply only to the content area. Padding and border are added ON TOP, so the element visually grows larger than the width you set.</li><li><strong>border-box:</strong> width/height include padding and border. Setting width: 200px with 20px padding still renders a 200px-wide box — padding eats into the content area instead of growing it.</li></ul><p><strong>Interview tip:</strong> Tailwind sets <code>box-sizing: border-box</code> globally via Preflight (its CSS reset), which is why <code>w-48 p-4</code> behaves predictably instead of growing past 48 units — this is a very common "why does Tailwind do this" interview question.</p><div class="diagram"><svg viewBox="0 0 900 290" width="900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="CSS box model and the difference between content-box and border-box">
+<defs><marker id="tb1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--muted)"/></marker></defs>
+<rect x="30" y="20" width="320" height="250" rx="8" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="1.4"/><text x="44" y="38"  font-family="var(--mono)" font-size="10" fill="var(--gold)">margin</text>
+<rect x="62" y="50" width="256" height="190" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="76" y="68"  font-family="var(--mono)" font-size="10" fill="var(--muted)">border</text>
+<rect x="90" y="80" width="200" height="132" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="104" y="98"  font-family="var(--mono)" font-size="10" fill="var(--accent)">padding</text>
+<rect x="122" y="108" width="136" height="74" rx="8" fill="var(--panel)" stroke="var(--accent)" stroke-width="1.4"/><text x="190" y="150" text-anchor="middle" font-family="var(--sans)" font-size="12" fill="var(--text)" font-weight="600">content</text>
+<text x="380" y="40"  font-family="var(--mono)" font-size="10.5" fill="var(--text)" font-weight="700">width: 200px; padding: 20px; border: 2px solid</text>
+<text x="380" y="86"  font-family="var(--sans)" font-size="11.5" fill="var(--text)" font-weight="600">content-box (the browser default)</text>
+<rect x="380" y="96" width="250" height="26" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><rect x="380" y="96" width="22" height="26" rx="8" fill="var(--panel-2)" stroke="var(--border)" stroke-width="1.4"/><rect x="402" y="96" width="22" height="26" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><rect x="424" y="96" width="182" height="26" rx="8" fill="var(--panel)" stroke="var(--accent)" stroke-width="1.4"/><rect x="606" y="96" width="24" height="26" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/>
+<text x="640" y="114"  font-family="var(--mono)" font-size="12" fill="var(--danger)" font-weight="700">= 244px</text>
+<text x="380" y="142"  font-family="var(--sans)" font-size="11" fill="var(--muted)">width sets the content only; padding and border are added outside it</text>
+<text x="380" y="188"  font-family="var(--sans)" font-size="11.5" fill="var(--text)" font-weight="600">border-box  (Tailwind preflight: box-border on everything)</text>
+<rect x="380" y="198" width="250" height="26" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="505" y="216" text-anchor="middle" font-family="var(--sans)" font-size="11" fill="var(--text)">content + padding + border</text>
+<text x="640" y="216"  font-family="var(--mono)" font-size="12" fill="var(--accent)" font-weight="700">= 200px</text>
+<text x="380" y="244"  font-family="var(--sans)" font-size="11" fill="var(--muted)">width includes padding and border, so layouts add up the way you expect</text>
+</svg></div>`
+    },
+    {
+      q:"How is CSS specificity calculated, and how does the cascade resolve conflicting rules?",
+      a:`<p>Specificity is a four-part score: (inline styles, IDs, classes/attributes/pseudo-classes, elements/pseudo-elements). The rule with the higher score wins regardless of source order; if scores are equal, the rule that appears later in the stylesheet wins.</p><pre>#nav .item { color: blue; }   /* specificity: 0-1-1-0 */
+.item.active { color: red; }  /* specificity: 0-0-2-0 */
+/* #nav .item wins — one ID beats any number of classes */</pre><p><strong>Interview tip:</strong> !important overrides specificity entirely (highest priority short of inline styles + !important). Tailwind avoids ever needing !important in normal usage because every utility class has equal, low specificity (0-0-1-0) — conflicts are resolved by CSS source order instead, which is why utility order in your stylesheet's generated output matters more than the order you write classNames in JSX.</p>`
+    },
+    {
+      q:"What is the difference between em and rem units?",
+      a:`<p>em is relative to the font-size of its own element (compounding when nested); rem is relative to the root (&lt;html&gt;) font-size only — always the same absolute value no matter how deeply nested.</p><p><strong>Interview tip:</strong> Nested em values compound unexpectedly (a 1.2em inside a 1.2em inside a 1.2em element keeps growing), which is why rem is generally preferred for consistent sizing — and exactly why Tailwind's default spacing/sizing scale (p-4, text-lg, etc.) is defined in rem, not em.</p>`
+    },
+    {
+      q:"Quiz: With box-sizing: border-box and width: 200px; padding: 20px, how wide does the element actually render? <span class=\"quizopts\">(A) 200px &nbsp;·&nbsp; (B) 240px &nbsp;·&nbsp; (C) 160px &nbsp;·&nbsp; (D) 220px</span>",
+      a:`<ol class="quiz" type="A"><li class="right">200px</li><li>240px</li><li>160px</li><li>220px</li></ol><p><strong>Answer: A.</strong> border-box includes padding and border inside the specified width — the content area shrinks to fit, but the box stays exactly 200px wide.</p>`
+    },
+    {
+      q:"What creates a stacking context, and why does z-index sometimes not work?",
+      a:`<p class="lede"><code>z-index</code> only competes with siblings <em>inside the same stacking context</em>. A child with <code>z-index: 9999</code> can never appear above something outside its parent's context if that parent sits lower.</p><p>A new stacking context is created by:</p><ul><li><code>position: relative | absolute | fixed | sticky</code> with a <code>z-index</code> other than <code>auto</code></li><li><code>opacity</code> below 1, <code>transform</code>, <code>filter</code>, <code>backdrop-filter</code>, <code>will-change</code>, <code>mix-blend-mode</code></li><li><code>isolation: isolate</code> (the deliberate way to create one, Tailwind <code>isolate</code>)</li><li>a flex or grid item with a <code>z-index</code></li></ul><pre>&lt;div class="relative z-10"&gt;        &lt;!-- context A (z 10) --&gt;
+  &lt;div class="absolute z-50"&gt;…&lt;/div&gt; &lt;!-- z 50 inside A: still below anything with z &gt; 10 outside --&gt;
+&lt;/div&gt;
+&lt;div class="relative z-20"&gt;…&lt;/div&gt;  &lt;!-- context B (z 20) paints above A entirely --&gt;</pre><p><strong>Interview tip:</strong> Debug method: walk up from the "broken" element and look for the ancestor that created a context (a stray <code>transform</code> or <code>opacity</code> is the usual culprit). Fix with <code>isolate</code> on the right wrapper, or render modals in a portal at the end of <code>&lt;body&gt;</code>.</p>`
+    },
+    {
+      q:"What are CSS custom properties, and how do they differ from Sass variables?",
+      a:`<p class="lede">Custom properties (<code>--brand: #2f7a72</code>) are real CSS values that live in the DOM: they cascade, inherit, and can change at runtime. Sass variables are replaced at build time and do not exist in the browser.</p><pre>:root { --gap: 1rem; --brand: #2f7a72; }
+[data-theme="dark"] { --brand: #6fc2b8; }      /* one override recolours everything */
+.card { padding: var(--gap); border-color: var(--brand, gray); }   /* fallback after the comma */</pre><ul><li><strong>Scoped:</strong> set them on any element and only that subtree sees the override (component-level theming).</li><li><strong>Dynamic:</strong> change from JavaScript with <code>el.style.setProperty('--x', value)</code>, or from media queries and container queries.</li><li><strong>Foundation of Tailwind v4 themes:</strong> every <code>@theme</code> token is a custom property.</li><li>They are always strings until used; <code>@property</code> lets you give one a type (so it can animate).</li></ul><p><strong>Interview tip:</strong> Use them for design tokens and theming; keep Sass (if you use it at all) for build-time logic like loops.</p>`
+    },
+    {
+      q:"What do :is(), :where() and :has() do, and how do they affect specificity?",
+      a:`<table class="cmp"><tr><th>Selector</th><th>Meaning</th><th>Specificity</th></tr><tr><td><code>:is(a, b)</code></td><td>matches if any listed selector matches (shorter grouping)</td><td>that of the most specific argument</td></tr><tr><td><code>:where(a, b)</code></td><td>same, but for low-priority defaults</td><td><strong>zero</strong>: easy to override</td></tr><tr><td><code>:has(x)</code></td><td>the "parent selector": matches an element that contains a match for <code>x</code></td><td>that of its argument</td></tr></table><pre>article :is(h1, h2, h3) { margin-block: 1em; }
+:where(.prose) a { text-decoration: underline; }      /* library default, trivial to override */
+label:has(input:invalid) { color: crimson; }          /* style the label when its input is invalid */
+.card:has(&gt; img) { grid-template-columns: 120px 1fr; }  /* layout depends on the content */</pre><p><strong>Interview tip:</strong> Specificity is (ids, classes/attributes/pseudo-classes, elements): <code>:where</code> contributes nothing, which is why reset and base styles use it. <code>:has()</code> removes many "toggle a class from JavaScript" patterns.</p>`
+    },
+    {
+      q:"How does clamp() give you fluid typography and spacing?",
+      a:`<p class="lede"><code>clamp(min, preferred, max)</code> picks the preferred value but never goes below the minimum or above the maximum, so a size scales smoothly with the viewport without any breakpoint.</p><pre>h1 { font-size: clamp(1.75rem, 1.2rem + 2.5vw, 3rem); }   /* 28px on phones, up to 48px */
+.section { padding-block: clamp(2rem, 6vw, 6rem); }
+
+/* Tailwind: arbitrary value */
+&lt;h1 class="text-[clamp(1.75rem,1.2rem+2.5vw,3rem)]"&gt;</pre><ul><li>Mix a <strong>rem</strong> term with a <strong>vw</strong> term in the middle value so text still respects the user's font-size setting (pure <code>vw</code> text ignores zoom preferences).</li><li>Use it for type scales, section padding and gaps; use breakpoints for layout changes (columns, navigation).</li><li><code>min()</code> and <code>max()</code> are the one-sided versions.</li></ul><p><strong>Interview tip:</strong> Accessibility point worth stating: keep at least one relative unit so browser zoom and default font-size changes still work.</p>`
+    }
+  ]
+},
+{
+  id:"s2", title:"Flexbox & Grid",
+  questions:[
+    {
+      q:"When would you reach for Flexbox vs CSS Grid?",
+      a:`<p>Flexbox is one-dimensional (a single row or column) and content-driven — great for distributing items along one axis, like a navbar or a button group. Grid is two-dimensional and layout-driven — great for defining an overall page/component structure with explicit rows and columns.</p><ul><li><strong>Flexbox:</strong> justify-content/align-items for distributing space along the main/cross axis; flex-grow/flex-shrink for how items resize.</li><li><strong>Grid:</strong> grid-template-columns/rows define explicit tracks; items can span multiple tracks, overlap, and be placed by line number or named area.</li></ul><p><strong>Interview tip:</strong> A practical rule interviewers like: 'if I'm laying out the items inside one component, Flexbox; if I'm laying out the page/major regions, Grid.'</p>`
+    },
+    {
+      q:"How do the Tailwind utilities map onto Flexbox properties?",
+      a:`<p>Each Tailwind utility is a thin, memorable alias for the underlying CSS property/value.</p><ul><li>**justify-* → justify-content** (main-axis alignment: justify-start/center/between/around/evenly)</li><li>**items-* → align-items** (cross-axis alignment: items-start/center/end/stretch)</li><li><strong>flex-1 → flex: 1 1 0%</strong> (grow and shrink equally, ignoring initial size)</li></ul><pre>&lt;div class="flex items-center justify-between gap-4"&gt;
+  &lt;!-- display: flex; align-items: center; justify-content: space-between; gap: 1rem; --&gt;
+  &lt;span&gt;Logo&lt;/span&gt;
+  &lt;nav class="flex gap-2"&gt;...&lt;/nav&gt;
+&lt;/div&gt;</pre><div class="diagram"><svg viewBox="0 0 900 250" width="900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Flexbox main axis and cross axis mapped to Tailwind utilities">
+<defs><marker id="tf1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--accent)"/></marker><marker id="tf2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--gold)"/></marker></defs>
+<rect x="20" y="30" width="420" height="130" rx="8" fill="var(--panel-2)" stroke="var(--border)" stroke-width="1.4"/>
+<rect x="40" y="60" width="90" height="70" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="85" y="99" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">A</text><rect x="160" y="60" width="90" height="70" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="205" y="99" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">B</text><rect x="280" y="60" width="90" height="70" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="325" y="99" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">C</text>
+<path d="M30 18 L430 18" fill="none" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#tf1)"/><text x="230" y="12" text-anchor="middle" font-family="var(--mono)" font-size="10" fill="var(--accent)">main axis: justify-*  (flex-row)</text>
+<path d="M452 34 L452 156" fill="none" stroke="var(--gold)" stroke-width="1.5" marker-end="url(#tf2)"/><text x="462" y="96"  font-family="var(--mono)" font-size="10" fill="var(--gold)">cross axis</text><text x="462" y="110"  font-family="var(--mono)" font-size="10" fill="var(--gold)">items-*</text>
+<rect x="560" y="30" width="330" height="130" rx="8" fill="var(--panel-2)" stroke="var(--border)" stroke-width="1.4"/>
+<rect x="600" y="42" width="250" height="26" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="725" y="59" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">A</text><rect x="600" y="76" width="250" height="26" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="725" y="93" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">B</text><rect x="600" y="110" width="250" height="26" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="725" y="127" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">C</text>
+<text x="725" y="152" text-anchor="middle" font-family="var(--mono)" font-size="10" fill="var(--muted)">flex-col swaps the axes: justify-* is now vertical</text>
+<text x="20" y="194"  font-family="var(--sans)" font-size="11" fill="var(--text)">justify-start / center / between / around / evenly   → distribute along the main axis</text>
+<text x="20" y="214"  font-family="var(--sans)" font-size="11" fill="var(--text)">items-start / center / end / stretch / baseline   → align across the cross axis</text>
+<text x="20" y="234"  font-family="var(--sans)" font-size="11" fill="var(--muted)">gap-*, flex-wrap, grow / shrink / basis (flex-1, grow, shrink-0) control spacing and sizing</text>
+</svg></div>`
+    },
+    {
+      q:"How do you build a responsive grid that goes from 1 to 2 to 4 columns with Tailwind?",
+      a:`<p>Stack Tailwind's mobile-first responsive prefixes onto grid-cols-* — each breakpoint only overrides what changes above it.</p><pre>&lt;div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"&gt;
+  &lt;!-- 1 column below 640px, 2 columns from 640px, 4 columns from 1024px --&gt;
+&lt;/div&gt;</pre>`
+    }
+  ]
+},
+{
+  id:"s3", title:"Responsive Design",
+  questions:[
+    {
+      q:"What does \"mobile-first\" responsive design mean, and how does it show up in Tailwind's breakpoint syntax?",
+      a:`<p>Mobile-first means your base (unprefixed) styles target the smallest screen, and each breakpoint prefix (sm:, md:, lg:, xl:, 2xl:) adds an override for "this size and up" — not "only at this size."</p><pre>&lt;p class="text-sm md:text-base lg:text-lg"&gt;
+  &lt;!-- text-sm applies below 768px.
+       md:text-base applies from 768px up (overriding text-sm).
+       lg:text-lg applies from 1024px up (overriding md:text-base). --&gt;
+&lt;/p&gt;</pre><p><strong>Interview tip:</strong> A common mistake: assuming md: means "only on medium screens." It actually means "medium and everything larger," unless you explicitly narrow it with something like md:max-lg:.</p><div class="diagram"><svg viewBox="0 0 900 250" width="900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Tailwind mobile-first breakpoints, each prefix applying from its width upward">
+<defs><marker id="tk1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--accent)"/></marker></defs>
+<line x1="30" y1="70" x2="870" y2="70" stroke="var(--border)" stroke-width="1.4"/>
+<circle cx="30" cy="70" r="6" fill="var(--accent)"/><text x="30" y="50" text-anchor="middle" font-family="var(--mono)" font-size="12" fill="var(--text)" font-weight="700">base</text><text x="30" y="92" text-anchor="middle" font-family="var(--mono)" font-size="10" fill="var(--muted)">0</text><circle cx="200" cy="70" r="6" fill="var(--accent)"/><text x="200" y="50" text-anchor="middle" font-family="var(--mono)" font-size="12" fill="var(--text)" font-weight="700">sm</text><text x="200" y="92" text-anchor="middle" font-family="var(--mono)" font-size="10" fill="var(--muted)">640px</text><circle cx="350" cy="70" r="6" fill="var(--accent)"/><text x="350" y="50" text-anchor="middle" font-family="var(--mono)" font-size="12" fill="var(--text)" font-weight="700">md</text><text x="350" y="92" text-anchor="middle" font-family="var(--mono)" font-size="10" fill="var(--muted)">768px</text><circle cx="510" cy="70" r="6" fill="var(--accent)"/><text x="510" y="50" text-anchor="middle" font-family="var(--mono)" font-size="12" fill="var(--text)" font-weight="700">lg</text><text x="510" y="92" text-anchor="middle" font-family="var(--mono)" font-size="10" fill="var(--muted)">1024px</text><circle cx="670" cy="70" r="6" fill="var(--accent)"/><text x="670" y="50" text-anchor="middle" font-family="var(--mono)" font-size="12" fill="var(--text)" font-weight="700">xl</text><text x="670" y="92" text-anchor="middle" font-family="var(--mono)" font-size="10" fill="var(--muted)">1280px</text><circle cx="810" cy="70" r="6" fill="var(--accent)"/><text x="810" y="50" text-anchor="middle" font-family="var(--mono)" font-size="12" fill="var(--text)" font-weight="700">2xl</text><text x="810" y="92" text-anchor="middle" font-family="var(--mono)" font-size="10" fill="var(--muted)">1536px</text>
+<rect x="36" y="110" width="814" height="18" rx="5" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="44" y="123"  font-family="var(--mono)" font-size="9.5" fill="var(--text)">p-2 applies from here and up</text><rect x="206" y="134" width="644" height="18" rx="5" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="214" y="147"  font-family="var(--mono)" font-size="9.5" fill="var(--text)">sm:p-4 applies from here and up</text><rect x="356" y="158" width="494" height="18" rx="5" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="364" y="171"  font-family="var(--mono)" font-size="9.5" fill="var(--text)">md:p-6 applies from here and up</text><rect x="516" y="182" width="334" height="18" rx="5" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="524" y="195"  font-family="var(--mono)" font-size="9.5" fill="var(--text)">lg:p-8 applies from here and up</text>
+<text x="20" y="224"  font-family="var(--sans)" font-size="11" fill="var(--text)">Mobile-first: unprefixed utilities are the smallest screen; each prefix (sm:, md:, ...) applies at that width AND ABOVE.</text>
+<text x="20" y="242"  font-family="var(--sans)" font-size="11" fill="var(--muted)">Use max-md: to target only below a breakpoint, and md:max-lg: for a range.</text>
+</svg></div>`
+    },
+    {
+      q:"What is a CSS container query, and how does it differ from a media query?",
+      a:`<p>A media query responds to the viewport size. A container query responds to the size of a specific containing element, regardless of the viewport — letting the same component adapt differently depending on where it's placed (e.g. a card in a narrow sidebar vs. a wide main column).</p><pre>&lt;div class="@container"&gt;
+  &lt;div class="flex flex-col @lg:flex-row"&gt;
+    &lt;!-- Switches to a row layout once the CONTAINER (not the viewport) is &gt;= the lg container size --&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre><p><strong>Interview tip:</strong> Tailwind's @container/@lg: syntax is the container-query equivalent of sm:/lg: for viewport media queries — a genuinely modern CSS feature, good to know it exists distinct from viewport-based responsiveness.</p><div class="callout"><strong>Tailwind v4:</strong> container queries are built in. Mark the parent <code>@container</code> and use variants such as <code>@md:flex-row</code> (or <code>@max-md:</code> for below a size); v3 needed the <code>@tailwindcss/container-queries</code> plugin.</div>`
+    }
+  ]
+},
+{
+  id:"s4", title:"Tailwind Core Concepts",
+  questions:[
+    {
+      q:"What does \"utility-first\" actually mean, and what problem does it solve compared to traditional semantic CSS?",
+      a:`<p>Instead of naming a class (.card, .btn-primary) and writing custom CSS for it, you apply small utilities (p-4, rounded-lg, bg-blue-500) directly in the markup. This avoids the classic problem of a growing, hard-to-maintain global stylesheet where unrelated components accidentally share (and break each other via) the same custom class names.</p><ul><li>No more inventing/naming a new class for every visual variation.</li><li>No CSS specificity fights between component stylesheets — every utility has equal, minimal specificity.</li><li>Styles live next to the markup that uses them, so deleting a component's JSX also deletes its styling — no orphaned, unused CSS accumulating over time.</li></ul><p><strong>Interview tip:</strong> The standard pushback interviewers raise: 'doesn't this make the markup ugly/verbose?' — a good answer acknowledges the trade-off and mentions component extraction (a &lt;Button&gt; React component) as how Tailwind projects avoid repeating the same utility string everywhere.</p>`
+    },
+    {
+      q:"How does Tailwind generate only the CSS you use (v3 JIT vs. v4 automatic source detection)?",
+      a:`<p>Tailwind never ships every possible utility. It <strong>scans your source files for class-name strings</strong> and generates CSS only for the ones it finds.</p>
+<ul>
+<li><strong>Tailwind v4 (current, since January 2025):</strong> a rewritten, much faster engine with <strong>CSS-first configuration</strong>. You add <code>@import "tailwindcss";</code> to your CSS and it <strong>detects source files automatically</strong> (skipping <code>.gitignore</code>d files, binaries and CSS). There is no <code>content</code> array; add extra paths with <code>@source</code>.</li>
+<li><strong>Tailwind v3:</strong> the JIT engine scanned the paths listed in <code>tailwind.config.js</code>'s <code>content</code> array. A wrong or missing path meant missing styles in production.</li>
+</ul>
+<pre>/* app.css — Tailwind v4 */
+@import "tailwindcss";
+@source "../node_modules/@acme/ui";   /* scan a package that auto-detection skips */
+
+/* Tailwind v3 equivalent (tailwind.config.js):
+   export default { content: ['./src/**/*.{js,ts,jsx,tsx}'] } */</pre>
+<p><strong>Still true in both versions:</strong> scanning is plain text search, it does not run your code. A class built by concatenation (<code>'bg-' + color + '-500'</code>) never appears as a whole string, so no CSS is generated for it. Write complete class names, or map values to full class strings in a lookup object.</p><div class="diagram"><svg viewBox="0 0 900 210" width="900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="How Tailwind turns source files into a small CSS file">
+<defs><marker id="tp1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--muted)"/></marker></defs>
+<rect x="10" y="40" width="170" height="66" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="95" y="70" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Your source files</text><text x="95" y="84" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">JSX, HTML, MDX, ...</text>
+<rect x="210" y="40" width="170" height="66" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="295" y="70" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Scan for class names</text><text x="295" y="84" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">plain text, no parsing</text>
+<rect x="410" y="40" width="210" height="66" rx="8" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="1.4"/><text x="515" y="70" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Tailwind compiler</text><text x="515" y="84" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">reads @import + @theme</text>
+<rect x="650" y="40" width="240" height="66" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="770" y="70" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Output CSS</text><text x="770" y="84" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">only the utilities you used</text>
+<path d="M182 73 L206 73" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#tp1)"/><path d="M382 73 L406 73" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#tp1)"/><path d="M622 73 L646 73" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#tp1)"/>
+<text x="10" y="140"  font-family="var(--sans)" font-size="11" fill="var(--text)">Because it scans for whole strings, "bg-red-500" is found but \`bg-\${color}-500\` is not: the class is never written out.</text>
+<text x="10" y="160"  font-family="var(--sans)" font-size="11" fill="var(--muted)">Map props to complete class names (a lookup object), or force classes with @source inline("...").</text>
+<text x="10" y="188"  font-family="var(--sans)" font-size="11" fill="var(--muted)">CSS size grows with the number of distinct utilities used, not with the size of the app.</text>
+</svg></div>`
+    },
+    {
+      q:"What are arbitrary values in Tailwind, and when are they appropriate?",
+      a:`<p>Square-bracket syntax lets you use a one-off value outside the design system's predefined scale, without writing custom CSS.</p>
+<pre>&lt;div class="top-[117px] bg-[#1da1f2] grid-cols-[1fr_2fr_1fr]"&gt;
+  &lt;!-- one-off pixel offset, an exact brand hex color, and a custom grid track layout --&gt;
+&lt;/div&gt;</pre>
+<p><strong>Interview tip:</strong> Treat these as an escape hatch, not a default habit — reaching for arbitrary values everywhere defeats the point of having a constrained design scale (consistent spacing/colors across the app). If the same arbitrary value shows up repeatedly, that's a sign it belongs in the theme instead (an <code>@theme</code> variable in v4, or <code>tailwind.config.js</code> in v3).</p>`
+    },
+    {
+      q:"Quiz: Why does `className={`bg-${color}-500`}` often fail to produce any styling in a real Tailwind build? <span class=\"quizopts\">(A) Template literals are not supported in JSX &nbsp;·&nbsp; (B) The JIT scanner does a static text search for full class names and never evaluates the interpolated string &nbsp;·&nbsp; (C) Tailwind does not support dynamic colors at all &nbsp;·&nbsp; (D) It only fails in production, not in development</span>",
+      a:`<ol class="quiz" type="A"><li>Template literals are not supported in JSX</li><li class="right">The JIT scanner does a static text search for full class names and never evaluates the interpolated string</li><li>Tailwind does not support dynamic colors at all</li><li>It only fails in production, not in development</li></ol><p><strong>Answer: B.</strong> The build-time scanner looks for literal class name substrings in your source files — it does not execute your code, so an interpolated class name it never sees as a complete string is never generated.</p>`
+    }
+  ]
+},
+{
+  id:"s5", title:"Responsive & State Variants",
+  questions:[
+    {
+      q:"How do hover:, focus:, and group-hover: differ?",
+      a:`<p>hover: and focus: apply a utility only when that specific element is in that pseudo-class state. group-hover: applies a utility to a CHILD element when its ancestor (marked with the group class) is hovered — letting one hover trigger a style change on a different element.</p><pre>&lt;div class="group border p-4"&gt;
+  &lt;h3 class="text-slate-900"&gt;Card title&lt;/h3&gt;
+  &lt;p class="text-slate-500 group-hover:text-slate-700"&gt;
+    &lt;!-- This paragraph's color changes when the PARENT card is hovered, not itself --&gt;
+  &lt;/p&gt;
+&lt;/div&gt;</pre><p><strong>Interview tip:</strong> peer works the same way but for SIBLING elements instead of a parent/child relationship — e.g. showing a validation message when a sibling input is peer-invalid:.</p>`
+    },
+    {
+      q:"How does dark: mode work in Tailwind, and what are the two strategies for triggering it?",
+      a:`<p><code>dark:</code> is a variant like <code>hover:</code> or <code>md:</code>: the style applies when dark mode is "on". The two strategies are <strong>follow the OS</strong> or <strong>toggle it yourself</strong>.</p>
+<ul>
+<li><strong>Media strategy (the default):</strong> follows <code>prefers-color-scheme</code>. Zero JavaScript, but users cannot override it in your app.</li>
+<li><strong>Class or attribute strategy:</strong> you add a <code>.dark</code> class (or <code>data-theme="dark"</code>) on <code>&lt;html&gt;</code> from your own code, which enables an in-app toggle that can override the system preference (store the choice, and set it before first paint to avoid a flash).</li>
+</ul>
+<pre>/* Tailwind v4: override the dark variant in CSS */
+@import "tailwindcss";
+@custom-variant dark (&amp;:where(.dark, .dark *));
+
+/* Tailwind v3: tailwind.config.js
+   export default { darkMode: 'class' }   // or 'media' */
+
+&lt;div class="bg-white text-slate-900 dark:bg-slate-900 dark:text-white"&gt;</pre>
+<p><strong>Interview tip:</strong> mention preventing the flash of the wrong theme (an inline script in <code>&lt;head&gt;</code> or a server-rendered class from a cookie) and using CSS variables for tokens so one theme switch recolours everything.</p>`
+    },
+    {
+      q:"Which state and structural variants does Tailwind offer beyond hover: (group, peer, has, data, aria)?",
+      a:`<table class="cmp"><tr><th>Variant</th><th>Styles an element when...</th><th>Example</th></tr><tr><td><code>group-*</code></td><td>an ancestor marked <code>group</code> is in a state</td><td><code>group-hover:text-blue-600</code></td></tr><tr><td><code>peer-*</code></td><td>a preceding sibling marked <code>peer</code> is in a state</td><td><code>peer-checked:bg-blue-500</code>, <code>peer-invalid:text-red-600</code></td></tr><tr><td><code>has-*</code></td><td>it contains a matching descendant</td><td><code>has-[:checked]:border-blue-500</code></td></tr><tr><td><code>data-*</code></td><td>a <code>data-</code> attribute matches</td><td><code>data-[state=open]:rotate-180</code> (Radix, Headless UI)</td></tr><tr><td><code>aria-*</code></td><td>an ARIA state is set</td><td><code>aria-expanded:bg-slate-100</code>, <code>aria-disabled:opacity-50</code></td></tr><tr><td><code>first: last: odd: even:</code></td><td>structural position</td><td><code>last:border-0</code></td></tr><tr><td><code>focus-visible: disabled: placeholder:</code></td><td>interaction and form states</td><td><code>focus-visible:ring-2</code></td></tr><tr><td><code>[&amp;&gt;li]:mt-2</code></td><td>arbitrary variant: any selector</td><td><code>[&amp;_p]:leading-7</code></td></tr></table><pre>&lt;label class="flex gap-2"&gt;
+  &lt;input type="checkbox" class="peer sr-only" /&gt;
+  &lt;span class="rounded border px-3 py-1 peer-checked:border-blue-600 peer-checked:bg-blue-50"&gt;Option&lt;/span&gt;
+&lt;/label&gt;
+
+&lt;button data-state="open" class="group flex"&gt;
+  Details &lt;svg class="transition group-data-[state=open]:rotate-180"&gt;…&lt;/svg&gt;
+&lt;/button&gt;</pre><ul><li>Variants stack (<code>md:hover:bg-blue-600</code>) and combine with <code>dark:</code>.</li><li>Prefer <code>data-*</code> and <code>aria-*</code> variants for component libraries: the same attribute drives behaviour, accessibility and styling.</li><li>Named groups (<code>group/card</code> and <code>group-hover/card:</code>) avoid clashes in nested groups.</li></ul><p><strong>Interview tip:</strong> "peer" needs the styled element to come <em>after</em> the peer in the DOM; that is the usual reason it does not work.</p>`
+    }
+  ]
+},
+{
+  id:"s6", title:"Customization & Theming",
+  questions:[
+    {
+      q:"What does @apply do, and when should (and shouldn't) you reach for it?",
+      a:`<p>@apply lets you compose multiple existing utility classes into a single custom CSS class, inside an actual CSS file.</p>
+<pre>/* globals.css */
+.btn-primary {
+  @apply px-4 py-2 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700;
+}</pre>
+<p><strong>Interview tip:</strong> Reach for @apply when the same long utility string is genuinely repeated across many places you can't easily componentize (e.g. inside markdown-generated HTML, or a design system's base CSS) — not as a default habit, since it reintroduces the maintenance problem utility-first CSS was meant to avoid (a growing custom stylesheet). Prefer extracting a React component over @apply whenever you're already in JSX. In Tailwind v4, <code>@apply</code> inside a separate stylesheet (a CSS module or a Vue/Svelte <code>&lt;style&gt;</code> block) needs <code>@reference "../app.css";</code> so it can see your theme.</p>`
+    },
+    {
+      q:"How do you extend Tailwind's default theme (colors, spacing, fonts) without losing the defaults?",
+      a:`<p><strong>Tailwind v4 (CSS-first):</strong> declare theme variables in an <code>@theme</code> block. Each variable both creates utilities and is exposed as a normal CSS custom property. New variables are added <em>alongside</em> the defaults.</p>
+<pre>@import "tailwindcss";
+
+@theme {
+  --color-brand: oklch(0.55 0.2 275);   /* adds bg-brand, text-brand, border-brand ... */
+  --font-display: "Inter", sans-serif;  /* adds font-display */
+  --breakpoint-3xl: 120rem;             /* adds 3xl: variant */
+}
+
+/* replace a whole namespace instead of extending it */
+@theme {
+  --color-*: initial;                   /* removes ALL default colors */
+  --color-ink: #211f1b;
+}</pre>
+<p><strong>Tailwind v3 (JavaScript config):</strong> put additions under <code>theme.extend</code>; putting them directly under <code>theme.colors</code> <em>replaces</em> the whole default palette, the classic mistake that makes <code>bg-red-500</code> vanish everywhere.</p>
+<pre>// tailwind.config.js (v3)
+export default { theme: { extend: { colors: { brand: '#6366f1' }, spacing: { 18: '4.5rem' } } } };</pre>
+<p><strong>Interview tip:</strong> v4's theme variables are real CSS variables, so the same tokens drive utilities, custom CSS and runtime theming; a v3 JS config can still be loaded in v4 with <code>@config</code> during migration.</p>`
+    },
+    {
+      q:"Quiz (v3 config): What happens if you define colors directly under `theme: { colors: {...} }` instead of `theme: { extend: { colors: {...} } }`? <span class=\"quizopts\">(A) Nothing different — they behave identically &nbsp;·&nbsp; (B) It merges your colors with the defaults &nbsp;·&nbsp; (C) It REPLACES Tailwind's entire default color palette with only what you defined &nbsp;·&nbsp; (D) It only affects dark mode colors</span>",
+      a:`<ol class="quiz" type="A"><li>Nothing different — they behave identically</li><li>It merges your colors with the defaults</li><li class="right">It REPLACES Tailwind's entire default color palette with only what you defined</li><li>It only affects dark mode colors</li></ol><p><strong>Answer: C.</strong> theme.colors (without extend) is a full override, not a merge — every default color utility (bg-red-500, text-blue-600, etc.) stops working unless you re-declare it yourself.</p><div class="callout"><strong>In Tailwind v4</strong> there is no <code>theme.colors</code> object. Tokens live in CSS: adding <code>--color-brand: ...</code> inside <code>@theme</code> extends the defaults, and <code>--color-*: initial;</code> resets the whole colour namespace first if you want to replace them.</div>`
+    }
+  ]
+},
+{
+  id:"s7", title:"Performance & Best Practices",
+  questions:[
+    {
+      q:"Why does Tailwind's production CSS bundle stay small regardless of how large the app grows?",
+      a:`<p>Because of the source-scanning model (v3 JIT, v4 automatic source detection): the final CSS only contains the utility classes that literally appear as strings somewhere in the scanned source files. Adding more components doesn't linearly grow the CSS bundle the way traditional per-component stylesheets do — it only grows by the set of NEW unique utility combinations introduced.</p>`
+    },
+    {
+      q:"What is the trade-off of extracting repeated utility strings into a React component vs. using @apply?",
+      a:`<p>Both solve 'don't repeat this long className string everywhere,' but a component extraction (e.g. &lt;Button variant="primary" /&gt;) keeps the styling co-located with markup AND gives you a typed, composable API (props, variants) — whereas @apply just gives you a new CSS class name, with none of a component's logic/composition benefits.</p><p><strong>Interview tip:</strong> In a React/Next.js codebase specifically, component extraction is almost always the better default over @apply — @apply mainly earns its keep in non-component contexts, like styling raw HTML from a CMS or markdown.</p>`
+    },
+    {
+      q:"How would you keep a long list of conditional Tailwind classes readable and correct?",
+      a:`<p>Use a small utility library (clsx or tailwind-merge/cva) instead of manually concatenating strings and ternaries — string concatenation is error-prone (extra/missing spaces) and doesn't resolve conflicting utilities (e.g. two different padding classes both present at once).</p><pre>import clsx from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+function Button({ variant, className }) {
+  return (
+    &lt;button
+      className={twMerge(
+        clsx(
+          'px-4 py-2 rounded-lg font-semibold',
+          variant === 'primary' &amp;&amp; 'bg-indigo-600 text-white',
+          variant === 'ghost' &amp;&amp; 'bg-transparent text-indigo-600'
+        ),
+        className // caller-provided overrides win, thanks to twMerge resolving conflicts
+      )}
+    /&gt;
+  );
+}</pre><p><strong>Interview tip:</strong> twMerge specifically resolves conflicting Tailwind classes (e.g. "px-4" and a caller-provided "px-8") by keeping only the last one for that CSS property — plain string concatenation would just apply both classes and let CSS source order decide, which is much less predictable.</p>`
+    }
+  ]
+},
+{
+  id:"deep-layout", title:"Deep Dive: Layout & Cascade",
+  questions:[
+    {
+      q:"What are cascade layers (@layer), and how does Tailwind v4 use them?",
+      a:`<p class="lede">Cascade layers let you decide which group of styles wins <em>before</em> specificity is compared. A later layer beats an earlier one even if the earlier selector is more specific.</p><pre>@layer reset, base, components, utilities;   /* order declared once, first = lowest priority */
+
+@layer components {
+  .card .title { color: navy; }       /* high specificity...                       */
+}
+@layer utilities {
+  .text-red { color: crimson; }       /* ...still loses to a later layer: crimson  */
+}
+
+p { color: green; }                   /* unlayered styles beat every layer          */</pre><ul><li><strong>Tailwind v4</strong> is built on native layers: <code>@import "tailwindcss"</code> declares <code>theme, base, components, utilities</code> in that order. Put your own base styles in <code>@layer base</code> so utilities can still override them.</li><li><strong>Unlayered CSS beats all layered CSS</strong>, which surprises people adding a plain stylesheet to a Tailwind project.</li><li><strong><code>!important</code> reverses the order:</strong> important declarations in earlier layers beat important ones in later layers.</li><li>Layers make third-party CSS manageable: import a library into a low layer so your styles win without specificity wars.</li></ul><p><strong>Interview tip:</strong> Explain it as "layers are compared before specificity", then give the unlayered-wins gotcha.</p>`
+    },
+    {
+      q:"CSS Grid in depth: auto-fit vs auto-fill, minmax and template areas.",
+      a:`<pre>/* responsive card grid with no media queries */
+.cards {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+/* named areas: the layout reads like a picture */
+.page {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "header header"
+    "sidebar main"
+    "footer footer";
+}
+.page &gt; header { grid-area: header; }
+.page &gt; nav    { grid-area: sidebar; }
+.page &gt; main   { grid-area: main; }
+.page &gt; footer { grid-area: footer; }
+
+@media (max-width: 700px) {
+  .page { grid-template-columns: 1fr; grid-template-areas: "header" "main" "sidebar" "footer"; }
+}</pre><table class="cmp"><tr><th></th><th>auto-fill</th><th>auto-fit</th></tr><tr><td>Creates as many columns as fit</td><td>yes</td><td>yes</td></tr><tr><td>With few items</td><td>keeps the empty tracks, so items stay at their minimum width</td><td>collapses empty tracks, so items stretch to fill the row</td></tr></table><ul><li><code>minmax(220px, 1fr)</code> means "at least 220px, share the leftover space".</li><li>Tailwind: <code>grid-cols-[repeat(auto-fill,minmax(220px,1fr))]</code> as an arbitrary value, or define a named utility with <code>@utility</code>.</li><li>Grid is for two-dimensional layout (rows and columns together); flexbox for one direction.</li></ul><p><strong>Interview tip:</strong> Draw the difference between auto-fill and auto-fit with two items in a wide container; that is the usual follow-up.</p>`
+    },
+    {
+      q:"What is subgrid, and what problem does it solve?",
+      a:`<p class="lede">Nested grids normally define their own tracks, so content inside sibling cards cannot line up. With <code>grid-template-columns: subgrid</code> (or rows), a child grid <strong>reuses its parent's tracks</strong>.</p><pre>.cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: auto auto 1fr auto;    /* title, meta, body, actions */
+  gap: 1rem;
+}
+.card {
+  grid-row: span 4;                      /* each card spans the four row tracks  */
+  display: grid;
+  grid-template-rows: subgrid;           /* ...and aligns its parts to them       */
+}
+/* every card's button now sits on the same line, whatever the text length */</pre><ul><li>Classic use: card titles, prices and buttons that align across a row of cards with different content lengths.</li><li>Line numbers restart at 1 inside the subgrid; the <code>gap</code> is inherited but can be overridden.</li><li>Tailwind: <code>grid-rows-subgrid</code> / <code>grid-cols-subgrid</code>.</li><li>Before subgrid people used fixed heights or JavaScript measuring; both break with dynamic content.</li></ul><p><strong>Interview tip:</strong> A good design-system answer: "subgrid lets independent components align without knowing about each other".</p>`
+    }
+  ]
+},
+{
+  id:"deep-ds", title:"Deep Dive: Design Systems",
+  questions:[
+    {
+      q:"How do you build variant-driven components with Tailwind (cn, tailwind-merge, cva)?",
+      a:`<pre>import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+import { cva, type VariantProps } from 'class-variance-authority';
+
+export const cn = (...inputs: ClassValue[]) =&gt; twMerge(clsx(inputs));
+
+const button = cva('inline-flex items-center rounded-md font-medium focus-visible:ring-2', {
+  variants: {
+    intent: { primary: 'bg-blue-600 text-white hover:bg-blue-700', ghost: 'bg-transparent hover:bg-slate-100' },
+    size: { sm: 'h-8 px-3 text-sm', md: 'h-10 px-4' },
+  },
+  compoundVariants: [{ intent: 'ghost', size: 'sm', class: 'px-2' }],
+  defaultVariants: { intent: 'primary', size: 'md' },
+});
+
+type ButtonProps = React.ComponentProps&lt;'button'&gt; &amp; VariantProps&lt;typeof button&gt;;
+
+export function Button({ intent, size, className, ...props }: ButtonProps) {
+  return &lt;button className={cn(button({ intent, size }), className)} {...props} /&gt;;
+}
+
+&lt;Button size="sm" className="px-6"&gt;Save&lt;/Button&gt;   // twMerge keeps px-6, drops the variant's px-3</pre><ul><li><strong>clsx</strong> builds a class string from conditions; <strong>tailwind-merge</strong> resolves conflicts so the <em>last</em> class in a group wins (<code>twMerge('px-2 p-3')</code> gives <code>'p-3'</code>).</li><li><strong>cva</strong> declares base classes, variants, compound variants and defaults; <code>VariantProps</code> turns them into typed props.</li><li>This is the pattern shadcn/ui components use; it keeps variant logic out of JSX.</li><li>Without tailwind-merge, a consumer's <code>className="px-6"</code> and the component's <code>px-3</code> both apply, and the winner depends on CSS order, not on intent.</li></ul><p><strong>Interview tip:</strong> Explain why the merge step exists: two utilities from the same group have equal specificity, so the one later in the stylesheet wins, not the one later in the class string.</p>`
+    },
+    {
+      q:"How do you implement runtime themes (light, dark, brand) with CSS variables and Tailwind v4?",
+      a:`<pre>@import "tailwindcss";
+
+/* 1) semantic tokens as CSS variables, overridden per theme */
+:root {
+  --bg: #ffffff;  --fg: #0f172a;  --brand: #2563eb;
+}
+[data-theme="dark"] {
+  --bg: #0b1220;  --fg: #e2e8f0;  --brand: #60a5fa;
+}
+
+/* 2) expose them as Tailwind colors: bg-surface, text-ink, bg-brand */
+@theme inline {
+  --color-surface: var(--bg);
+  --color-ink: var(--fg);
+  --color-brand: var(--brand);
+}
+
+/* 3) make dark: follow the attribute instead of the OS */
+@custom-variant dark (&amp;:where([data-theme=dark], [data-theme=dark] *));</pre><ul><li><strong>Semantic names</strong> (<code>surface</code>, <code>ink</code>, <code>brand</code>) mean components never change when a theme is added; only variables do.</li><li><code>@theme inline</code> makes <code>bg-surface</code> compile to the underlying <code>var(--bg)</code> instead of <code>var(--color-surface)</code>, so overriding <code>--bg</code> on any element (not only the root) recolours it at runtime.</li><li><strong>Avoid the flash of the wrong theme:</strong> set <code>data-theme</code> before first paint (a tiny inline script in <code>&lt;head&gt;</code>, or render it on the server from a cookie).</li><li>Respect <code>prefers-color-scheme</code> as the default and let the user override it.</li></ul><p><strong>Interview tip:</strong> Multi-brand products use the same trick: one set of components, one variables block per brand.</p>`
+    }
+  ]
+}
+];
+
+window.__STUDY__ = {"key":"tailwind-css","core":"the 2-Hour Review"};
+</script>
+<script src="/study/engine.js"></script>
+</body>
+</html>

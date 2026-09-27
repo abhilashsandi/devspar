@@ -3,28 +3,17 @@
 //   public/search-index.json  cross-guide search (the guides' search box and the homepage search)
 //   app/lib/studyMeta.json    question counts and title hashes (homepage cards and progress bars)
 import { readFileSync, writeFileSync, existsSync, statSync } from 'node:fs';
-import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { loadData, MARK } from './parsePage.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const APP = path.join(ROOT, 'app');
-const MARK = '// ---------- render ----------';
 const PAGES = {
   'interview-prep': 'Interview Prep', 'interview-cheatsheet': 'Cheatsheet', genai: 'GenAI', javascript: 'JavaScript', 'react-training': 'React',
   reactjs: 'React + TypeScript', nextjs: 'Next.js', nodejs: 'Node.js', 'tailwind-css': 'CSS & Tailwind', 'coding-questions': 'Coding Practice',
   'system-design': 'System Design', 'system-design-scale': 'System Design at Scale', 'performance-optimization': 'Performance', 'web-platform': 'Web Platform',
 };
-
-// A guide's content.json holds { html }; the questions are the DATA array inside its script.
-function loadData(html) {
-  let sc = html.slice(html.indexOf('<script>') + 8, html.indexOf('</script>'));
-  sc = sc.slice(0, sc.indexOf(MARK)) + '\nglobalThis.__D__=DATA;';
-  const sandbox = {};
-  vm.createContext(sandbox);
-  vm.runInContext(sc, sandbox);
-  return sandbox.__D__;
-}
 
 const ent = (s) => s.replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&mdash;/g, '—').replace(/&rarr;/g, '→').replace(/&[a-z]+;/g, ' ');
 const strip = (s) => ent(s.replace(/<pre[\s\S]*?<\/pre>/g, ' ').replace(/<svg[\s\S]*?<\/svg>/g, ' ').replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();

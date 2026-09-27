@@ -1,14 +1,14 @@
 import StaticPrepClient from '../components/StaticPrepClient';
-import content from './content.json';
 
 export const metadata = {
   title: 'System Design at Scale — Interview Prep',
+  description: "A senior-level, end-to-end answer to designing a full-stack app for millions of users.",
 };
 
 export default function SystemDesignScalePage() {
   return (
     <StaticPrepClient
-      html={(content as { html: string }).html}
+      src="/study/system-design-scale.html"
       title="System Design at Scale — Interview Prep"
       loadingLabel="Loading system design guide…"
     />

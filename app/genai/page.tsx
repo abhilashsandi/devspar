@@ -1,14 +1,14 @@
 import StaticPrepClient from '../components/StaticPrepClient';
-import content from './content.json';
 
 export const metadata = {
   title: 'GenAI Interview Prep',
+  description: "How LLMs, embeddings, RAG, tool calling, MCP and agents fit together, with diagrams, a cheatsheet and a full worked AI-comparison example.",
 };
 
 export default function GenAIPage() {
   return (
     <StaticPrepClient
-      html={(content as { html: string }).html}
+      src="/study/genai.html"
       title="GenAI Interview Prep"
       loadingLabel="Loading GenAI guide…"
     />

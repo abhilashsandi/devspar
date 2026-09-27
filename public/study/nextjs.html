@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Next.js Interview Mastery</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F6F4EF;
+    --panel:#FFFFFF;
+    --panel-2:#FBF9F4;
+    --border:#E4E0D4;
+    --text:#211F1B;
+    --muted:#716B5E;
+    --accent:#2F7A72;
+    --accent-ink:#F3FBF9;
+    --accent-soft:#EDF6F4;
+    --gold:#B8792F;
+    --gold-soft:#F5E9D8;
+    --code-bg:#EFECE2;
+    --danger:#B5502F;
+    --shadow: 0 1px 2px rgba(30,26,18,0.05);
+    --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#15181A;
+      --panel:#1B1F21;
+      --panel-2:#202426;
+      --border:#2C3133;
+      --text:#E9E6DE;
+      --muted:#9A968A;
+      --accent:#5FBFB2;
+      --accent-ink:#0B1716;
+      --accent-soft:#1E3230;
+      --gold:#D9A15C;
+      --gold-soft:#332918;
+      --code-bg:#20262A;
+      --danger:#D98866;
+      --shadow: 0 1px 2px rgba(0,0,0,0.4);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#15181A;
+    --panel:#1B1F21;
+    --panel-2:#202426;
+    --border:#2C3133;
+    --text:#E9E6DE;
+    --muted:#9A968A;
+    --accent:#5FBFB2;
+    --accent-ink:#0B1716;
+    --accent-soft:#1E3230;
+    --gold:#D9A15C;
+    --gold-soft:#332918;
+    --code-bg:#20262A;
+    --danger:#D98866;
+    --shadow: 0 1px 2px rgba(0,0,0,0.4);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--accent);}
+
+  .app{
+    display:flex;
+    min-height:100vh;
+  }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    width:260px;
+    flex:0 0 260px;
+    border-right:1px solid var(--border);
+    padding:28px 16px 24px;
+    position:sticky;
+    top:0;
+    height:100vh;
+    overflow-y:auto;
+  }
+  .brand{
+    font-family:var(--mono);
+    font-size:13px;
+    letter-spacing:0.02em;
+    color:var(--muted);
+    padding:0 8px 18px;
+    border-bottom:1px solid var(--border);
+    margin-bottom:14px;
+  }
+  .brand b{color:var(--text);font-weight:600;}
+  .nav-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    width:100%;
+    text-align:left;
+    padding:10px 10px;
+    border-radius:8px;
+    border:1px solid transparent;
+    background:transparent;
+    color:var(--text);
+    font-family:var(--sans);
+    font-size:14.5px;
+    cursor:pointer;
+    margin-bottom:2px;
+  }
+  .nav-item:hover{background:var(--panel-2);}
+  .nav-item.active{
+    background:var(--accent-soft);
+    border-color:var(--accent);
+    color:var(--text);
+    font-weight:600;
+  }
+  .nav-num{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--muted);
+    width:18px;
+    flex:0 0 18px;
+  }
+  .nav-item.active .nav-num{color:var(--accent);}
+  .nav-label{flex:1;}
+  .nav-count{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--muted);
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    padding:1px 6px;
+    border-radius:999px;
+  }
+  .progress-box{
+    margin-top:20px;
+    padding:14px 12px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:var(--panel-2);
+  }
+  .progress-box .label{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--muted);
+    margin-bottom:8px;
+  }
+  .progress-track{
+    height:6px;
+    border-radius:999px;
+    background:var(--border);
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    background:var(--accent);
+    width:0%;
+    transition:width .25s ease;
+  }
+  .progress-num{
+    margin-top:8px;
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--text);
+  }
+  .reset-btn{
+    margin-top:10px;
+    width:100%;
+    font-family:var(--sans);
+    font-size:12px;
+    color:var(--muted);
+    background:transparent;
+    border:1px solid var(--border);
+    border-radius:7px;
+    padding:6px 8px;
+    cursor:pointer;
+  }
+  .reset-btn:hover{color:var(--danger);border-color:var(--danger);}
+
+  /* ---------- Main ---------- */
+  .main{
+    flex:1;
+    min-width:0;
+    padding:36px 40px 80px;
+    max-width:1200px;
+  }
+  .hero{
+    margin-bottom:34px;
+  }
+  .hero .eyebrow-free{
+    font-family:var(--mono);
+    font-size:13px;
+    color:var(--accent);
+    margin:0 0 10px;
+  }
+  .hero h1{
+    font-family:var(--mono);
+    font-size:30px;
+    line-height:1.25;
+    margin:0 0 12px;
+    font-weight:600;
+    letter-spacing:-0.01em;
+  }
+  .hero p{
+    color:var(--muted);
+    max-width:62ch;
+    margin:0 0 6px;
+    font-size:15px;
+  }
+  .hero .source-note{
+    font-size:13px;
+    color:var(--muted);
+    border-left:2px solid var(--border);
+    padding-left:12px;
+    margin-top:16px;
+  }
+
+  .section-head{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    margin:44px 0 16px;
+    padding-bottom:10px;
+    border-bottom:1px solid var(--border);
+  }
+  .section-head .num{
+    font-family:var(--mono);
+    color:var(--accent);
+    font-size:14px;
+  }
+  .section-head h2{
+    font-family:var(--mono);
+    font-size:19px;
+    margin:0;
+    font-weight:600;
+  }
+  .section-head .count{
+    margin-left:auto;
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--muted);
+  }
+
+  .qcard{
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:var(--panel);
+    margin-bottom:12px;
+    overflow:hidden;
+  }
+  .qhead{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    padding:14px 16px;
+    cursor:pointer;
+    user-select:none;
+  }
+  .qcheck{
+    margin-top:3px;
+    flex:0 0 auto;
+    width:18px;height:18px;
+    border-radius:5px;
+    border:1.5px solid var(--border);
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    background:var(--panel);
+  }
+  .qcheck.done{
+    background:var(--accent);
+    border-color:var(--accent);
+  }
+  .qcheck.done::after{
+    content:"✓";
+    color:var(--accent-ink);
+    font-size:12px;
+    font-weight:700;
+  }
+  .qtext{
+    flex:1;
+    font-size:15px;
+    font-weight:500;
+  }
+  .qtext.done-text{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--border);}
+  .qchevron{
+    flex:0 0 auto;
+    color:var(--muted);
+    font-family:var(--mono);
+    font-size:13px;
+    transform:rotate(0deg);
+    transition:transform .15s ease;
+    margin-top:2px;
+  }
+  .qcard.open .qchevron{transform:rotate(90deg);}
+  .qbody{
+    display:none;
+    padding:2px 16px 20px 46px;
+    border-top:1px solid var(--border);
+    font-size:14.5px;
+  }
+  .qcard.open .qbody{display:block; padding-top:14px;}
+  .qbody p{margin:0 0 12px;}
+  .qbody ul{margin:0 0 12px; padding-left:20px;}
+  .qbody li{margin-bottom:6px;}
+  .qbody strong{color:var(--text);}
+  code{
+    font-family:var(--mono);
+    background:var(--code-bg);
+    padding:1px 5px;
+    border-radius:4px;
+    font-size:0.92em;
+  }
+  pre{
+    font-family:var(--mono);
+    background:var(--code-bg);
+    padding:12px 14px;
+    border-radius:8px;
+    overflow-x:auto;
+    font-size:13px;
+    margin:0 0 14px;
+    border:1px solid var(--border);
+  }
+  .diagram{
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:14px;
+    margin:0 0 14px;
+    overflow-x:auto;
+  }
+  .diagram svg{display:block; margin:0 auto; max-width:100%; height:auto;}
+  .tag{
+    display:inline-block;
+    font-family:var(--mono);
+    font-size:10.5px;
+    color:var(--gold);
+    background:var(--gold-soft);
+    border:1px solid var(--gold);
+    border-radius:5px;
+    padding:1px 6px;
+    margin-bottom:10px;
+  }
+  table.cmp{
+    width:100%;
+    border-collapse:collapse;
+    margin:0 0 14px;
+    font-size:13.5px;
+  }
+  table.cmp th, table.cmp td{
+    border:1px solid var(--border);
+    padding:7px 10px;
+    text-align:left;
+    vertical-align:top;
+  }
+  table.cmp th{
+    background:var(--panel-2);
+    font-family:var(--mono);
+    font-size:12px;
+    font-weight:600;
+  }
+
+  ::selection{background:var(--accent-soft);}
+
+  @media (max-width: 820px){
+    .sidebar{
+      width:100%;
+      flex:none;
+      height:auto;
+      position:relative;
+      border-right:none;
+      border-bottom:1px solid var(--border);
+    }
+    .app{flex-direction:column;}
+    .main{padding:24px 18px 60px; max-width:100%;}
+  }
+
+  .tbadge{display:inline-block; font-family:var(--mono); font-size:11px; letter-spacing:.04em; color:var(--gold); background:var(--gold-soft); border:1px solid var(--gold); border-radius:99px; padding:2px 10px; margin-bottom:10px;}
+  .deeper{margin-top:14px; padding-top:10px; border-top:1px dashed var(--border); font-size:13.5px; line-height:1.9;}
+  a.go{color:var(--accent); text-decoration:none; border-bottom:1px solid var(--accent-soft); white-space:nowrap;}
+  a.go:hover{border-bottom-color:var(--accent);}
+
+  .search{width:100%; box-sizing:border-box; margin:0 0 14px; padding:9px 11px; font:inherit; font-size:13.5px; color:var(--text); background:var(--panel); border:1px solid var(--border); border-radius:8px;}
+  .search:focus{outline:2px solid var(--accent); outline-offset:1px;}
+  .qmain{flex:1; min-width:0; display:flex; flex-direction:column; gap:4px;}
+  .qchips{display:flex; gap:6px; flex-wrap:wrap;}
+  .qsec,.qcore{font-family:var(--mono); font-size:10.5px; padding:1px 7px; border-radius:99px; border:1px solid var(--border); color:var(--muted); background:var(--panel-2);}
+  .qcore{color:var(--gold); border-color:var(--gold); background:var(--gold-soft);}
+  .qsum{font-size:13.5px; color:var(--muted); line-height:1.5;}
+  .qcard.open .qsum{display:none;}
+  .qcard.focused{box-shadow:0 0 0 2px var(--accent);}
+  .qcheck:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+  mark{background:var(--gold-soft); color:var(--text); border-radius:3px; padding:0 1px;}
+  .toolbar{display:flex; flex-wrap:wrap; align-items:center; gap:10px 16px; margin:-4px 0 16px; font-size:13px; color:var(--muted);}
+  .toolbar .tmeta{font-family:var(--mono); font-size:12px; margin-right:auto;}
+  .toolbar .tgroup{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
+  .toolbar button{font:inherit; font-size:12.5px; color:var(--text); background:var(--panel); border:1px solid var(--border); border-radius:7px; padding:5px 10px; cursor:pointer;}
+  .toolbar button:hover{border-color:var(--accent);}
+  .toolbar label{display:flex; gap:5px; align-items:center; cursor:pointer; white-space:nowrap;}
+  .toolbar input{accent-color:var(--accent);}
+  .empty{color:var(--muted); font-size:14px; padding:18px; border:1px dashed var(--border); border-radius:10px;}
+  .pager{display:flex; justify-content:space-between; gap:12px; margin-top:26px;}
+  .pager button{font:inherit; font-size:13.5px; color:var(--accent); background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:10px 14px; cursor:pointer; max-width:48%; text-align:left;}
+  .pager button:last-child{text-align:right;}
+  .pager button:hover{border-color:var(--accent);}
+  .back-btn{position:fixed; right:22px; bottom:22px; z-index:10; font:inherit; font-size:13.5px; font-weight:600; color:var(--accent-ink); background:var(--accent); border:0; border-radius:99px; padding:10px 16px; cursor:pointer; box-shadow:0 4px 14px rgba(0,0,0,.18);}
+  .nav-item.complete .nav-count{color:var(--accent); border-color:var(--accent);}
+  .keys{display:inline-block; margin-top:6px;}
+  kbd{font-family:var(--mono); font-size:11px; padding:0 5px; border:1px solid var(--border); border-bottom-width:2px; border-radius:4px; background:var(--panel);}
+  @media (max-width: 820px){ .keys{display:none;} .toolbar .tmeta{width:100%;} }
+  .hero-actions{margin-top:14px;}
+  .fc-start,.toolbar .flash-btn{font:inherit; font-weight:600; color:var(--accent-ink); background:var(--accent); border:1px solid var(--accent); border-radius:8px; cursor:pointer;}
+  .fc-start{font-size:14px; padding:9px 16px;}
+  .toolbar .flash-btn{color:var(--accent-ink);}
+  .fc-start:hover,.toolbar .flash-btn:hover{filter:brightness(1.08);}
+  body.fc-lock{overflow:hidden;}
+  .fc{position:fixed; inset:0; z-index:50; background:rgba(10,12,14,.55); display:flex; align-items:center; justify-content:center; padding:24px;}
+  .fc[hidden]{display:none;}
+  .fc-dialog{width:min(920px,100%); max-height:100%; display:flex; flex-direction:column; background:var(--bg); border:1px solid var(--border); border-radius:14px; box-shadow:0 20px 60px rgba(0,0,0,.35); outline:none;}
+  .fc-head{display:flex; justify-content:space-between; align-items:flex-start; gap:12px; padding:16px 20px 10px;}
+  .fc-title{font-family:var(--mono); font-size:14px; font-weight:600;}
+  .fc-count{font-family:var(--mono); font-size:12px; color:var(--muted); margin-top:3px;}
+  .fc-tools{display:flex; gap:12px; align-items:center; font-size:13px; color:var(--muted);}
+  .fc-tools label{display:flex; gap:5px; align-items:center; cursor:pointer;}
+  .fc-tools input{accent-color:var(--accent);}
+  .fc-tools button{font:inherit; font-size:15px; color:var(--muted); background:transparent; border:1px solid var(--border); border-radius:7px; width:32px; height:32px; cursor:pointer;}
+  .fc-bar{height:4px; background:var(--border); margin:0 20px;}
+  .fc-bar i{display:block; height:100%; width:0; background:var(--accent); transition:width .2s ease;}
+  .fc-body{flex:1; overflow-y:auto; padding:22px 24px; min-height:220px;}
+  .fc-q{font-family:var(--sans); font-size:21px; line-height:1.4; margin:10px 0 16px; font-weight:600;}
+  .fc-prompt{color:var(--muted); font-size:14px; border:1px dashed var(--border); border-radius:10px; padding:26px 18px; text-align:center;}
+  .fc .qbody.fc-a{display:block; border-top:1px solid var(--border); padding:16px 0 0; font-size:14.5px;}
+  .fc-done h3{font-family:var(--mono); margin:0 0 8px;}
+  .fc-done .fc-sub{color:var(--muted); margin:14px 0 6px;}
+  .fc-done ul{padding-left:20px; font-size:14px;}
+  .fc-actions{display:flex; gap:10px; justify-content:flex-end; padding:12px 20px; border-top:1px solid var(--border); flex-wrap:wrap;}
+  .fc-actions button{font:inherit; font-size:14px; color:var(--text); background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:9px 16px; cursor:pointer;}
+  .fc-actions button.primary{color:var(--accent-ink); background:var(--accent); border-color:var(--accent); font-weight:600;}
+  .fc-actions button.again{border-color:var(--gold); color:var(--gold);}
+  .fc-actions button:first-child{margin-right:auto;}
+  .fc-actions kbd{margin-left:6px; background:transparent; border-color:currentColor; opacity:.75;}
+  .fc-keys{font-size:11.5px; color:var(--muted); padding:0 20px 14px; text-align:right;}
+  @media (max-width: 820px){ .fc{padding:0;} .fc-dialog{height:100%; border-radius:0;} .fc-keys{display:none;} .fc-q{font-size:18px;} }
+
+  .lede{font-size:15px; color:var(--muted);}
+  .callout{background:var(--accent-soft); border:1px solid var(--accent); border-radius:9px; padding:11px 14px; margin:0 0 14px;}
+  .note{font-size:13px; color:var(--muted);}
+  .codelabel{font-family:var(--mono); font-size:12px; color:var(--accent); margin:10px 0 4px;}
+  .verified{font-size:12.5px; color:var(--muted); border-top:1px dashed var(--border); padding-top:8px; margin-top:12px;}
+  .diagram.lightbg{background:#F8FAFC; border-color:#CBD5E1;}
+  .diagram.lightbg .codelabel{color:#334155;}
+  .quizopts{display:block; font-weight:400; font-size:13px; color:var(--muted); margin-top:4px; line-height:1.55;}
+  ol.quiz{padding-left:26px;} ol.quiz li{margin-bottom:5px;}
+  ol.quiz li.right{color:var(--accent); font-weight:600;}
+  hr{border:0; border-top:1px dashed var(--border); margin:14px 0;}
+  a.fc-start.alt{display:inline-block; text-decoration:none; margin-left:8px; background:var(--panel); color:var(--accent); border:1px solid var(--accent);}
+
+  /* study-v3: compact phone menu + cross-guide search results */
+  .nav-toggle{display:none;}
+  .ghits{margin-top:22px;}
+  .gh-head{display:flex; justify-content:space-between; gap:10px; font-family:var(--mono); font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin:0 0 8px;}
+  .gh{display:block; text-decoration:none; color:var(--text); background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:10px 14px; margin-bottom:8px;}
+  .gh:hover{border-color:var(--accent);}
+  .gh-t{display:block; font-weight:600; font-size:14.5px;}
+  .gh-m{display:block; font-family:var(--mono); font-size:11.5px; color:var(--accent); margin:2px 0;}
+  .gh-s{display:block; font-size:13px; color:var(--muted);}
+  .gh-note{font-size:13px; color:var(--muted);}
+  @media (max-width: 820px){
+    .sidebar{position:sticky; top:0; z-index:30; display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:10px 14px; background:var(--bg);}
+    .sidebar .brand{display:none;}
+    .sidebar .search{flex:1 1 130px; width:auto; min-width:0; margin:0;}
+    .nav-toggle{display:flex; align-items:center; justify-content:space-between; gap:8px; flex:0 1 54%; min-width:0; padding:9px 12px; font:inherit; font-size:13.5px; font-weight:600; color:var(--text); background:var(--accent-soft); border:1px solid var(--accent); border-radius:8px; cursor:pointer;}
+    .nav-toggle span{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+    .nav-toggle i{font-style:normal; color:var(--accent); transition:transform .15s;}
+    .sidebar.open .nav-toggle i{transform:rotate(180deg);}
+    .nav-panel{display:none; flex:1 0 100%; max-height:calc(100vh - 96px); overflow-y:auto; border-top:1px solid var(--border); padding-top:8px;}
+    .sidebar.open .nav-panel{display:block;}
+    .hero{margin-top:0;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="sidebar" id="sidebar">
+    <div class="brand"><b>Next.js</b><br>App Router · RSC · caching</div>
+    <input class="search" id="searchInput" type="search" placeholder="Search all guides   /" aria-label="Search all guides">
+    <button class="nav-toggle" id="navToggle" type="button" aria-expanded="false" aria-controls="navPanel"><span id="navToggleLbl">Sections</span><i>▾</i></button>
+    <div class="nav-panel" id="navPanel">
+    <div id="navList"></div>
+    <div class="progress-box">
+      <div class="label">REVIEWED</div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-num" id="progressNum">0 / 0</div>
+      <button class="reset-btn" id="resetBtn">Reset progress</button>
+    </div>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="hero">
+      <p class="eyebrow-free">Prep guide</p>
+      <h1>Next.js interview mastery</h1>
+      <p>App Router, Server Components, rendering strategies, caching, Server Actions, middleware and deployment. Use the <strong>Quick Reference</strong> for a one-page scan, then work section by section; every question can be practised as a flashcard, and each section ends with a short quiz.</p>
+      <div class="hero-actions"><button id="fcCore" class="fc-start" type="button">▶ Flashcards: all ★ core questions</button>
+      <button id="fcWeak" class="fc-start alt" type="button" hidden>↻ Review weak cards</button></div>
+      <div class="source-note"><span id="heroMeta"></span><br><span class="keys"><kbd>/</kbd> search · <kbd>j</kbd> <kbd>k</kbd> move · <kbd>o</kbd> open · <kbd>x</kbd> mark reviewed · <kbd>n</kbd> <kbd>p</kbd> next / previous section · <kbd>Esc</kbd> clear</span></div>
+    </div>
+    <div id="content"></div>
+    <button id="backBtn" class="back-btn" hidden></button>
+    <div id="fc" class="fc" hidden>
+      <div class="fc-dialog" role="dialog" aria-modal="true" aria-label="Flashcards" tabindex="-1">
+        <div class="fc-head">
+          <div><div class="fc-title"></div><div class="fc-count"></div></div>
+          <div class="fc-tools"><label><input type="checkbox" id="fcShuffle"> Shuffle</label><button data-fc="close" aria-label="Close flashcards">✕</button></div>
+        </div>
+        <div class="fc-bar"><i></i></div>
+        <div class="fc-body"></div>
+        <div class="fc-actions"></div>
+        <div class="fc-keys"><kbd>Space</kbd> reveal · <kbd>1</kbd> again · <kbd>2</kbd> got it (marks reviewed) · <kbd>←</kbd> <kbd>→</kbd> back / skip · <kbd>Esc</kbd> close</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+const DATA = [
+{
+  id:"quickref", title:"Quick Reference",
+  questions:[
+    {
+      q:"Cheat sheet: Next.js 16: What Changed",
+      a:`<table class="cmp"><tr><th>Question</th><th>One-line answer</th></tr><tr><td><a class="go" href="#v16:0" data-go="v16:0">Which Next.js versions matter, and what changed between the recent major versions?</a></td><td>If you do not remember, say so and verify: read the real next and react versions from package.json and the lockfile before the interview.</td></tr><tr><td><a class="go" href="#v16:1" data-go="v16:1">What are Cache Components, and how do "use cache", cacheLife and cacheTag work?</a></td><td>Cache Components (Next.js 16) is the opt-in caching model: with cacheComponents: true a route is rendered at request time by default, and you explicitly mark the parts that can be cached with the use cache directive.</td></tr><tr><td><a class="go" href="#v16:2" data-go="v16:2">updateTag, revalidateTag and revalidatePath: which one do you call, and when?</a></td><td>All three invalidate cached data on demand.</td></tr><tr><td><a class="go" href="#v16:3" data-go="v16:3">What are the async request APIs, and what changed between Next.js 14, 15 and 16?</a></td><td>Request-time values used to be readable synchronously.</td></tr><tr><td><a class="go" href="#v16:4" data-go="v16:4">What is the request lifecycle in Next.js 16, from the network to the rendered page?</a></td><td>next.config headers, redirects and rewrites are applied first.</td></tr></table>`
+    },
+    {
+      q:"Cheat sheet: App Router Fundamentals",
+      a:`<table class="cmp"><tr><th>Question</th><th>One-line answer</th></tr><tr><td><a class="go" href="#s1:0" data-go="s1:0">What do layout.tsx, page.tsx, loading.tsx, and error.tsx each control?</a></td><td>The App Router (introduced in Next.js 13, now the default) is built on React Server Components and a file-system convention for routing, layouts, and loading/error states.</td></tr><tr><td><a class="go" href="#s1:1" data-go="s1:1">What is the difference between a Server Component and a Client Component?</a></td><td>Server Components (the default in the App Router) render entirely on the server and send HTML + a serialized description to the client — zero JavaScript shipped for that component.</td></tr><tr><td><a class="go" href="#s1:2" data-go="s1:2">How does composing Server and Client Components together actually work?</a></td><td>A Client Component can never directly import a Server Component (since everything it imports gets bundled for the client) — but a Server Component CAN be passed to a Client Component as children/props, because the Server…</td></tr></table>`
+    },
+    {
+      q:"Cheat sheet: Rendering Strategies",
+      a:`<table class="cmp"><tr><th>Question</th><th>One-line answer</th></tr><tr><td><a class="go" href="#s2:0" data-go="s2:0">Explain SSR, SSG, ISR, and CSR — and when you would choose each.</a></td><td>They differ in when the HTML is generated and how fresh the data is.</td></tr><tr><td><a class="go" href="#s2:1" data-go="s2:1">How do you configure ISR in the App Router?</a></td><td>ISR means "serve a cached static result, and regenerate it in the background after a time or on demand".</td></tr><tr><td><a class="go" href="#s2:2" data-go="s2:2">What is Partial Prerendering (PPR)?</a></td><td>A rendering model that combines static and dynamic content in one route: the static shell (everything that does not depend on request-time data) is prerendered and served instantly, while dynamic holes wrapped in &lt;Suspense&gt;…</td></tr></table>`
+    },
+    {
+      q:"Cheat sheet: Data Fetching & Caching",
+      a:`<table class="cmp"><tr><th>Question</th><th>One-line answer</th></tr><tr><td><a class="go" href="#s3:0" data-go="s3:0">Name the distinct caching layers in Next.js and what each one caches.</a></td><td>Four layers, and the defaults changed across versions, which is where most interview answers go wrong.</td></tr><tr><td><a class="go" href="#s3:1" data-go="s3:1">What does a Route Handler (app/api/.../route.ts) give you that a Server Action does not, and vice versa?</a></td><td>Both run exclusively on the server, but they serve different purposes.</td></tr><tr><td><a class="go" href="#s3:2" data-go="s3:2">How do generateStaticParams and dynamicParams interact?</a></td><td>generateStaticParams tells Next.js which dynamic segment values to prerender at build time (like getStaticPaths in the Pages Router).</td></tr></table>`
+    },
+    {
+      q:"Cheat sheet: Routing & Navigation",
+      a:`<table class="cmp"><tr><th>Question</th><th>One-line answer</th></tr><tr><td><a class="go" href="#s4:0" data-go="s4:0">What are parallel routes and intercepting routes for?</a></td><td>Both are advanced App Router conventions for rendering more than one thing at once from a single URL.</td></tr><tr><td><a class="go" href="#s4:1" data-go="s4:1">How does next/link prefetching work, and how does it differ from next/navigation's router.push?</a></td><td>&lt;Link&gt; automatically prefetches the linked route's code and, for static routes, its data, when it scrolls into the viewport — so navigation feels instant.</td></tr><tr><td><a class="go" href="#s4:2" data-go="s4:2">What is the difference between useRouter, usePathname, and useSearchParams?</a></td><td>All three are Client-Component-only hooks from next/navigation for reading/reacting to routing state.</td></tr><tr><td><a class="go" href="#s4:3" data-go="s4:3">How do metadata and generateMetadata work in the App Router?</a></td><td>Metadata (title, description, Open Graph, canonical, robots) is defined in Server Components, not with a manual &lt;head&gt; .</td></tr></table>`
+    },
+    {
+      q:"Cheat sheet: Server Actions & Mutations",
+      a:`<table class="cmp"><tr><th>Question</th><th>One-line answer</th></tr><tr><td><a class="go" href="#s5:0" data-go="s5:0">How do useFormStatus and useFormState (now useActionState) improve a Server Action-backed form?</a></td><td>They give a Client Component visibility into an in-flight/completed Server Action without manually wiring loading state.</td></tr><tr><td><a class="go" href="#s5:1" data-go="s5:1">Why should Server Actions always re-validate input and re-check authorization, even though the "use server" boundary looks safe?</a></td><td>A Server Action compiles to a public HTTP endpoint under the hood (Next.js creates a POST route for it) — anyone can call it directly with a crafted request, bypassing your UI entirely.</td></tr><tr><td><a class="go" href="#s5:3" data-go="s5:3">What is the lifecycle of a Server Action from click to updated UI?</a></td><td>A form action={fn} or a call inside startTransition triggers a POST to the current page URL carrying an encrypted action id and the arguments.</td></tr></table>`
+    },
+    {
+      q:"Cheat sheet: Performance & Optimization",
+      a:`<table class="cmp"><tr><th>Question</th><th>One-line answer</th></tr><tr><td><a class="go" href="#s6:0" data-go="s6:0">What does next/image automatically handle that a plain &lt;img&gt; does not?</a></td><td>Automatic responsive sizing (srcset), lazy loading below the fold, modern format conversion (WebP/AVIF) served from an on-demand optimization endpoint, and preventing layout shift by requiring width/height (or fill) up front.</td></tr><tr><td><a class="go" href="#s6:1" data-go="s6:1">How does streaming with Suspense improve perceived performance over a single blocking server render?</a></td><td>Without streaming, the whole page waits for the slowest data dependency before sending any HTML.</td></tr><tr><td><a class="go" href="#s6:2" data-go="s6:2">What is the purpose of next/font, and why is it better than a &lt;link&gt; to Google Fonts in the &lt;head&gt;?</a></td><td>next/font downloads and self-hosts font files at build time, removing the extra network round-trip to a third-party font CDN at request time — improving both privacy (no request leaked to Google) and performance (no…</td></tr></table>`
+    },
+    {
+      q:"Cheat sheet: Proxy (Middleware), Auth & Deployment",
+      a:`<table class="cmp"><tr><th>Question</th><th>One-line answer</th></tr><tr><td><a class="go" href="#s7:0" data-go="s7:0">What runs in Next.js Middleware, and what are its constraints?</a></td><td>Code that runs before a request completes , before a page or Route Handler renders: auth redirects, A/B cookie assignment, locale or geo rewrites, header changes.</td></tr><tr><td><a class="go" href="#s7:1" data-go="s7:1">What is the Edge Runtime vs the Node.js runtime for a route, and how do you choose?</a></td><td>Node.js runtime (the default): the full Node API, any npm package, database drivers, native modules.</td></tr></table>`
+    },
+    {
+      q:"Cheat sheet: Deep Dive: Production Next.js",
+      a:`<table class="cmp"><tr><th>Question</th><th>One-line answer</th></tr><tr><td><a class="go" href="#deep-prod:0" data-go="deep-prod:0">How do you implement authentication and authorization in the App Router?</a></td><td>Next.js recommends a Data Access Layer (DAL) : one server-only module that verifies the session and performs every data read and write with an authorization check.</td></tr><tr><td><a class="go" href="#deep-prod:1" data-go="deep-prod:1">How does error handling work in the App Router (error.tsx, global-error, not-found)?</a></td><td>Expected errors (validation, "email already taken") should be returned from Server Actions and shown with useActionState , not thrown.</td></tr><tr><td><a class="go" href="#deep-prod:2" data-go="deep-prod:2">Route Handlers in depth: caching, streaming and webhooks.</a></td><td>Dynamic by default: handlers run per request.</td></tr><tr><td><a class="go" href="#deep-prod:3" data-go="deep-prod:3">How do environment variables work in Next.js, and how do you keep secrets on the server?</a></td><td>Server-only by default: process.env.DATABASE_URL is available in Server Components, Server Actions, Route Handlers and proxy.ts , and never sent to the browser.</td></tr><tr><td><a class="go" href="#deep-prod:4" data-go="deep-prod:4">What is after(), and when would you use it?</a></td><td>after(callback) from next/server schedules work to run after the response has been sent , so logging, analytics or cache warming do not delay the user.</td></tr><tr><td><a class="go" href="#deep-prod:5" data-go="deep-prod:5">How do you self-host Next.js in production (Docker, multiple instances)?</a></td><td>output: 'standalone' in next.config produces .next/standalone with a minimal server.js and only the dependencies it needs.</td></tr></table>`
+    }
+  ]
+},
+{
+  id:"v16", title:"Next.js 16: What Changed",
+  questions:[
+    {
+      q:"Which Next.js versions matter, and what changed between the recent major versions?",
+      a:`<p>If you do not remember, say so and verify: read the real <code>next</code> and <code>react</code> versions from <code>package.json</code> and the lockfile before the interview. Then know what that version implies.</p>
+<table class="cmp">
+<tr><th>Version</th><th>What to know</th></tr>
+<tr><td><strong>13</strong></td><td>App Router introduced (stable from 13.4): layouts, server components, streaming, <code>loading.tsx</code>. Client components need <code>"use client"</code>.</td></tr>
+<tr><td><strong>14</strong></td><td>Server Actions stable; still React 18; fetch results cached by default.</td></tr>
+<tr><td><strong>15</strong></td><td>React 19 support. <code>params</code>, <code>searchParams</code>, <code>cookies()</code> and <code>headers()</code> became async. Caching defaults flipped: <code>fetch</code> and GET route handlers are not cached unless opted in.</td></tr>
+<tr><td><strong>16</strong></td><td>Turbopack default, <code>middleware.ts</code> renamed <code>proxy.ts</code>, Cache Components (<code>cacheComponents</code>) replacing the experimental PPR flag, synchronous <code>params</code> access removed, <code>revalidateTag(tag, profile)</code> needs a cacheLife profile, new <code>updateTag</code> and <code>refresh</code> for Server Actions, and it ships with React 19.2 (for example <code>&lt;Activity&gt;</code> and <code>useEffectEvent</code>).</td></tr>
+</table>
+<p>Minor releases vary, so state the direction and confirm specifics in the upgrade guide for the version you find.</p>
+<p><strong>Practical consequence:</strong> on 13/14, stale-data bugs point at default fetch caching; on 15+, you must <code>await params</code> and opt in to caching. An upgrade from 14 to 15 means running the codemod, making those accesses async, adding explicit caching where wanted, and moving to React 19.</p>
+<p><strong>Interview tip:</strong> "I would confirm from the lockfile rather than guess, and here is how the patterns behave across 13 to 15" is a stronger answer than a wrong number.</p>`
+    },
+    {
+      q:"What are Cache Components, and how do \"use cache\", cacheLife and cacheTag work?",
+      a:`<p class="lede">Cache Components (Next.js 16) is the opt-in caching model: with <code>cacheComponents: true</code> a route is rendered at request time by default, and you explicitly mark the parts that can be cached with the <code>use cache</code> directive. The static parts and cached parts become a prerendered shell that is served instantly; everything else streams in.</p><ul><li><strong><code>use cache</code></strong> at the top of a file, component or async function caches its result. The arguments (and props) become part of the cache key, and the return value must be serializable.</li><li><strong><code>cacheLife</code></strong> sets how long: a preset profile (<code>seconds</code>, <code>minutes</code>, <code>hours</code>, <code>days</code>, <code>weeks</code>, <code>max</code>) or a custom object with <code>stale</code>, <code>revalidate</code> and <code>expire</code>.</li><li><strong><code>cacheTag</code></strong> labels an entry so <code>updateTag</code> or <code>revalidateTag</code> can invalidate it on demand.</li><li><strong>Runtime data</strong> (<code>cookies()</code>, <code>headers()</code>, <code>searchParams</code>) cannot be read inside a plain <code>use cache</code> scope. Read it outside and pass what you need in as an argument, wrap the reader in <code>&lt;Suspense&gt;</code> so the rest of the page still prerenders, or use <code>'use cache: private'</code> for per-user caching.</li></ul><p class="codelabel">Cached component plus a streamed dynamic hole</p><pre>// next.config.ts
+const nextConfig = { cacheComponents: true };
+export default nextConfig;
+
+// app/products/[id]/page.tsx
+import { Suspense } from 'react';
+import { cacheLife, cacheTag } from 'next/cache';
+
+async function ProductDetails({ id }: { id: string }) {
+  'use cache';
+  cacheLife('hours');
+  cacheTag(\`product-\${id}\`);
+  const product = await db.products.find(id);
+  return &lt;ProductCard product={product} /&gt;;
+}
+
+export default async function Page({ params }: { params: Promise&lt;{ id: string }&gt; }) {
+  const { id } = await params;
+  return (
+    &lt;&gt;
+      &lt;ProductDetails id={id} /&gt;
+      &lt;Suspense fallback={&lt;CartSkeleton /&gt;}&gt;
+        &lt;CartBadge /&gt;   {/* reads cookies(): runtime data, streamed */}
+      &lt;/Suspense&gt;
+    &lt;/&gt;
+  );
+}</pre><div class="diagram"><svg viewBox="0 0 900 330" width="900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cache Components: a static shell with streamed dynamic holes">
+<defs><marker id="cc1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--muted)"/></marker><marker id="cc2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--accent)"/></marker></defs>
+<rect x="10" y="10" width="400" height="310" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/>
+<text x="24" y="28"  font-family="var(--mono)" font-size="9.5" fill="var(--accent)">ONE ROUTE, THREE KINDS OF PARTS</text>
+<rect x="24" y="40" width="372" height="44" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="210" y="59" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Header, nav, footer</text><text x="210" y="73" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">static: prerendered into the shell</text>
+<rect x="24" y="96" width="372" height="62" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="210" y="124" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Product details</text><text x="210" y="138" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">"use cache" + cacheLife("hours"), refreshed in the background</text>
+<rect x="24" y="170" width="372" height="60" rx="8" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="1.4" stroke-dasharray="5 4"/>
+<text x="36" y="188"  font-family="var(--mono)" font-size="9.5" fill="var(--gold)">&lt;Suspense fallback={&lt;Skeleton/&gt;}&gt;</text>
+<rect x="40" y="194" width="340" height="30" rx="8" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="1.4"/><text x="210" y="213" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Greeting: reads cookies()  (request time)</text>
+<rect x="24" y="242" width="372" height="68" rx="8" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="1.4" stroke-dasharray="5 4"/>
+<text x="36" y="260"  font-family="var(--mono)" font-size="9.5" fill="var(--gold)">&lt;Suspense fallback={&lt;CartSkeleton/&gt;}&gt;</text>
+<rect x="40" y="266" width="340" height="32" rx="8" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="1.4"/><text x="210" y="286" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Cart badge + recommendations (per user)</text>
+<rect x="470" y="30" width="400" height="64" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="670" y="59" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">1  Build / first request</text><text x="670" y="73" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">prerender the static shell and the "use cache" parts</text>
+<rect x="470" y="128" width="400" height="64" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="670" y="157" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">2  User requests the page</text><text x="670" y="171" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">CDN sends the shell immediately: fast first paint</text>
+<rect x="470" y="226" width="400" height="64" rx="8" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="1.4"/><text x="670" y="255" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">3  Server streams the holes</text><text x="670" y="269" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">each Suspense boundary replaces its fallback when ready</text>
+<path d="M670 96 L670 124" fill="none" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#cc2)"/><path d="M670 194 L670 222" fill="none" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#cc2)"/>
+<text x="470" y="308"  font-family="var(--sans)" font-size="10.5" fill="var(--muted)">Runtime data (cookies, headers, searchParams) must sit</text><text x="470" y="322"  font-family="var(--sans)" font-size="10.5" fill="var(--muted)">inside Suspense or a "use cache: private" scope.</text>
+</svg></div><div class="callout"><strong>Why interviewers ask:</strong> it replaces the implicit fetch-level caching of Next.js 13 to 15 (and the experimental PPR flag) with one explicit rule: <em>nothing is cached unless you say so</em>. Stale-data bugs stop being mysterious.</div><p><strong>Interview tip:</strong> Name the three kinds of content in a route: static (in the shell), cached (in the shell, refreshed by <code>cacheLife</code>), and dynamic (inside Suspense, per request).</p>`
+    },
+    {
+      q:"updateTag, revalidateTag and revalidatePath: which one do you call, and when?",
+      a:`<p class="lede">All three invalidate cached data on demand. They differ in <em>how quickly</em> the user sees fresh data and <em>where</em> you may call them.</p><table class="cmp"><tr><th>Function</th><th>Where it works</th><th>What happens next</th></tr><tr><td><code>updateTag(tag)</code></td><td>Server Actions only</td><td>Expires the entry and the next request waits for fresh data: read-your-own-writes, so the user sees their change immediately.</td></tr><tr><td><code>revalidateTag(tag, 'max')</code></td><td>Server Actions and Route Handlers</td><td>Marks the entry stale; the stale version is served while fresh data loads in the background (stale-while-revalidate). Good for blog posts, catalogues, webhooks.</td></tr><tr><td><code>revalidatePath(path)</code></td><td>Server Actions and Route Handlers</td><td>Invalidates everything cached for that route. Coarser: you must know every path that shows the data.</td></tr></table><pre>'use server';
+import { updateTag, revalidateTag } from 'next/cache';
+
+export async function saveProfile(userId: string, profile: Profile) {
+  await db.users.update(userId, profile);
+  updateTag(\`user-\${userId}\`);          // the user sees their edit right away
+}
+
+export async function onCmsWebhook(articleId: string) {
+  revalidateTag(\`article-\${articleId}\`, 'max');   // readers get stale content, refreshed in the background
+}</pre><div class="callout">In Next.js 16 the one-argument form <code>revalidateTag(tag)</code> is deprecated: pass a profile such as <code>'max'</code> (or a custom cache-life profile). Without it the entry expires immediately and the next request is a blocking cache miss.</div><p><strong>Interview tip:</strong> Pick by who is waiting: the person who just made the change needs <code>updateTag</code>; everyone else can tolerate <code>revalidateTag(..., 'max')</code>. Tags beat paths because one tag can cover many routes.</p>`
+    },
+    {
+      q:"What are the async request APIs, and what changed between Next.js 14, 15 and 16?",
+      a:`<p class="lede">Request-time values used to be readable synchronously. Since Next.js 15 they are Promises, because a route can be prerendered before the request exists; Next.js 16 removed the temporary synchronous compatibility, so you must <code>await</code> them.</p><ul><li><code>params</code> and <code>searchParams</code> (page, layout, route and metadata props)</li><li><code>cookies()</code>, <code>headers()</code> and <code>draftMode()</code> from <code>next/headers</code></li></ul><pre>// Server Component (Next.js 16)
+export default async function Page({
+  params,
+  searchParams,
+}: {
+  params: Promise&lt;{ slug: string }&gt;;
+  searchParams: Promise&lt;{ page?: string }&gt;;
+}) {
+  const { slug } = await params;
+  const { page = '1' } = await searchParams;
+  const theme = (await cookies()).get('theme')?.value;
+  // ...
+}
+
+// Client Component: unwrap the Promise with React's use()
+'use client';
+import { use } from 'react';
+export default function Filters({ searchParams }: { searchParams: Promise&lt;{ q?: string }&gt; }) {
+  const { q } = use(searchParams);
+}</pre><div class="callout">Reading any of these makes that part of the route dynamic. With Cache Components, put the reader inside <code>&lt;Suspense&gt;</code> so the rest of the page can still be prerendered. A codemod (<code>@next/codemod</code>) migrates most call sites.</div><p><strong>Interview tip:</strong> If asked "why did they make it async?": to let Next.js prerender the static shell first and resolve request data later, which is what makes partial prerendering possible.</p>`
+    },
+    {
+      q:"What is the request lifecycle in Next.js 16, from the network to the rendered page?",
+      a:`<div class="diagram"><svg viewBox="0 0 900 190" width="900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Request lifecycle in Next.js 16 with proxy.ts">
+<defs><marker id="nq1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--muted)"/></marker></defs>
+<rect x="10" y="40" width="110" height="60" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="65" y="67" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Request</text><text x="65" y="81" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">from the browser</text>
+<rect x="150" y="40" width="170" height="60" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="235" y="67" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">next.config</text><text x="235" y="81" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">headers, redirects, rewrites</text>
+<rect x="350" y="40" width="150" height="60" rx="8" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="1.4"/><text x="425" y="67" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">proxy.ts</text><text x="425" y="81" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">Node.js, before routes</text>
+<rect x="530" y="40" width="160" height="60" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="610" y="67" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">File-system route</text><text x="610" y="81" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">layout.tsx → page.tsx</text>
+<rect x="720" y="40" width="170" height="60" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="805" y="67" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Response</text><text x="805" y="81" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">streamed RSC + HTML</text>
+<path d="M122 70 L146 70" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#nq1)"/><path d="M322 70 L346 70" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#nq1)"/><path d="M502 70 L526 70" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#nq1)"/><path d="M692 70 L716 70" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#nq1)"/>
+<text x="350" y="124"  font-family="var(--mono)" font-size="10" fill="var(--gold)">proxy: redirect, rewrite, set headers, cheap cookie checks</text>
+<text x="530" y="124"  font-family="var(--mono)" font-size="10" fill="var(--accent)">Server Components fetch data and render</text>
+<text x="10" y="160"  font-family="var(--sans)" font-size="11" fill="var(--text)">proxy.ts replaces middleware.ts (renamed in Next.js 16). It is a network-boundary tool, not the place for full authorization or heavy work.</text>
+</svg></div><ol><li><strong><code>next.config</code></strong> headers, redirects and rewrites are applied first.</li><li><strong><code>proxy.ts</code></strong> runs next (Node.js runtime): redirect, rewrite, set headers, cheap cookie checks. It replaced <code>middleware.ts</code>.</li><li><strong>Route matching</strong> picks the file-system route: nested layouts wrap the page; a Route Handler answers directly.</li><li><strong>Server Components</strong> fetch data and render to the RSC payload; cached parts (<code>use cache</code>) come from the cache, dynamic holes stream.</li><li><strong>The browser</strong> paints the shell, hydrates Client Components, and Server Actions post back to the same URL.</li></ol><p><strong>Interview tip:</strong> Say where each concern belongs: coarse routing in proxy, authorization where the data is read, caching on the data function, interactivity at the client leaves.</p>`
+    }
+  ]
+},
+{
+  id:"s1", title:"App Router Fundamentals",
+  questions:[
+    {
+      q:"What do layout.tsx, page.tsx, loading.tsx, and error.tsx each control?",
+      a:`<p class="lede">The App Router (introduced in Next.js 13, now the default) is built on React Server Components and a file-system convention for routing, layouts, and loading/error states.</p><p>Each is a special file convention that Next.js wires into the route tree automatically — no manual routing configuration.</p><ul><li><strong>page.tsx:</strong> The unique UI for a route segment — makes the route publicly accessible.</li><li><strong>layout.tsx:</strong> Shared UI that wraps a segment and its children. Persists across navigations (does not re-render/reset state) and can be nested.</li><li><strong>loading.tsx:</strong> An instant loading UI, automatically wrapped in a React Suspense boundary around the segment below it.</li><li><strong>error.tsx:</strong> A client-boundary error UI, automatically wrapped in a React Error Boundary. Catches errors in the segment below it, not in the layout above it.</li><li><strong>not-found.tsx:</strong> Rendered when notFound() is called or a route segment cannot be matched.</li></ul><p><strong>Interview tip:</strong> A classic follow-up: 'why doesn't error.tsx catch errors thrown in its own layout.tsx?' — because the error boundary wraps the segment's children, not its parent layout, by design.</p>`
+    },
+    {
+      q:"What is the difference between a Server Component and a Client Component?",
+      a:`<p>Server Components (the default in the App Router) render entirely on the server and send HTML + a serialized description to the client — zero JavaScript shipped for that component. Client Components (opted into with the "use client" directive) render on the server for the initial HTML too, but also ship JS and hydrate in the browser.</p><ul><li><strong>Server Components:</strong> Can be async, can access backend resources directly (DB, filesystem, secrets), cannot use useState/useEffect/browser APIs or event handlers.</li><li><strong>Client Components:</strong> Required for interactivity — state, effects, event listeners, browser-only APIs (localStorage, window).</li><li><strong>"use client" is a boundary, not a label per-file:</strong> once a component is a Client Component, every component it imports becomes part of that client bundle too (unless passed in as children from a Server Component).</li></ul><pre>// app/page.tsx — Server Component by default, can be async
+export default async function Page() {
+  const data = await fetch('https://api.example.com/products').then(r =&gt; r.json());
+  return &lt;ProductList products={data} /&gt;;
+}
+
+// app/ProductList.tsx — needs interactivity, opts into the client
+'use client';
+export function ProductList({ products }) {
+  const [selected, setSelected] = useState(null);
+  return products.map((p) =&gt; &lt;button onClick={() =&gt; setSelected(p.id)}&gt;{p.title}&lt;/button&gt;);
+}</pre><div class="diagram"><svg viewBox="0 0 900 330" width="900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Server Components with a client boundary around interactive leaves">
+<defs><marker id="nb1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--muted)"/></marker><marker id="nb2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--gold)"/></marker></defs>
+<rect x="20" y="8" width="860" height="314" rx="8" fill="var(--panel-2)" stroke="var(--border)" stroke-width="1.4"/>
+<text x="34" y="26"  font-family="var(--mono)" font-size="9.5" fill="var(--accent)">SERVER  (renders once per request or at build; code and secrets never reach the browser)</text>
+<rect x="350" y="36" width="200" height="40" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="450" y="53" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">layout.tsx</text><text x="450" y="67" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">Server Component</text>
+<rect x="350" y="100" width="200" height="40" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="450" y="117" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">page.tsx</text><text x="450" y="131" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">async, fetches from the DB</text>
+<rect x="100" y="176" width="200" height="40" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="200" y="193" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">ProductList</text><text x="200" y="207" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">Server Component</text>
+<rect x="350" y="176" width="200" height="40" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="450" y="193" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">ProductDetails</text><text x="450" y="207" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">Server Component</text>
+<path d="M450 78 L450 96" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#nb1)"/><path d="M420 142 L220 172" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#nb1)"/><path d="M450 142 L450 172" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#nb1)"/><path d="M480 142 L640 172" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#nb1)"/>
+<rect x="590" y="168" width="270" height="146" rx="8" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="1.4" stroke-dasharray="5 4"/>
+<text x="602" y="186"  font-family="var(--mono)" font-size="9.5" fill="var(--gold)">CLIENT BOUNDARY  ("use client")</text>
+<rect x="620" y="196" width="210" height="40" rx="8" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="1.4"/><text x="725" y="213" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">AddToCartButton</text><text x="725" y="227" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">Client Component: state, events</text>
+<rect x="620" y="258" width="210" height="44" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="725" y="277" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">children slot</text><text x="725" y="291" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">a Server Component can be passed in</text>
+<path d="M725 238 L725 254" fill="none" stroke="var(--gold)" stroke-width="1.5" marker-end="url(#nb2)"/>
+<text x="34" y="262"  font-family="var(--mono)" font-size="10.5" fill="var(--text)" font-weight="700">Rules of thumb</text>
+<text x="34" y="280"  font-family="var(--sans)" font-size="11" fill="var(--muted)">· Default to Server Components; add "use client" only at the leaves that need state or events.</text>
+<text x="34" y="297"  font-family="var(--sans)" font-size="11" fill="var(--muted)">· Props that cross the boundary must be serializable (no functions, except Server Actions).</text>
+<text x="34" y="314"  font-family="var(--sans)" font-size="11" fill="var(--muted)">· A Client Component cannot import a Server Component, but it can render one passed as children.</text>
+</svg></div>`
+    },
+    {
+      q:"How does composing Server and Client Components together actually work?",
+      a:`<p>A Client Component can never directly import a Server Component (since everything it imports gets bundled for the client) — but a Server Component CAN be passed to a Client Component as children/props, because the Server Component is rendered on the server first and its output is passed down as serialized data.</p><pre>// ClientWrapper.tsx
+'use client';
+export function ClientWrapper({ children }) {
+  const [open, setOpen] = useState(false);
+  return &lt;div onClick={() =&gt; setOpen(!open)}&gt;{open &amp;&amp; children}&lt;/div&gt;;
+}
+
+// page.tsx — Server Component, still async, still zero-JS for its own content
+export default async function Page() {
+  const data = await getData();
+  return (
+    &lt;ClientWrapper&gt;
+      {/* This is still rendered on the server — "slotted in" as children */}
+      &lt;ExpensiveServerRenderedReport data={data} /&gt;
+    &lt;/ClientWrapper&gt;
+  );
+}</pre><p><strong>Interview tip:</strong> This "slotting" pattern is the standard answer to "how do you keep a component server-rendered while still nesting it inside an interactive client component?"</p>`
+    },
+    {
+      q:"Quiz: Can a Client Component directly import a Server Component? <span class=\"quizopts\">(A) Yes, always &nbsp;·&nbsp; (B) No — but a Server Component can be passed to a Client Component as children/props &nbsp;·&nbsp; (C) Only if it uses async/await &nbsp;·&nbsp; (D) Only inside a layout.tsx</span>",
+      a:`<ol class="quiz" type="A"><li>Yes, always</li><li class="right">No — but a Server Component can be passed to a Client Component as children/props</li><li>Only if it uses async/await</li><li>Only inside a layout.tsx</li></ol><p><strong>Answer: B.</strong> Importing pulls the Server Component into the client bundle, which is not allowed. Passing it down as children (the "slot" pattern) works because it is rendered on the server first.</p>`
+    }
+  ]
+},
+{
+  id:"s2", title:"Rendering Strategies",
+  questions:[
+    {
+      q:"Explain SSR, SSG, ISR, and CSR — and when you would choose each.",
+      a:`<p>They differ in when the HTML is generated and how fresh the data is.</p><ul><li><strong>SSG (Static Site Generation):</strong> HTML generated at build time. Fastest possible response (served from CDN), but content is only as fresh as the last build. Best for marketing pages, docs, blog posts.</li><li><strong>SSR (Server-Side Rendering):</strong> HTML generated per-request on the server. Always fresh, but adds server compute + latency per request. Best for personalized/authenticated pages that need real-time data.</li><li><strong>ISR (Incremental Static Regeneration):</strong> Static like SSG, but pages are regenerated in the background after a revalidate interval, without a full rebuild. Best for content that changes occasionally (product catalogs, news).</li><li><strong>CSR (Client-Side Rendering):</strong> Empty/minimal HTML shell, data fetched and rendered in the browser. Best for highly interactive, non-SEO-critical dashboards behind auth.</li></ul><p><strong>Interview tip:</strong> In the App Router, these are no longer a single per-page setting — a route is static by default until it uses something dynamic (cookies(), headers(), a fetch with cache: "no-store", etc.), at which point Next.js opts that route into dynamic rendering automatically.</p><div class="diagram"><svg viewBox="0 0 900 330" width="900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="How SSG, ISR, SSR, CSR and Cache Components differ in where HTML is produced and served">
+<defs><marker id="nr1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--muted)"/></marker></defs>
+<text x="140" y="20"  font-family="var(--mono)" font-size="9.5" fill="var(--accent)">WHERE THE HTML IS MADE</text><text x="430" y="20"  font-family="var(--mono)" font-size="9.5" fill="var(--accent)">WHERE IT IS SERVED FROM</text><text x="680" y="20"  font-family="var(--mono)" font-size="9.5" fill="var(--accent)">WHAT THE USER GETS</text>
+<text x="10" y="60"  font-family="var(--sans)" font-size="13" fill="var(--text)" font-weight="700">SSG</text><rect x="140" y="34" width="250" height="46" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="265" y="61" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">At build time, once</text><rect x="420" y="34" width="230" height="46" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="535" y="61" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">CDN, until the next deploy</text><rect x="680" y="34" width="210" height="46" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="785" y="61" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Instant, same for everyone</text><path d="M392 57 L416 57" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#nr1)"/><path d="M652 57 L676 57" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#nr1)"/><text x="10" y="118"  font-family="var(--sans)" font-size="13" fill="var(--text)" font-weight="700">ISR</text><rect x="140" y="92" width="250" height="46" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="265" y="119" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Build, then re-made every N s</text><rect x="420" y="92" width="230" height="46" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="535" y="119" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">CDN, stale-while-revalidate</text><rect x="680" y="92" width="210" height="46" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="785" y="119" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Instant, possibly slightly stale</text><path d="M392 115 L416 115" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#nr1)"/><path d="M652 115 L676 115" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#nr1)"/><text x="10" y="176"  font-family="var(--sans)" font-size="13" fill="var(--text)" font-weight="700">SSR</text><rect x="140" y="150" width="250" height="46" rx="8" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="1.4"/><text x="265" y="177" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">On the server, every request</text><rect x="420" y="150" width="230" height="46" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="535" y="177" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Nothing shared: rendered per user</text><rect x="680" y="150" width="210" height="46" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="785" y="177" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Slower first byte, always fresh</text><path d="M392 173 L416 173" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#nr1)"/><path d="M652 173 L676 173" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#nr1)"/><text x="10" y="234"  font-family="var(--sans)" font-size="13" fill="var(--text)" font-weight="700">CSR</text><rect x="140" y="208" width="250" height="46" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="265" y="235" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Empty shell at build, UI in the browser</text><rect x="420" y="208" width="230" height="46" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="535" y="235" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">CDN serves the shell + JS bundle</text><rect x="680" y="208" width="210" height="46" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="785" y="235" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Spinner first, then data fetched</text><path d="M392 231 L416 231" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#nr1)"/><path d="M652 231 L676 231" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#nr1)"/><text x="10" y="292"  font-family="var(--sans)" font-size="11" fill="var(--text)" font-weight="700">Cache Components</text><rect x="140" y="266" width="250" height="46" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="265" y="293" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Static shell at build, "holes" per request</text><rect x="420" y="266" width="230" height="46" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="535" y="293" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">CDN shell + streamed dynamic parts</text><rect x="680" y="266" width="210" height="46" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="785" y="293" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Instant shell, fresh personal parts</text><path d="M392 289 L416 289" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#nr1)"/><path d="M652 289 L676 289" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#nr1)"/>
+</svg></div>`
+    },
+    {
+      q:"How do you configure ISR in the App Router?",
+      a:`<p>ISR means "serve a cached static result, and regenerate it in the background after a time or on demand". How you express it depends on the Next.js version, so say which model you mean.</p>
+<p><strong>Next.js 13 to 15 (and 16 without Cache Components):</strong> a <code>revalidate</code> time on a fetch or as a route-segment export, plus on-demand invalidation.</p>
+<pre>// per fetch: regenerate at most every 60 seconds
+const res = await fetch('https://api.example.com/products', { next: { revalidate: 60, tags: ['products'] } });
+
+// per route segment
+export const revalidate = 60;
+
+// on demand, from a Server Action or Route Handler
+import { revalidatePath, revalidateTag } from 'next/cache';
+revalidatePath('/products');
+revalidateTag('products', 'max');   // Next 16: a cacheLife profile is now required as the 2nd argument</pre>
+<p><strong>Next.js 16 with Cache Components (<code>cacheComponents: true</code>):</strong> caching is explicit. Mark a function or component with <code>"use cache"</code>, set its lifetime with <code>cacheLife()</code> and label it with <code>cacheTag()</code>.</p>
+<pre>import { cacheLife, cacheTag } from 'next/cache';
+
+export async function getProducts() {
+  'use cache';
+  cacheLife('hours');          // built-in profiles: seconds, minutes, hours, days, weeks, max
+  cacheTag('products');
+  return db.products.findMany();
+}
+
+// in a Server Action after a write:
+'use server';
+import { updateTag } from 'next/cache';
+export async function renameProduct(id, name) {
+  await db.products.update(id, { name });
+  updateTag('products');       // expire AND refresh now: the user sees their own write (read-your-writes)
+}</pre>
+<ul>
+<li><strong><code>revalidateTag(tag, profile)</code></strong> marks the data stale and serves stale-while-revalidate; <strong><code>updateTag(tag)</code></strong> (Server Actions only) expires it immediately so the next read is fresh.</li>
+<li><strong>Prefer tags over paths:</strong> one tag can invalidate data used by many routes without listing every URL.</li>
+</ul>
+<p><strong>Interview tip:</strong> name your version first. "Cached by default" (14), "uncached by default" (15) and "explicit <code>use cache</code>" (16 with Cache Components) are three different mental models, and mixing them is the classic mistake.</p>`
+    },
+    {
+      q:"What is Partial Prerendering (PPR)?",
+      a:`<p>A rendering model that combines static and dynamic content in one route: the <strong>static shell</strong> (everything that does not depend on request-time data) is prerendered and served instantly, while <strong>dynamic holes</strong> wrapped in <code>&lt;Suspense&gt;</code> stream in as they resolve.</p>
+<ul>
+<li>The shell arrives immediately, so perceived load matches a static page; a personalised greeting or cart badge streams in without blocking the rest.</li>
+<li>Before this, you picked SSG or SSR for the <em>whole</em> route.</li>
+<li><strong>Current status:</strong> PPR started as an experimental flag in Next 14/15. In <strong>Next.js 16</strong> it is delivered through <strong>Cache Components</strong> (<code>cacheComponents: true</code> in <code>next.config</code>), which replaces the old experimental <code>ppr</code> flag. Anything that reads request data (<code>cookies()</code>, <code>headers()</code>, uncached fetches) must sit inside a Suspense boundary or be cached with <code>"use cache"</code>; the rest becomes the static shell.</li>
+</ul>
+<pre>export default function ProductPage({ params }) {
+  return (
+    &lt;&gt;
+      &lt;ProductDetails params={params} /&gt;        {/* cached with "use cache": part of the static shell */}
+      &lt;Suspense fallback={&lt;CartSkeleton /&gt;}&gt;
+        &lt;CartBadge /&gt;                             {/* reads cookies(): streams in per request */}
+      &lt;/Suspense&gt;
+    &lt;/&gt;
+  );
+}</pre>
+<p><strong>Interview tip:</strong> frame it as "static by default, dynamic where you opt in with Suspense", and note it depends on the version and config you are on.</p>`
+    },
+    {
+      q:"Quiz: What triggers a route to opt into dynamic rendering in the App Router by default? <span class=\"quizopts\">(A) Using any React hook &nbsp;·&nbsp; (B) Using dynamic data APIs like cookies(), headers(), or a fetch with cache: 'no-store' &nbsp;·&nbsp; (C) Having more than one page.tsx &nbsp;·&nbsp; (D) Using next/image</span>",
+      a:`<ol class="quiz" type="A"><li>Using any React hook</li><li class="right">Using dynamic data APIs like cookies(), headers(), or a fetch with cache: 'no-store'</li><li>Having more than one page.tsx</li><li>Using next/image</li></ol><p><strong>Answer: B.</strong> A route is static until something in it explicitly requires request-time data — at that point Next.js automatically renders it dynamically per-request.</p>`
+    }
+  ]
+},
+{
+  id:"s3", title:"Data Fetching & Caching",
+  questions:[
+    {
+      q:"Name the distinct caching layers in Next.js and what each one caches.",
+      a:`<p>Four layers, and the <em>defaults</em> changed across versions, which is where most interview answers go wrong.</p>
+<table class="cmp">
+<tr><th>Layer</th><th>Where</th><th>What it caches</th><th>Lifetime</th></tr>
+<tr><td><strong>Request memoization</strong></td><td>Server</td><td>Identical <code>fetch</code> calls (same URL and options) in one render, plus functions wrapped in React <code>cache()</code></td><td>One request</td></tr>
+<tr><td><strong>Data Cache</strong></td><td>Server</td><td><code>fetch</code> results (or <code>"use cache"</code> results in 16) across requests and deploys</td><td>Until revalidated</td></tr>
+<tr><td><strong>Full Route Cache</strong></td><td>Server</td><td>Rendered HTML and RSC payload of static routes</td><td>Until revalidated or redeployed</td></tr>
+<tr><td><strong>Router Cache</strong></td><td>Browser</td><td>Visited route segments, for instant back/forward</td><td>Session; refreshed after mutations</td></tr>
+</table>
+<p><strong>How the defaults moved:</strong></p>
+<ul>
+<li><strong>Next 14:</strong> <code>fetch</code> was cached by default; stale data after a DB change was the classic bug.</li>
+<li><strong>Next 15:</strong> <code>fetch</code> and GET Route Handlers are <em>not</em> cached by default; opt in with <code>cache: 'force-cache'</code> or <code>next.revalidate</code>. The client Router Cache no longer reuses page segments by default (stale time 0 for dynamic pages).</li>
+<li><strong>Next 16 with Cache Components:</strong> caching is explicit via <code>"use cache"</code> + <code>cacheLife</code>/<code>cacheTag</code>; invalidate with <code>revalidateTag(tag, profile)</code> or <code>updateTag(tag)</code> in a Server Action for read-your-writes.</li>
+</ul>
+<p><strong>Interview tip:</strong> "why didn't my data update?" means: identify which layer served it, then either revalidate that tag or path, or make that read uncached. Say which version you are describing.</p><div class="diagram"><svg viewBox="0 0 900 300" width="900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The Next.js caching layers and what invalidates each">
+<defs><marker id="nc1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--muted)"/></marker><marker id="nc2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--accent)"/></marker></defs>
+<rect x="10" y="30" width="150" height="62" rx="8" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="1.4"/><text x="85" y="58" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Router Cache</text><text x="85" y="72" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">in the browser, per session</text>
+<rect x="190" y="30" width="170" height="62" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="275" y="58" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Full Route Cache</text><text x="275" y="72" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">HTML + RSC payload, server</text>
+<rect x="390" y="30" width="170" height="62" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="475" y="58" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Request Memoization</text><text x="475" y="72" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">one render pass only</text>
+<rect x="590" y="30" width="150" height="62" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="665" y="58" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Data Cache</text><text x="665" y="72" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">fetch() results, server</text>
+<rect x="770" y="30" width="120" height="62" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="830" y="58" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Origin</text><text x="830" y="72" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">DB, API, CMS</text>
+<path d="M162 61 L186 61" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#nc1)"/><path d="M362 61 L386 61" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#nc1)"/><path d="M562 61 L586 61" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#nc1)"/><path d="M742 61 L766 61" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#nc1)"/>
+<text x="10" y="118"  font-family="var(--mono)" font-size="9.5" fill="var(--accent)">HOW LONG IT LIVES / WHAT CLEARS IT</text>
+<text x="10" y="140"  font-family="var(--mono)" font-size="10" fill="var(--text)" font-weight="700">Router Cache</text><text x="150" y="140"  font-family="var(--sans)" font-size="11" fill="var(--muted)">until a full reload or router.refresh(); a Server Action that revalidates clears it</text>
+<text x="10" y="162"  font-family="var(--mono)" font-size="10" fill="var(--text)" font-weight="700">Full Route Cache</text><text x="150" y="162"  font-family="var(--sans)" font-size="11" fill="var(--muted)">static routes only, until a redeploy or revalidatePath / revalidateTag / time-based revalidate</text>
+<text x="10" y="184"  font-family="var(--mono)" font-size="10" fill="var(--text)" font-weight="700">Memoization</text><text x="150" y="184"  font-family="var(--sans)" font-size="11" fill="var(--muted)">duplicate fetch() calls (same URL + options) inside one render become a single request</text>
+<text x="10" y="206"  font-family="var(--mono)" font-size="10" fill="var(--text)" font-weight="700">Data Cache</text><text x="150" y="206"  font-family="var(--sans)" font-size="11" fill="var(--muted)">persists across requests until revalidate seconds pass or a tag is invalidated</text>
+<rect x="10" y="226" width="880" height="60" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/>
+<text x="24" y="246"  font-family="var(--mono)" font-size="10.5" fill="var(--accent)" font-weight="700">Next.js 16 with cacheComponents: true</text>
+<text x="24" y="264"  font-family="var(--sans)" font-size="11" fill="var(--muted)">Caching becomes explicit: nothing is cached unless a function or component opts in with "use cache" (+ cacheLife / cacheTag).</text>
+<text x="24" y="279"  font-family="var(--sans)" font-size="11" fill="var(--muted)">The layers above still explain the App Router model of Next.js 13 to 15 that most existing codebases and interviews still use.</text>
+</svg></div>`
+    },
+    {
+      q:"What does a Route Handler (app/api/.../route.ts) give you that a Server Action does not, and vice versa?",
+      a:`<p>Both run exclusively on the server, but they serve different purposes.</p><ul><li><strong>Route Handlers:</strong> A real HTTP endpoint (GET/POST/etc.) — needed for webhooks, a public API consumed by non-React clients, or anything that must be a URL.</li><li><strong>Server Actions:</strong> An async function marked "use server", callable directly from a component (including from a &lt;form action={...}&gt;) without manually wiring up a fetch call. Automatically get progressive enhancement — the form still works with JS disabled.</li></ul><pre>// app/actions.ts
+'use server';
+export async function createTodo(formData: FormData) {
+  const text = formData.get('text');
+  await db.todos.insert({ text });
+  revalidatePath('/todos');
+}
+
+// app/todos/page.tsx — no client JS needed to submit this form
+&lt;form action={createTodo}&gt;
+  &lt;input name="text" /&gt;
+  &lt;button type="submit"&gt;Add&lt;/button&gt;
+&lt;/form&gt;</pre>`
+    },
+    {
+      q:"How do generateStaticParams and dynamicParams interact?",
+      a:`<p>generateStaticParams tells Next.js which dynamic segment values to prerender at build time (like getStaticPaths in the Pages Router). dynamicParams controls what happens for a value NOT in that list.</p><pre>// app/products/[id]/page.tsx
+export async function generateStaticParams() {
+  const products = await getTopProducts();
+  return products.map((p) =&gt; ({ id: p.id })); // prerender these at build time
+}
+
+// Default true: an unlisted id is rendered on-demand (SSR) the first time
+// it's requested, then cached like the rest.
+// Set to false to 404 instead for any id not returned above.
+export const dynamicParams = false;</pre>`
+    },
+    {
+      q:"Predict the output: Request memoization in action",
+      a:`<p class="codelabel">Code</p><pre>// Called from three different Server Components in the same render pass
+async function getUser(id: string) {
+  const res = await fetch(\`https://api.example.com/users/\${id}\`);
+  return res.json();
+}
+
+// Header.tsx, Sidebar.tsx, and Page.tsx all call getUser('42')</pre><p class="codelabel">Output</p><pre>&gt; Rendering Header, Sidebar, and Page for this request...
+&gt; fetch('.../users/42') — network request #1 (cache MISS)
+&gt; fetch('.../users/42') — deduplicated, reused from request #1 (no network call)
+&gt; fetch('.../users/42') — deduplicated, reused from request #1 (no network call)
+// Only one actual network request for this render, regardless of how
+// many components call the same fetch with the same URL/options.</pre>`
+    },
+    {
+      q:"Quiz: Which cache layer should you invalidate to reflect a database change across every page that uses that data, without knowing every URL it appears on? <span class=\"quizopts\">(A) Router Cache &nbsp;·&nbsp; (B) Request Memoization &nbsp;·&nbsp; (C) revalidateTag on the Data Cache &nbsp;·&nbsp; (D) Full Route Cache only</span>",
+      a:`<ol class="quiz" type="A"><li>Router Cache</li><li>Request Memoization</li><li class="right">revalidateTag on the Data Cache</li><li>Full Route Cache only</li></ol><p><strong>Answer: C.</strong> revalidateTag invalidates every cached fetch tagged with that value, regardless of which route(s) fetched it — more targeted than knowing and calling revalidatePath for every affected page.</p>`
+    }
+  ]
+},
+{
+  id:"s4", title:"Routing & Navigation",
+  questions:[
+    {
+      q:"What are parallel routes and intercepting routes for?",
+      a:`<p>Both are advanced App Router conventions for rendering more than one thing at once from a single URL.</p><ul><li><strong>Parallel routes (@slot folders):</strong> Render multiple independent pages in the same layout simultaneously — e.g. a dashboard with @analytics and @team slots that each have their own loading/error state and can navigate independently.</li><li><strong>Intercepting routes ((.) / (..) / (...) folders):</strong> "Intercept" a route to show it in the current layout (e.g. a photo opening in a modal over the feed) while still being a real, shareable, bookmarkable URL if the user navigates to it directly or refreshes.</li></ul><p><strong>Interview tip:</strong> The canonical example is Instagram's photo modal: clicking a photo from the feed opens it in a modal (intercepted), but pasting that same URL in a new tab loads the full standalone photo page.</p>`
+    },
+    {
+      q:"How does next/link prefetching work, and how does it differ from next/navigation's router.push?",
+      a:`<p>&lt;Link&gt; automatically prefetches the linked route's code and, for static routes, its data, when it scrolls into the viewport — so navigation feels instant. router.push() (from useRouter, a Client Component hook) is used for programmatic navigation and does not prefetch by default the way &lt;Link&gt; does.</p><p><strong>Interview tip:</strong> Prefer &lt;Link&gt; whenever the destination is known at render time; reach for the imperative router only when navigation depends on an event (e.g. after a form submits successfully).</p>`
+    },
+    {
+      q:"What is the difference between useRouter, usePathname, and useSearchParams?",
+      a:`<p>All three are Client-Component-only hooks from next/navigation for reading/reacting to routing state.</p><ul><li><strong>useRouter():</strong> Imperative navigation — router.push(), router.replace(), router.refresh(), router.back().</li><li><strong>usePathname():</strong> Returns the current URL's pathname as a plain string — commonly used to compute an "active" nav link.</li><li><strong>useSearchParams():</strong> Returns a read-only URLSearchParams for the current URL's query string. Reading it opts the component into client-side rendering for that part of the tree, which is why Next.js requires wrapping it in a Suspense boundary.</li></ul>`
+    },
+    {
+      q:"How do metadata and generateMetadata work in the App Router?",
+      a:`<p class="lede">Metadata (title, description, Open Graph, canonical, robots) is defined in Server Components, not with a manual <code>&lt;head&gt;</code>. Export a static object when the values are fixed, or an async function when they depend on data.</p><pre>// Static: layout.tsx or page.tsx
+export const metadata: Metadata = {
+  title: { default: 'Shop', template: '%s | Shop' },
+  description: 'Everything for your desk.',
+};
+
+// Dynamic: depends on the route params
+export async function generateMetadata(
+  { params }: { params: Promise&lt;{ id: string }&gt; },
+): Promise&lt;Metadata&gt; {
+  const { id } = await params;
+  const product = await getProduct(id);   // wrap in React cache() so the page reuses the same query
+  return { title: product.name, openGraph: { images: [product.image] } };
+}</pre><ul><li>Metadata merges from the root layout down to the page; deeper segments override shallower ones.</li><li>Identical <code>fetch</code> calls in <code>generateMetadata</code> and the page are deduplicated; for a database call wrap the function in React <code>cache()</code>.</li><li>File conventions cover the rest: <code>opengraph-image</code>, <code>icon</code>, <code>sitemap.ts</code>, <code>robots.ts</code>.</li><li>It only works in Server Components; a <code>"use client"</code> file cannot export metadata.</li></ul><p><strong>Interview tip:</strong> Mention that metadata is streamed for dynamic routes, so crawlers still get it, and that you should always set a canonical URL for filtered or paginated pages.</p>`
+    }
+  ]
+},
+{
+  id:"s5", title:"Server Actions & Mutations",
+  questions:[
+    {
+      q:"How do useFormStatus and useFormState (now useActionState) improve a Server Action-backed form?",
+      a:`<p>They give a Client Component visibility into an in-flight/completed Server Action without manually wiring loading state.</p><pre>'use client';
+import { useActionState } from 'react';
+import { createTodo } from './actions';
+
+function TodoForm() {
+  const [state, formAction, isPending] = useActionState(createTodo, { error: null });
+  return (
+    &lt;form action={formAction}&gt;
+      &lt;input name="text" /&gt;
+      &lt;button disabled={isPending}&gt;{isPending ? 'Saving…' : 'Add'}&lt;/button&gt;
+      {state.error &amp;&amp; &lt;p&gt;{state.error}&lt;/p&gt;}
+    &lt;/form&gt;
+  );
+}</pre><p><strong>Interview tip:</strong> useFormStatus must be called inside a component nested underneath the &lt;form&gt;, not in the same component that renders the &lt;form&gt; itself — it reads from React context set up by the nearest parent form.</p>`
+    },
+    {
+      q:"Why should Server Actions always re-validate input and re-check authorization, even though the \"use server\" boundary looks safe?",
+      a:`<p>A Server Action compiles to a public HTTP endpoint under the hood (Next.js creates a POST route for it) — anyone can call it directly with a crafted request, bypassing your UI entirely. The client-side call is a convenience, not a security boundary.</p><ul><li>Always re-validate the shape/type of formData on the server, the same as you would for any API route.</li><li>Always re-check that the current session/user is authorized for the specific mutation being performed — never trust an id passed from the client without checking ownership.</li></ul>`
+    },
+    {
+      q:"Quiz: Why must a Server Action re-validate input and authorization on the server, even though it is only called from your own UI? <span class=\"quizopts\">(A) It doesn't need to — the 'use server' directive handles it &nbsp;·&nbsp; (B) A Server Action is compiled to a real HTTP endpoint that can be called directly, bypassing the UI &nbsp;·&nbsp; (C) Only for performance reasons &nbsp;·&nbsp; (D) Only if TypeScript is not used</span>",
+      a:`<ol class="quiz" type="A"><li>It doesn't need to — the 'use server' directive handles it</li><li class="right">A Server Action is compiled to a real HTTP endpoint that can be called directly, bypassing the UI</li><li>Only for performance reasons</li><li>Only if TypeScript is not used</li></ol><p><strong>Answer: B.</strong> 'use server' marks where the function runs, not who is allowed to call it. It becomes a public POST endpoint, so it needs the same validation/authorization as any API route.</p>`
+    },
+    {
+      q:"What is the lifecycle of a Server Action from click to updated UI?",
+      a:`<div class="diagram"><svg viewBox="0 0 900 210" width="900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Lifecycle of a Next.js Server Action">
+<defs><marker id="na1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--muted)"/></marker><marker id="na2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--accent)"/></marker></defs>
+<rect x="10" y="40" width="150" height="66" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="85" y="70" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">&lt;form action={fn}&gt;</text><text x="85" y="84" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">or startTransition(fn)</text>
+<rect x="190" y="40" width="150" height="66" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="265" y="70" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">POST to the page URL</text><text x="265" y="84" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">action id + arguments</text>
+<rect x="370" y="40" width="170" height="66" rx="8" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="1.4"/><text x="455" y="70" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Server Action runs</text><text x="455" y="84" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">validate, authorize, mutate</text>
+<rect x="570" y="40" width="150" height="66" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="645" y="70" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Invalidate</text><text x="645" y="84" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">updateTag / revalidateTag</text>
+<rect x="750" y="40" width="140" height="66" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="820" y="70" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Response</text><text x="820" y="84" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">new RSC payload + result</text>
+<path d="M162 73 L186 73" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#na1)"/><path d="M342 73 L366 73" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#na1)"/><path d="M542 73 L566 73" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#na1)"/><path d="M722 73 L746 73" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#na1)"/>
+<path d="M820 108 L820 150 L85 150 L85 110" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#na2)"/>
+<text x="450" y="144" text-anchor="middle" font-family="var(--mono)" font-size="10" fill="var(--accent)">React updates the UI in place; isPending / useActionState drive the pending and error states</text>
+<text x="10" y="186"  font-family="var(--sans)" font-size="11" fill="var(--text)">A Server Action is a public POST endpoint: re-check authentication and authorization inside it, and validate every input.</text>
+</svg></div><ol><li>A form <code>action={fn}</code> or a call inside <code>startTransition</code> triggers a POST to the current page URL carrying an encrypted action id and the arguments.</li><li>The server runs the function: <strong>authenticate, authorize, validate input</strong>, then mutate.</li><li>It invalidates what changed (<code>updateTag</code>, <code>revalidateTag</code>, <code>revalidatePath</code>) or calls <code>redirect()</code>.</li><li>The response carries the new RSC payload, so React updates the affected UI without a full page load.</li><li><code>useActionState</code> and <code>useFormStatus</code> expose the pending state and the returned error; <code>useOptimistic</code> can show the result before the round trip ends.</li></ol><div class="callout">A Server Action is a public POST endpoint. The <code>"use server"</code> boundary does not authenticate anyone: check the session and permissions inside every action.</div><p><strong>Interview tip:</strong> Server Actions serialize per client: use them for mutations, not for parallel data fetching (use Server Components or Route Handlers for that).</p>`
+    }
+  ]
+},
+{
+  id:"s6", title:"Performance & Optimization",
+  questions:[
+    {
+      q:"What does next/image automatically handle that a plain &lt;img&gt; does not?",
+      a:`<p>Automatic responsive sizing (srcset), lazy loading below the fold, modern format conversion (WebP/AVIF) served from an on-demand optimization endpoint, and preventing layout shift by requiring width/height (or fill) up front.</p><pre>import Image from 'next/image';
+
+&lt;Image
+  src="/hero.png"
+  alt="Hero"
+  width={800}
+  height={400}
+  priority // disables lazy-loading for above-the-fold images (LCP)
+/&gt;</pre><p><strong>Interview tip:</strong> The priority prop is the answer to "how do you optimize your Largest Contentful Paint image in Next.js" — it preloads that specific image and skips lazy-loading.</p>`
+    },
+    {
+      q:"How does streaming with Suspense improve perceived performance over a single blocking server render?",
+      a:`<p>Without streaming, the whole page waits for the slowest data dependency before sending any HTML. With Suspense boundaries around slow parts, Next.js can send the fast/static shell immediately and stream in the slower chunks as they resolve, each as its own HTML chunk over the same connection.</p><pre>export default function Page() {
+  return (
+    &lt;&gt;
+      &lt;Header /&gt; {/* renders immediately */}
+      &lt;Suspense fallback={&lt;ReviewsSkeleton /&gt;}&gt;
+        &lt;SlowReviews /&gt; {/* streams in once its fetch resolves */}
+      &lt;/Suspense&gt;
+    &lt;/&gt;
+  );
+}</pre>`
+    },
+    {
+      q:"What is the purpose of next/font, and why is it better than a &lt;link&gt; to Google Fonts in the &lt;head&gt;?",
+      a:`<p>next/font downloads and self-hosts font files at build time, removing the extra network round-trip to a third-party font CDN at request time — improving both privacy (no request leaked to Google) and performance (no render-blocking external request, automatic font-display: swap to avoid layout shift from font-loading).</p>`
+    }
+  ]
+},
+{
+  id:"s7", title:"Proxy (Middleware), Auth & Deployment",
+  questions:[
+    {
+      q:"What runs in Next.js Middleware, and what are its constraints?",
+      a:`<p>Code that runs <strong>before a request completes</strong>, before a page or Route Handler renders: auth redirects, A/B cookie assignment, locale or geo rewrites, header changes.</p>
+<ul>
+<li><strong>Next.js 16 renamed it:</strong> <code>middleware.ts</code> becomes <strong><code>proxy.ts</code></strong>, and the exported function becomes <code>proxy</code>. The rename makes the purpose clearer (a network boundary in front of the app). Proxy runs on the Node.js runtime; the old <code>middleware.ts</code> is deprecated and kept for Edge-runtime cases. Check the docs for your exact version.</li>
+<li><strong>It runs on every matching request</strong>, so keep it light and scope it with <code>matcher</code>. Heavy work here adds latency to every page.</li>
+<li><strong>It is not your authorization layer.</strong> Use it for an optimistic check (is there a session cookie?) and redirect; still verify identity and permissions where the data is read (Server Components, Server Actions, Route Handlers). A 2025 vulnerability that let crafted headers skip middleware showed why relying on it alone is risky.</li>
+</ul>
+<pre>// proxy.ts (Next 16)  |  middleware.ts + export function middleware (Next 13-15)
+import { NextResponse, type NextRequest } from 'next/server';
+
+export function proxy(request: NextRequest) {
+  const token = request.cookies.get('session')?.value;
+  if (!token &amp;&amp; request.nextUrl.pathname.startsWith('/dashboard')) {
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
+}
+
+export const config = { matcher: ['/dashboard/:path*'] };</pre>`
+    },
+    {
+      q:"What is the Edge Runtime vs the Node.js runtime for a route, and how do you choose?",
+      a:`<p><strong>Node.js runtime</strong> (the default): the full Node API, any npm package, database drivers, native modules. <strong>Edge runtime</strong>: lightweight V8 isolates with fast start-up and a Web-standard API subset (no <code>fs</code>, no raw TCP sockets, many npm packages won't work).</p>
+<pre>export const runtime = 'nodejs'; // default; or 'edge' for a Route Handler or page</pre>
+<ul>
+<li><strong>The direction of travel is Node-first.</strong> Next.js 16's <code>proxy.ts</code> runs on Node.js, and most deployments (including Vercel's Fluid compute) now run Node functions with fast start-up, which removed much of Edge's advantage.</li>
+<li><strong>Choose Edge</strong> only for small, latency-sensitive logic with no Node dependencies: redirects, header rewrites, simple personalisation near the user.</li>
+<li><strong>Choose Node.js</strong> for anything touching a database, an SDK, heavy libraries or long work. Remember that an Edge function far from your database can be <em>slower</em> overall, because every query crosses regions.</li>
+</ul>
+<p><strong>Interview tip:</strong> "run compute close to the data, not just close to the user" is the senior framing.</p>`
+    }
+  ]
+},
+{
+  id:"deep-prod", title:"Deep Dive: Production Next.js",
+  questions:[
+    {
+      q:"How do you implement authentication and authorization in the App Router?",
+      a:`<p class="lede">Next.js recommends a <strong>Data Access Layer (DAL)</strong>: one server-only module that verifies the session and performs every data read and write with an authorization check. Pages, Server Actions and Route Handlers call the DAL instead of the database directly.</p><pre>// app/lib/dal.ts
+import 'server-only';                 // build fails if a Client Component imports this file
+import { cache } from 'react';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { decrypt } from '@/app/lib/session';
+
+export const verifySession = cache(async () =&gt; {      // memoized per request render
+  const cookie = (await cookies()).get('session')?.value;
+  const session = await decrypt(cookie);
+  if (!session?.userId) redirect('/login');
+  return { userId: session.userId };
+});
+
+export async function deletePost(postId: string) {
+  const { userId } = await verifySession();            // authentication
+  const post = await db.post.findUnique({ where: { id: postId } });
+  if (post?.authorId !== userId) throw new Error('Forbidden');   // authorization, per object
+  await db.post.delete({ where: { id: postId } });
+}</pre><ul><li><strong><code>proxy.ts</code> is only an optimistic check</strong> (is there a session cookie? redirect if not). Server Actions are POST requests to their page's route, so a proxy matcher that skips a path also skips its actions. Always check again in the DAL.</li><li><strong>Return DTOs</strong>, not whole database rows, so secrets and internal fields never reach a Client Component.</li><li><strong>Sessions:</strong> an encrypted, <code>HttpOnly</code> cookie (stateless) or a session id backed by a database (revocable). Libraries such as Auth.js or Better Auth handle OAuth providers.</li><li><code>cache()</code> means several components can call <code>verifySession()</code> in one render with a single cookie read.</li></ul><p><strong>Interview tip:</strong> The sentence to say: "authorization lives next to the data, not in routing".</p>`
+    },
+    {
+      q:"How does error handling work in the App Router (error.tsx, global-error, not-found)?",
+      a:`<table class="cmp"><tr><th>File or function</th><th>Handles</th></tr><tr><td><code>error.tsx</code></td><td>errors thrown while rendering that route segment and its children. Must be a Client Component. It receives <code>error</code> (with a <code>digest</code> in production) and a function to retry; recent docs use <code>unstable_retry()</code>, which re-fetches and re-renders the segment</td></tr><tr><td><code>global-error.tsx</code></td><td>errors in the root layout; it replaces the whole document, so it must render its own <code>&lt;html&gt;</code> and <code>&lt;body&gt;</code></td></tr><tr><td><code>not-found.tsx</code> + <code>notFound()</code></td><td>call <code>notFound()</code> when data does not exist; the nearest <code>not-found.tsx</code> renders with a 404</td></tr><tr><td><code>redirect()</code></td><td>throws internally to stop rendering and send the user elsewhere (works in Server Components, Server Actions and Route Handlers)</td></tr></table><pre>// app/posts/[id]/page.tsx
+import { notFound } from 'next/navigation';
+
+export default async function Post({ params }: { params: Promise&lt;{ id: string }&gt; }) {
+  const { id } = await params;
+  const post = await getPost(id);
+  if (!post) notFound();              // renders not-found.tsx with a 404 status
+  return &lt;Article post={post} /&gt;;
+}</pre><ul><li><strong>Expected errors</strong> (validation, "email already taken") should be <em>returned</em> from Server Actions and shown with <code>useActionState</code>, not thrown.</li><li><strong>Unexpected errors</strong> are thrown and caught by the nearest <code>error.tsx</code>. In production the message is hidden; log the <code>digest</code> on the server to match it.</li><li><strong>Do not wrap <code>redirect()</code> or <code>notFound()</code> in try/catch</strong>: they work by throwing, and catching them swallows the navigation.</li><li><code>error.tsx</code> does not catch errors in the <code>layout.tsx</code> of the same segment; the parent segment's boundary does.</li></ul><p><strong>Interview tip:</strong> Place <code>error.tsx</code> files where a failure should stay contained (per dashboard widget route, not only at the root).</p>`
+    },
+    {
+      q:"Route Handlers in depth: caching, streaming and webhooks.",
+      a:`<ul><li><strong>Dynamic by default:</strong> handlers run per request. A <code>GET</code> handler can opt into static caching with <code>export const dynamic = 'force-static'</code> (other methods are never cached). With Cache Components, cache data inside with <code>use cache</code> instead.</li><li><strong>Web standard APIs:</strong> handlers receive a <code>Request</code> and return a <code>Response</code> (<code>Response.json()</code>, streams, redirects).</li><li><strong>Streaming:</strong> return a <code>ReadableStream</code> (server-sent events, AI token streams, large exports).</li><li><strong>Webhooks:</strong> read the raw body (<code>await req.text()</code>) to verify the provider's signature before parsing JSON, and respond quickly; do heavy work later (a queue or <code>after()</code>).</li><li><strong>When to use them</strong> vs Server Actions: public or third-party callers, webhooks, non-POST methods, custom responses and streaming. Server Actions are for your own UI's mutations.</li></ul><pre>// app/api/events/route.ts: a server-sent events stream
+export async function GET(req: Request) {
+  const encoder = new TextEncoder();
+  const stream = new ReadableStream({
+    start(controller) {
+      const timer = setInterval(() =&gt; controller.enqueue(encoder.encode(\`data: \${Date.now()}\\n\\n\`)), 1000);
+      req.signal.addEventListener('abort', () =&gt; { clearInterval(timer); controller.close(); });
+    },
+  });
+  return new Response(stream, { headers: { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache' } });
+}</pre><p><strong>Interview tip:</strong> For webhooks, mention idempotency: providers retry, so store the event id and ignore duplicates.</p>`
+    },
+    {
+      q:"How do environment variables work in Next.js, and how do you keep secrets on the server?",
+      a:`<ul><li><strong>Server-only by default:</strong> <code>process.env.DATABASE_URL</code> is available in Server Components, Server Actions, Route Handlers and <code>proxy.ts</code>, and never sent to the browser.</li><li><strong><code>NEXT_PUBLIC_</code> variables are inlined at build time</strong> into the client bundle. They are public, and changing them requires a rebuild. Dynamic lookups such as <code>process.env[name]</code> are <em>not</em> inlined.</li><li><strong><code>import "server-only"</code></strong> at the top of a module makes the build fail if client code imports it: a guard for files that read secrets.</li><li><strong>Load order:</strong> <code>.env.local</code> overrides <code>.env</code>; environment-specific files (<code>.env.production</code>) exist too. Never commit <code>.env.local</code>.</li><li><strong>Runtime configuration</strong> for one image deployed to many environments: read server variables at request time (dynamic rendering) or expose them through an API, because <code>NEXT_PUBLIC_</code> values are frozen at build.</li><li><strong>Validate at startup</strong> (for example with Zod) so a missing variable fails the deploy, not the first request.</li></ul><pre>// env.ts: fail fast
+import { z } from 'zod';
+export const env = z.object({
+  DATABASE_URL: z.string().url(),
+  STRIPE_SECRET_KEY: z.string().min(1),
+  NEXT_PUBLIC_APP_URL: z.string().url(),
+}).parse(process.env);</pre><p><strong>Interview tip:</strong> Classic bug to mention: a secret prefixed with <code>NEXT_PUBLIC_</code> by mistake ships to every visitor.</p>`
+    },
+    {
+      q:"What is after(), and when would you use it?",
+      a:`<p class="lede"><code>after(callback)</code> from <code>next/server</code> schedules work to run <strong>after the response has been sent</strong>, so logging, analytics or cache warming do not delay the user.</p><pre>import { after } from 'next/server';
+
+export async function POST(req: Request) {
+  const order = await createOrder(await req.json());
+  after(async () =&gt; {
+    await analytics.track('order_created', { id: order.id });   // runs after the response
+    await sendReceiptEmail(order);
+  });
+  return Response.json(order, { status: 201 });
+}</pre><ul><li>Works in Server Components (including layouts), Server Actions, Route Handlers and <code>proxy.ts</code>.</li><li>The callback still runs on the server process, so it is not a durable job queue: if the process dies, the work is lost. Use a real queue for anything that must happen (payments, emails you are legally required to send).</li><li>On serverless platforms it relies on the platform keeping the function alive briefly after the response.</li></ul><p><strong>Interview tip:</strong> Good contrast: <code>after()</code> for best-effort side work, a queue for guaranteed work.</p>`
+    },
+    {
+      q:"How do you self-host Next.js in production (Docker, multiple instances)?",
+      a:`<ol><li><strong><code>output: 'standalone'</code></strong> in <code>next.config</code> produces <code>.next/standalone</code> with a minimal <code>server.js</code> and only the dependencies it needs. Copy <code>public</code> and <code>.next/static</code> next to it (or serve them from a CDN).</li><li><strong>Docker:</strong> multi-stage build, run <code>node server.js</code> as a non-root user, and handle <code>SIGTERM</code> for graceful shutdown.</li><li><strong>Multiple instances:</strong> the default cache is per instance (memory and local disk). Configure a shared cache handler (for example Redis, via <code>cacheHandlers</code>) so revalidation on one instance is seen by all.</li><li><strong>Static assets and images:</strong> put a CDN in front; image optimization needs CPU and a writable cache, or use an external image loader.</li><li><strong>Deploy skew:</strong> old browsers may request assets or Server Action ids from the previous build. Keep old static files available for a while and roll out gradually.</li></ol><pre># Dockerfile (outline)
+FROM node:22-slim AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM node:22-slim
+WORKDIR /app
+ENV NODE_ENV=production
+COPY --from=build /app/.next/standalone ./
+COPY --from=build /app/.next/static ./.next/static
+COPY --from=build /app/public ./public
+USER node
+EXPOSE 3000
+CMD ["node", "server.js"]</pre><p><strong>Interview tip:</strong> Name the three things Vercel does for you that you must do yourself: a shared cache across instances, a CDN for static assets, and handling old and new builds running side by side during a deploy.</p>`
+    }
+  ]
+}
+];
+
+window.__STUDY__ = {"key":"nextjs","core":"the 2-Hour Review"};
+</script>
+<script src="/study/engine.js"></script>
+</body>
+</html>

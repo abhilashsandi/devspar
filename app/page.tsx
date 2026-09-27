@@ -136,6 +136,29 @@ function useProgress(): Record<string, number> {
   return useMemo(() => JSON.parse(raw) as Record<string, number>, [raw]);
 }
 
+// Cards marked "Again" in flashcards, anywhere, that haven't since been marked "Got it" —
+// counted per guide the same way as progress (matching hashed question titles).
+function readWeak(): string {
+  const next: Record<string, number> = {};
+  try {
+    const weak = JSON.parse(localStorage.getItem('study-weak-titles-v1') || '{}') as Record<string, unknown>;
+    const weakKeys = Object.keys(weak);
+    next._total = weakKeys.length; // unique cards, regardless of how many guides each appears on
+    const hashes = new Set(weakKeys.map(fnv));
+    for (const g of ALL_GUIDES) {
+      const n = (meta[g.slug]?.keys ?? []).filter((k) => hashes.has(k)).length;
+      if (n) next[g.slug] = n;
+    }
+  } catch {
+    /* storage unavailable: show no weak cards */
+  }
+  return JSON.stringify(next);
+}
+function useWeak(): Record<string, number> {
+  const raw = useSyncExternalStore(subscribeProgress, readWeak, () => '{}');
+  return useMemo(() => JSON.parse(raw) as Record<string, number>, [raw]);
+}
+
 function GuideCard({ guide, index, done }: { guide: Guide; index: number; done: number }) {
   const m = meta[guide.slug];
   const pct = m && done ? Math.max(1, Math.min(100, Math.round((done / m.questions) * 100))) : 0;
@@ -172,7 +195,11 @@ function GuideCard({ guide, index, done }: { guide: Guide; index: number; done: 
 
 export default function LandingPage() {
   const progress = useProgress();
+  const weak = useWeak();
   const uniqueQuestions = meta._all?.questions ?? 0;
+
+  const weakTotal = weak._total ?? 0;
+  const weakGuide = Object.entries(weak).filter(([slug]) => slug !== '_total').sort((a, b) => b[1] - a[1])[0]?.[0];
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#030712] selection:bg-indigo-500/30 text-slate-900 dark:text-slate-50 font-sans overflow-hidden transition-colors duration-300">
@@ -251,7 +278,7 @@ export default function LandingPage() {
               </Link>
             </motion.div>
 
-            <motion.div variants={fadeIn} className="mt-12 flex flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-2 text-sm text-slate-500 font-medium">
+            <motion.div variants={fadeIn} className="mt-12 flex flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-2 text-sm text-slate-500 dark:text-slate-400 font-medium">
               <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500 dark:text-emerald-400"/> Flashcards & quizzes</div>
               <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500 dark:text-emerald-400"/> Progress saved in your browser</div>
               <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500 dark:text-emerald-400"/> Search across every guide</div>
@@ -307,6 +334,15 @@ export default function LandingPage() {
               <h2 className="text-3xl md:text-5xl font-bold mb-6">Study <span className="text-indigo-600 dark:text-indigo-400">Guides</span></h2>
               <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto text-lg mb-8">Every guide has categories, one-line summaries, flashcards and progress tracking. A question you review in one guide counts as reviewed in all of them.</p>
               <SiteSearch />
+              {weakTotal > 0 && weakGuide && (
+                <Link
+                  href={`/${weakGuide}#weak`}
+                  className="mt-6 inline-flex items-center gap-2 rounded-full bg-amber-100 dark:bg-amber-400/10 border border-amber-200 dark:border-amber-500/20 text-amber-800 dark:text-amber-300 text-sm font-medium px-4 py-2 hover:bg-amber-200/70 dark:hover:bg-amber-400/20 transition-colors"
+                >
+                  ↻ {weakTotal} card{weakTotal === 1 ? '' : 's'} marked &ldquo;Again&rdquo; — review them now
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              )}
             </motion.div>
 
             <div className="space-y-16">
@@ -408,7 +444,7 @@ export default function LandingPage() {
         </section>
 
         {/* Footer */}
-        <footer className="border-t border-slate-200 dark:border-white/5 py-12 px-6 text-center text-slate-500 text-sm">
+        <footer className="border-t border-slate-200 dark:border-white/5 py-12 px-6 text-center text-slate-500 dark:text-slate-400 text-sm">
           <p>© {new Date().getFullYear()} DevSpar. Study guides and utilities that run in your browser.</p>
         </footer>
       </main>

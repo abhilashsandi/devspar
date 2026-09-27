@@ -37,13 +37,33 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 ## Study guides
 
-The interview-prep pages (`/interview-prep`, `/nextjs`, `/genai`, ...) are static: each `app/<guide>/content.json` holds one self-contained HTML document (questions as a `DATA` array, plus the shared card/flashcard/search engine) that `app/components/StaticPrepClient.tsx` renders in an iframe.
+The interview-prep pages (`/interview-prep`, `/nextjs`, `/genai`, ...) each keep their questions
+in `app/<guide>/content.json` and load from a generated static file (`public/study/<guide>.html`)
+plus one engine shared by every guide (`public/study/engine.js`: search, flashcards, the phone
+menu, progress shared across guides), rendered in an iframe by `app/components/StaticPrepClient.tsx`.
 
-After changing any guide's questions, regenerate the cross-guide search index and the homepage counts:
+After editing any `content.json` (by hand or with a script — see `scripts/study/README.md` for
+the toolkit and worked examples), regenerate the generated files:
 
 ```bash
-npm run study:index
+npm run study:build
 ```
 
-This rewrites `public/search-index.json` and `app/lib/studyMeta.json`. Commit both with the content change.
-`/my-prep` is an encrypted private page (`scripts/encrypt-private.mjs`); nothing links to it.
+This runs automatically before `npm run build`, so a forgotten regeneration can't ship a stale
+site — but the generated `public/study/*.html`, `public/study/engine.js`,
+`public/search-index.json` and `app/lib/studyMeta.json` are committed like any other file, so
+commit them with the content change.
+
+`npm test` (after `npm run build`) starts a production server and checks that every guide loads,
+the shared engine works, and the homepage's links and search work — see `tests/`.
+
+`/my-prep` is an encrypted private page (`scripts/encrypt-private.mjs`); nothing links to it, and
+it is deliberately never part of `public/study/` (its content only exists client-side, after the
+reader's own password decrypts it).
+
+## SEO
+
+Set `NEXT_PUBLIC_SITE_URL` in the deploy environment (the production domain, e.g.
+`https://devspar.example.com`) — `app/sitemap.ts` and `app/robots.ts` use it to build absolute
+URLs, and fall back to `http://localhost:3000` when it's unset, which is only correct for local
+development.

@@ -1,5 +1,4 @@
 import StaticPrepClient from '../components/StaticPrepClient';
-import content from './content.json';
 
 export const metadata = {
   title: 'Web Platform & Tooling — Interview Prep',
@@ -9,7 +8,7 @@ export const metadata = {
 export default function WebPlatformPage() {
   return (
     <StaticPrepClient
-      html={(content as { html: string }).html}
+      src="/study/web-platform.html"
       title="Web Platform & Tooling — Interview Prep"
       loadingLabel="Loading web platform guide…"
     />
