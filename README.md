@@ -1,4 +1,6 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# devspar
+
+A personal developer toolkit and interview-prep hub built with Next.js. Includes browser-based CSV/PDF tools (`/csv-tools`, `/pdf-tools`), system-design and coding-question study guides with flashcards and search (`/system-design`, `/coding-questions`, `/interview-prep`, `/nextjs`, `/nodejs`, `/reactjs`, `/javascript`, `/genai`), and a GenAI playground. Built on [Next.js](https://nextjs.org), bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
 
