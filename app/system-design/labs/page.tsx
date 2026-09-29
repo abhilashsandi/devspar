@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
+import { useTheme } from 'next-themes';
+import {
   Server, Layers, Cloud, ShieldAlert, Network, BookOpen, Sun, Moon, Globe, CheckCircle2
 } from 'lucide-react';
 
@@ -75,18 +76,17 @@ const modules = [
 
 export default function SystemDesignMasterclass() {
   const [activeModule, setActiveModule] = useState(0);
-  const [isDark, setIsDark] = useState(true);
   const { progress } = useProgress();
+  // This page used to manage its own `dark` class on <html>, independently of the site's theme
+  // toggle (next-themes, in the root layout). Since next-themes also controls that same class,
+  // the two fought for control — next-themes always won after mount, so this page's own toggle
+  // button looked like it worked (the icon flipped) but had no lasting effect on what actually
+  // rendered. Using next-themes here too makes this page's theme the same single source of truth
+  // as the rest of the site.
+  const { resolvedTheme, setTheme } = useTheme();
+  const isDark = resolvedTheme !== 'light'; // matches the previous default (dark) before the theme is known
 
-  React.useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDark]);
-
-  const toggleTheme = () => setIsDark(!isDark);
+  const toggleTheme = () => setTheme(isDark ? 'light' : 'dark');
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#0a0f1c] text-slate-900 dark:text-slate-50 font-sans selection:bg-blue-500/30 pb-20 transition-colors duration-300">
@@ -112,7 +112,7 @@ export default function SystemDesignMasterclass() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-semibold mb-8 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-700 dark:text-blue-400 text-sm font-semibold mb-8 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
             <BookOpen className="w-4 h-4" />
             Complete Study Guide
           </div>
@@ -132,9 +132,9 @@ export default function SystemDesignMasterclass() {
           {/* Left Sidebar (Sticky Navigation) */}
           <div className="lg:w-1/4 shrink-0">
             <div className="sticky top-2 z-40 bg-slate-50/95 dark:bg-[#0a0f1c]/95 backdrop-blur-xl pb-4 lg:bg-transparent lg:dark:bg-transparent lg:pb-0 pt-2 lg:pt-8 -mx-4 px-4 lg:mx-0 lg:px-0 rounded-b-xl lg:rounded-none shadow-sm lg:shadow-none">
-              <h3 className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-slate-500 mb-3 lg:mb-6 ml-2 hidden lg:block">Modules</h3>
+              <h3 className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-3 lg:mb-6 ml-2 hidden lg:block">Modules</h3>
               <div className="flex flex-row lg:flex-col gap-3 overflow-x-auto lg:overflow-visible snap-x pb-2 slick-scrollbar">
-              <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-6 ml-2">Modules</h3>
+              <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-6 ml-2 lg:hidden">Modules</h3>
               {modules.map((mod, idx) => (
                 <button
                   key={mod.id}
@@ -151,7 +151,7 @@ export default function SystemDesignMasterclass() {
                     {mod.icon}
                   </div>
                   <div className="flex-1">
-                    <div className="text-xs font-semibold text-slate-500 mb-1 tracking-wider uppercase">Module {idx + 1}</div>
+                    <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1 tracking-wider uppercase">Module {idx + 1}</div>
                     <div className={`font-semibold text-sm md:text-base ${activeModule === idx ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-300'}`}>
                       {mod.title}
                     </div>

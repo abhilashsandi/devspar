@@ -36,7 +36,7 @@ export default function ArchitectureSandbox() {
           <Globe className="text-blue-500" />
           Interactive Architecture Sandbox
         </h3>
-        <p className="text-slate-500 text-sm mt-1">
+        <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
           Drag the components from the dock to build a scalable web architecture.
         </p>
       </div>
@@ -57,7 +57,7 @@ export default function ArchitectureSandbox() {
         
         {/* Drop zones / Slots */}
         <div className={`w-24 h-24 sm:w-32 sm:h-32 rounded-xl border-2 flex flex-col items-center justify-center transition-colors ${placed['lb'] ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-slate-200 dark:border-slate-800 border-dashed'}`}>
-          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Tier 1</span>
+          <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Tier 1</span>
           {placed['lb'] && <Server className="w-8 h-8 sm:w-12 sm:h-12 text-blue-500 mb-1" />}
           {placed['lb'] && <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Load Balancer</span>}
         </div>
@@ -65,7 +65,7 @@ export default function ArchitectureSandbox() {
         {placed['lb'] && placed['web'] && <ArrowRight className="text-slate-400 animate-pulse rotate-90 sm:rotate-0" />}
         
         <div className={`w-24 h-24 sm:w-32 sm:h-32 rounded-xl border-2 flex flex-col items-center justify-center transition-colors ${placed['web'] ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20' : 'border-slate-200 dark:border-slate-800 border-dashed'}`}>
-          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Tier 2</span>
+          <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Tier 2</span>
           {placed['web'] && <Server className="w-8 h-8 sm:w-12 sm:h-12 text-purple-500 mb-1" />}
           {placed['web'] && <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Web Servers</span>}
         </div>
@@ -73,7 +73,7 @@ export default function ArchitectureSandbox() {
         {placed['web'] && placed['db'] && <ArrowRight className="text-slate-400 animate-pulse rotate-90 sm:rotate-0" />}
 
         <div className={`w-24 h-24 sm:w-32 sm:h-32 rounded-xl border-2 flex flex-col items-center justify-center transition-colors ${placed['db'] ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20' : 'border-slate-200 dark:border-slate-800 border-dashed'}`}>
-          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Tier 3</span>
+          <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Tier 3</span>
           {placed['db'] && <Database className="w-8 h-8 sm:w-12 sm:h-12 text-emerald-500 mb-1" />}
           {placed['db'] && <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Database</span>}
         </div>

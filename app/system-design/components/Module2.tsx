@@ -176,6 +176,7 @@ function MonolithVsMicroservicesSVG() {
         </button>
       </div>
       <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 800 380" className="w-full max-w-3xl mx-auto min-w-[800px] lg:min-w-0">
         <defs>
           <linearGradient id="monoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -345,6 +346,7 @@ function MonolithVsMicroservicesSVG() {
         </AnimatePresence>
       </svg>
 </div>
+</div>
     </div>
   );
 }
@@ -355,6 +357,7 @@ function MonolithVsMicroservicesSVG() {
 function BoundedContextMapSVG() {
   return (
     <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 800 500" className="w-full max-w-3xl mx-auto my-8 min-w-[800px] lg:min-w-0">
       <defs>
         <linearGradient id="bcGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -550,6 +553,7 @@ function BoundedContextMapSVG() {
       </text>
     </svg>
 </div>
+</div>
   );
 }
 
@@ -568,6 +572,7 @@ function DockerLayersSVG() {
 
   return (
     <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 700 420" className="w-full max-w-2xl mx-auto my-8 min-w-[700px] lg:min-w-0">
       <text x="350" y="28" textAnchor="middle" fill="#e2e8f0" fontSize="18" fontWeight="bold">
         Docker Image Layers (Union Filesystem)
@@ -630,6 +635,7 @@ function DockerLayersSVG() {
       </text>
     </svg>
 </div>
+</div>
   );
 }
 
@@ -639,6 +645,7 @@ function DockerLayersSVG() {
 function MigrationTimelineSVG() {
   return (
     <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 800 340" className="w-full max-w-3xl mx-auto my-8 min-w-[800px] lg:min-w-0">
       <text x="400" y="25" textAnchor="middle" fill="#e2e8f0" fontSize="18" fontWeight="bold">
         Strangler Fig Migration Pattern
@@ -695,6 +702,7 @@ function MigrationTimelineSVG() {
         Microservices (growing)
       </text>
     </svg>
+</div>
 </div>
   );
 }
@@ -791,7 +799,7 @@ export default function Module2() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-sm font-medium mb-6"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-700 dark:text-cyan-400 text-sm font-medium mb-6"
           >
             <Box className="w-4 h-4" />
             Module 2 — System Design

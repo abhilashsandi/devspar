@@ -76,7 +76,7 @@ export default function TableOfContents({ moduleIdx }: { moduleIdx: number }) {
                 className={`text-left text-sm py-1 pl-4 block w-full transition-colors ${
                   activeId === heading.id
                     ? 'text-blue-600 dark:text-blue-400 font-semibold border-l-2 -ml-[2px] border-blue-600 dark:border-blue-400'
-                    : 'text-slate-600 dark:text-slate-500 hover:text-slate-900 dark:hover:text-slate-300'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-300'
                 }`}
               >
                 {heading.title.length > 35 ? heading.title.substring(0, 32) + '...' : heading.title}

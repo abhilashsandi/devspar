@@ -170,13 +170,13 @@ function Badge({
   color?: string;
 }) {
   const colors: Record<string, string> = {
-    blue: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
-    purple: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
-    green: 'bg-green-500/20 text-green-300 border-green-500/30',
-    amber: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
-    red: 'bg-red-500/20 text-red-300 border-red-500/30',
-    cyan: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30',
-    pink: 'bg-pink-500/20 text-pink-300 border-pink-500/30',
+    blue: 'bg-blue-500/20 text-blue-700 dark:text-blue-300 border-blue-500/30',
+    purple: 'bg-purple-500/20 text-purple-700 dark:text-purple-300 border-purple-500/30',
+    green: 'bg-green-500/20 text-green-700 dark:text-green-300 border-green-500/30',
+    amber: 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-500/30',
+    red: 'bg-red-500/20 text-red-700 dark:text-red-300 border-red-500/30',
+    cyan: 'bg-cyan-500/20 text-cyan-700 dark:text-cyan-300 border-cyan-500/30',
+    pink: 'bg-pink-500/20 text-pink-700 dark:text-pink-300 border-pink-500/30',
   };
   return (
     <span
@@ -252,6 +252,7 @@ function DesignVsArchitecture() {
       <Card className="mb-6">
         <h4 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">Abstraction Spectrum</h4>
         <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 800 120" className="w-full min-w-[800px] lg:min-w-0" aria-label="Abstraction spectrum from code to architecture">
           <defs>
             <linearGradient id="spectrumGrad" x1="0" y1="0" x2="1" y2="0">
@@ -280,6 +281,7 @@ function DesignVsArchitecture() {
           <text x="50" y="95" fill="#94a3b8" fontSize="11">Low-level / Tactical</text>
           <text x="610" y="95" fill="#94a3b8" fontSize="11">High-level / Strategic</text>
         </svg>
+</div>
 </div>
       </Card>
 
@@ -330,6 +332,7 @@ function WaterfallModel() {
       <Card className="mb-6 overflow-x-auto">
         <h4 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">Waterfall Flow Diagram</h4>
         <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 900 500" className="w-full min-w-[600px]" aria-label="Waterfall model steps flowing downward">
           <defs>
             <filter id="dropShadow">
@@ -383,6 +386,7 @@ function WaterfallModel() {
             </marker>
           </defs>
         </svg>
+</div>
 </div>
       </Card>
 
@@ -481,7 +485,7 @@ function AgileMethods() {
                 <div className="shrink-0 mt-1">{p.icon}</div>
                 <div>
                   <h5 className="text-slate-900 dark:text-white font-bold text-lg">{p.title}</h5>
-                  <p className="text-slate-500 dark:text-slate-500 text-sm mb-2">over {p.over}</p>
+                  <p className="text-slate-500 dark:text-slate-400 text-sm mb-2">over {p.over}</p>
                   <p className="text-slate-700 dark:text-slate-300 text-sm">{p.desc}</p>
                 </div>
               </div>
@@ -494,6 +498,7 @@ function AgileMethods() {
       <Card className="mb-6">
         <h4 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">Agile Iterative Cycle</h4>
         <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 600 300" className="w-full max-w-xl mx-auto min-w-[600px] lg:min-w-0" aria-label="Agile iterative cycle diagram">
           {/* Center */}
           <motion.circle cx="300" cy="150" r="40" fill="#3b82f6" opacity="0.2" stroke="#3b82f6" strokeWidth="2"
@@ -554,6 +559,7 @@ function AgileMethods() {
             Each sprint: 1-4 weeks → Shippable increment
           </text>
         </svg>
+</div>
 </div>
       </Card>
 
@@ -692,7 +698,7 @@ function QualityAttributes() {
             </tbody>
           </table>
         </div>
-        <p className="text-slate-500 dark:text-slate-500 text-xs mt-3">
+        <p className="text-slate-500 dark:text-slate-400 text-xs mt-3">
           ★ Five Nines is highlighted — the gold standard for mission-critical systems (banking, healthcare, telecom).
         </p>
       </Card>
@@ -773,7 +779,7 @@ function ArchitecturalStructures() {
                     <CircleDot className={`w-4 h-4 text-${cat.color}-400 mt-0.5 shrink-0`} />
                     <div>
                       <span className="text-slate-900 dark:text-white font-medium text-sm">{item.name}</span>
-                      <p className="text-slate-500 dark:text-slate-500 text-xs">{item.detail}</p>
+                      <p className="text-slate-500 dark:text-slate-400 text-xs">{item.detail}</p>
                     </div>
                   </li>
                 ))}
@@ -787,6 +793,7 @@ function ArchitecturalStructures() {
       <Card>
         <h4 className="text-lg font-semibold text-slate-900 dark:text-white mb-3">How Structures Relate</h4>
         <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 700 200" className="w-full min-w-[700px] lg:min-w-0" aria-label="Architectural structures relationship">
           {/* Three pillars */}
           {[
@@ -820,6 +827,7 @@ function ArchitecturalStructures() {
           </text>
         </svg>
 </div>
+</div>
       </Card>
     </Section>
   );
@@ -849,6 +857,7 @@ function CentralizedVsDecentralized() {
               <Target className="w-5 h-5 text-blue-400" /> Centralized
             </h4>
             <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 300 220" className="w-full mb-4 min-w-[300px] lg:min-w-0" aria-label="Centralized architecture with controller and workers">
               {/* Controller */}
               <motion.circle cx="150" cy="60" r="35" fill="#3b82f6" opacity="0.2" stroke="#3b82f6" strokeWidth="2"
@@ -865,6 +874,7 @@ function CentralizedVsDecentralized() {
                 </g>
               ))}
             </svg>
+</div>
 </div>
             <ul className="text-slate-700 dark:text-slate-300 text-sm space-y-1">
               <li>✅ Single point of coordination</li>
@@ -888,6 +898,7 @@ function CentralizedVsDecentralized() {
               <GitBranch className="w-5 h-5 text-purple-400" /> Decentralized
             </h4>
             <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 300 220" className="w-full mb-4 min-w-[300px] lg:min-w-0" aria-label="Decentralized architecture with equal peer nodes">
               {/* Equal nodes in mesh */}
               {[
@@ -911,6 +922,7 @@ function CentralizedVsDecentralized() {
                 </g>
               ))}
             </svg>
+</div>
 </div>
             <ul className="text-slate-700 dark:text-slate-300 text-sm space-y-1">
               <li>✅ No single point of failure</li>
@@ -959,6 +971,7 @@ function LayeredArchitecture() {
       <Card className="mb-6">
         <h4 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">Layer Stack Diagram</h4>
         <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 700 360" className="w-full min-w-[700px] lg:min-w-0" aria-label="Layered architecture stack with four layers">
           {layers.map((layer, i) => {
             const y = 30 + i * 80;
@@ -993,6 +1006,7 @@ function LayeredArchitecture() {
             );
           })}
         </svg>
+</div>
 </div>
       </Card>
 
@@ -1116,6 +1130,7 @@ function MVCPattern() {
       <Card className="mb-6">
         <h4 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">MVC Interaction Cycle</h4>
         <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 700 350" className="w-full min-w-[700px] lg:min-w-0" aria-label="MVC pattern showing Model, View, Controller cycle">
           {/* View */}
           <motion.g initial={{ opacity: 0, y: -20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: 0 }} viewport={{ once: true }}>
@@ -1171,6 +1186,7 @@ function MVCPattern() {
           </defs>
         </svg>
 </div>
+</div>
       </Card>
 
       <div className="grid md:grid-cols-3 gap-4">
@@ -1209,6 +1225,7 @@ function ClientServer() {
 
       <Card className="mb-6">
         <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 700 250" className="w-full min-w-[700px] lg:min-w-0" aria-label="Client-server request response diagram">
           {/* Clients */}
           {[80, 80, 80].map((_, i) => {
@@ -1249,6 +1266,7 @@ function ClientServer() {
           <line x1="370" y1="235" x2="410" y2="235" stroke="#10b981" strokeWidth="2" strokeDasharray="5 3" />
           <text x="415" y="239" fill="#94a3b8" fontSize="10">Response</text>
         </svg>
+</div>
 </div>
       </Card>
 
@@ -1321,7 +1339,7 @@ function PeerToPeer() {
               <Badge color={t.color}>{t.name}</Badge>
               <h5 className="text-slate-900 dark:text-white font-bold mt-3 mb-2">{t.name}</h5>
               <p className="text-slate-700 dark:text-slate-300 text-sm mb-3">{t.desc}</p>
-              <p className="text-slate-500 dark:text-slate-500 text-xs"><strong>Examples:</strong> {t.examples}</p>
+              <p className="text-slate-500 dark:text-slate-400 text-xs"><strong>Examples:</strong> {t.examples}</p>
             </Card>
           </motion.div>
         ))}
@@ -1331,6 +1349,7 @@ function PeerToPeer() {
       <Card>
         <h4 className="text-lg font-semibold text-slate-900 dark:text-white mb-3">P2P Network Topology</h4>
         <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 500 250" className="w-full max-w-md mx-auto min-w-[500px] lg:min-w-0" aria-label="Peer-to-peer mesh network">
           {[
             { x: 250, y: 40 },
@@ -1361,6 +1380,7 @@ function PeerToPeer() {
           ))}
         </svg>
 </div>
+</div>
       </Card>
     </Section>
   );
@@ -1385,6 +1405,7 @@ function BrokerPattern() {
 
       <Card className="mb-6">
         <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 700 220" className="w-full min-w-[700px] lg:min-w-0" aria-label="Broker pattern with clients, broker, and servers">
           {/* Clients */}
           {['Client A', 'Client B'].map((label, i) => (
@@ -1427,6 +1448,7 @@ function BrokerPattern() {
             </g>
           ))}
         </svg>
+</div>
 </div>
       </Card>
 
@@ -1485,6 +1507,7 @@ function PipeAndFilter() {
       <Card className="mb-6">
         <h4 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">Data Pipeline Diagram</h4>
         <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 900 140" className="w-full min-w-[600px]" aria-label="Pipe and filter pipeline with sequential stages">
           {stages.map((stage, i) => {
             const x = 30 + i * 145;
@@ -1517,6 +1540,7 @@ function PipeAndFilter() {
             Data flows left → right through independent, composable stages
           </text>
         </svg>
+</div>
 </div>
       </Card>
 
@@ -1564,6 +1588,7 @@ function EventDriven() {
 
       <Card className="mb-6">
         <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 700 280" className="w-full min-w-[700px] lg:min-w-0" aria-label="Event-driven architecture with producers, event channel, and consumers">
           {/* Producers */}
           <text x="80" y="25" textAnchor="middle" fill="#94a3b8" fontSize="12" fontWeight="bold">Producers</text>
@@ -1612,6 +1637,7 @@ function EventDriven() {
           ))}
         </svg>
 </div>
+</div>
       </Card>
 
       <Card>
@@ -1653,6 +1679,7 @@ function PubSub() {
 
       <Card className="mb-6">
         <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 700 300" className="w-full min-w-[700px] lg:min-w-0" aria-label="Publish-subscribe with publishers, event bus with topics, and subscribers">
           {/* Publishers */}
           {['Pub 1', 'Pub 2'].map((label, i) => (
@@ -1693,6 +1720,7 @@ function PubSub() {
           <line x1="455" y1="155" x2="555" y2="235" stroke="#10b981" strokeWidth="1" opacity="0.4" />
         </svg>
 </div>
+</div>
       </Card>
 
       <div className="flex flex-wrap gap-2">
@@ -1727,6 +1755,7 @@ function HexagonalArchitecture() {
       <Card className="mb-6">
         <h4 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">Hexagonal Structure</h4>
         <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 700 400" className="w-full min-w-[700px] lg:min-w-0" aria-label="Hexagonal architecture with core domain, ports, and adapters">
           <defs>
             <linearGradient id="hexGrad" x1="0" y1="0" x2="1" y2="1">
@@ -1782,6 +1811,7 @@ function HexagonalArchitecture() {
             </motion.g>
           ))}
         </svg>
+</div>
 </div>
       </Card>
 
@@ -1859,6 +1889,7 @@ function ServerlessArchitecture() {
 
       <Card className="mb-6">
         <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 700 220" className="w-full min-w-[700px] lg:min-w-0" aria-label="Serverless architecture with events triggering cloud functions">
           {/* Events */}
           {[
@@ -1897,6 +1928,7 @@ function ServerlessArchitecture() {
             </g>
           ))}
         </svg>
+</div>
 </div>
       </Card>
 
@@ -1954,6 +1986,7 @@ function MonolithicArchitecture() {
 
       <Card className="mb-6">
         <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 700 260" className="w-full min-w-[700px] lg:min-w-0" aria-label="Monolithic architecture as a single deployment unit">
           {/* Big monolith box */}
           <motion.rect x="100" y="20" width="500" height="200" rx="20"
@@ -1983,6 +2016,7 @@ function MonolithicArchitecture() {
             initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 0.8 }} viewport={{ once: true }} />
           <text x="350" y="250" textAnchor="middle" fill="#94a3b8" fontSize="10">Single Database</text>
         </svg>
+</div>
 </div>
       </Card>
 
@@ -2036,6 +2070,7 @@ function ScalabilitySection() {
               <ArrowUpDown className="w-5 h-5 text-blue-400" /> Vertical Scaling (Scale Up)
             </h4>
             <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 300 200" className="w-full mb-4 min-w-[300px] lg:min-w-0" aria-label="Vertical scaling: making one server bigger">
               {/* Small server growing */}
               <motion.rect x="50" y="120" width="80" height="60" rx="8" fill="#3b82f6" opacity="0.2" stroke="#3b82f6" strokeWidth="2" />
@@ -2058,6 +2093,7 @@ function ScalabilitySection() {
               <text x="230" y="125" textAnchor="middle" fill="#93c5fd" fontSize="9">256 GB</text>
               <text x="230" y="140" textAnchor="middle" fill="#93c5fd" fontSize="9">NVMe SSD</text>
             </svg>
+</div>
 </div>
             <p className="text-slate-700 dark:text-slate-300 text-sm mb-3">Add more power to an existing machine: more CPU, RAM, faster storage.</p>
             <ul className="text-slate-600 dark:text-slate-400 text-xs space-y-1">
@@ -2083,6 +2119,7 @@ function ScalabilitySection() {
               <Scale className="w-5 h-5 text-green-400" /> Horizontal Scaling (Scale Out)
             </h4>
             <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 300 200" className="w-full mb-4 min-w-[300px] lg:min-w-0" aria-label="Horizontal scaling: adding more servers">
               {/* Single server */}
               <motion.rect x="30" y="80" width="60" height="50" rx="8" fill="#10b981" opacity="0.2" stroke="#10b981" strokeWidth="2" />
@@ -2109,6 +2146,7 @@ function ScalabilitySection() {
                 </motion.g>
               ))}
             </svg>
+</div>
 </div>
             <p className="text-slate-700 dark:text-slate-300 text-sm mb-3">Add more machines to distribute the load. Each handles a portion of traffic.</p>
             <ul className="text-slate-600 dark:text-slate-400 text-xs space-y-1">
@@ -2204,6 +2242,7 @@ function Bottlenecks() {
       <Card>
         <h4 className="text-slate-900 dark:text-white font-semibold mb-4">Systematic Bottleneck Resolution</h4>
         <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 800 100" className="w-full min-w-[800px] lg:min-w-0" aria-label="Bottleneck resolution pipeline">
           {[
             { label: 'Monitor', color: '#3b82f6', desc: 'APM, Logs' },
@@ -2229,6 +2268,7 @@ function Bottlenecks() {
             );
           })}
         </svg>
+</div>
 </div>
         <p className="text-slate-600 dark:text-slate-400 text-sm mt-4">
           <strong className="text-slate-900 dark:text-white">Remember:</strong> Premature optimization is the root of all evil (Knuth). Always measure first,
@@ -2268,7 +2308,7 @@ function TableOfContents() {
 
   return (
     <motion.nav
-      className="mb-16 rounded-2xl border border-slate-300/60 dark:border-slate-700/60 bg-slate-800/30 backdrop-blur-sm p-6"
+      className="mb-16 rounded-2xl border border-slate-300/60 dark:border-slate-700/60 bg-slate-200/60 dark:bg-slate-800/30 backdrop-blur-sm p-6"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
@@ -2281,9 +2321,9 @@ function TableOfContents() {
           <a
             key={item.id}
             href={`#${item.id}`}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-white hover:bg-slate-700/50 transition-all text-sm"
+            className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-300/50 dark:hover:bg-slate-700/50 transition-all text-sm"
           >
-            <span className="text-xs font-bold text-slate-600 w-6">{String(i + 1).padStart(2, '0')}</span>
+            <span className="text-xs font-bold text-slate-600 dark:text-slate-400 w-6">{String(i + 1).padStart(2, '0')}</span>
             {item.label}
           </a>
         ))}
@@ -2346,7 +2386,7 @@ export default function Module1() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-300 text-sm font-medium mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-700 dark:text-blue-300 text-sm font-medium mb-6">
             <Rocket className="w-4 h-4" />
             Module 1 of System Design
           </div>
@@ -2395,7 +2435,7 @@ export default function Module1() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
         >
-          <p className="text-slate-500 dark:text-slate-500 text-sm">
+          <p className="text-slate-500 dark:text-slate-400 text-sm">
             Module 1 Complete — 20 Topics Covered
           </p>
           <p className="text-slate-600 text-xs mt-2">

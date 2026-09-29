@@ -88,7 +88,7 @@ export default function SearchCommandPalette({ onSelect }: { onSelect: (moduleId
 
               <div className="max-h-[60vh] overflow-y-auto p-2">
                 {filtered.length === 0 ? (
-                  <div className="p-8 text-center text-slate-500">
+                  <div className="p-8 text-center text-slate-500 dark:text-slate-400">
                     No results found for "{query}"
                   </div>
                 ) : (
@@ -104,7 +104,7 @@ export default function SearchCommandPalette({ onSelect }: { onSelect: (moduleId
                       <Book className="w-4 h-4 text-slate-400 mr-3 group-hover:text-blue-500" />
                       <div className="flex-1">
                         <div className="text-slate-900 dark:text-slate-200 font-medium">{item.title}</div>
-                        <div className="text-xs text-slate-500">Module {item.moduleIdx + 1} • {item.type}</div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400">Module {item.moduleIdx + 1} • {item.type}</div>
                       </div>
                       <ChevronRight className="w-4 h-4 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </button>

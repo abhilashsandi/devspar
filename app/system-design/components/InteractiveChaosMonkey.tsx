@@ -54,7 +54,7 @@ export default function InteractiveChaosMonkey() {
         </div>
         <div className="text-right">
           <div className="text-2xl font-mono text-emerald-400">{requests}</div>
-          <div className="text-xs text-slate-500 dark:text-slate-500 uppercase tracking-widest">Total Requests</div>
+          <div className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-widest">Total Requests</div>
         </div>
       </div>
 

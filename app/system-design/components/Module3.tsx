@@ -160,6 +160,7 @@ const SCSDiagram = () => {
         Self-Contained Systems Architecture
       </h4>
       <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 680 320" className="w-full max-w-2xl mx-auto min-w-[680px] lg:min-w-0">
         {/* Browser bar */}
         <rect x="180" y="10" width="320" height="30" rx="6" fill="#1e293b" stroke="#475569" strokeWidth="1" />
@@ -266,6 +267,7 @@ const SCSDiagram = () => {
         </text>
       </svg>
 </div>
+</div>
     </motion.div>
   );
 };
@@ -283,6 +285,7 @@ const ESIDiagram = () => (
       Edge Side Includes — Request Assembly Flow
     </h4>
     <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 700 260" className="w-full max-w-2xl mx-auto min-w-[700px] lg:min-w-0">
       {/* Client */}
       <motion.rect x="20" y="90" width="100" height="50" rx="8" fill="#1e293b" stroke="#818cf8" strokeWidth="1.5"
@@ -348,6 +351,7 @@ const ESIDiagram = () => (
       </defs>
     </svg>
 </div>
+</div>
   </motion.div>
 );
 
@@ -379,6 +383,7 @@ const CAPTriangle = () => {
         CAP Theorem — Pick Two (in the presence of partitions)
       </h4>
       <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 600 310" className="w-full max-w-xl mx-auto min-w-[600px] lg:min-w-0">
         {/* Triangle edges */}
         <motion.polygon
@@ -462,6 +467,7 @@ const CAPTriangle = () => {
         ))}
       </svg>
 </div>
+</div>
     </motion.div>
   );
 };
@@ -479,6 +485,7 @@ const APIGatewayDiagram = () => (
       API Gateway — Single Entry Point Pattern
     </h4>
     <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 720 300" className="w-full max-w-2xl mx-auto min-w-[720px] lg:min-w-0">
       {/* Clients */}
       {['Web App', 'Mobile', 'Partner'].map((c, i) => (
@@ -584,6 +591,7 @@ const APIGatewayDiagram = () => (
       </motion.g>
     </svg>
 </div>
+</div>
   </motion.div>
 );
 
@@ -608,6 +616,7 @@ const ServiceDiscoveryDiagram = () => {
         Service Discovery — Registration &amp; Lookup (Animated)
       </h4>
       <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 600 260" className="w-full max-w-xl mx-auto min-w-[600px] lg:min-w-0">
         {/* Registry */}
         <rect x="220" y="20" width="160" height="70" rx="10" fill="#0f172a" stroke="#c084fc" strokeWidth="2" />
@@ -673,6 +682,7 @@ const ServiceDiscoveryDiagram = () => {
         </text>
       </svg>
 </div>
+</div>
     </motion.div>
   );
 };
@@ -690,6 +700,7 @@ const SagaDiagram = () => (
       Saga Pattern — Choreography vs Orchestration
     </h4>
     <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 700 340" className="w-full max-w-2xl mx-auto min-w-[700px] lg:min-w-0">
       {/* Choreography (top) */}
       <text x="350" y="20" textAnchor="middle" fill="#818cf8" fontSize="12" fontWeight="bold">
@@ -803,6 +814,7 @@ const SagaDiagram = () => (
       </defs>
     </svg>
 </div>
+</div>
   </motion.div>
 );
 
@@ -844,6 +856,7 @@ const CircuitBreakerSVG = () => {
         </span>
       </p>
       <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 600 240" className="w-full max-w-xl mx-auto min-w-[600px] lg:min-w-0">
         {/* Closed state */}
         <motion.circle
@@ -974,6 +987,7 @@ const CircuitBreakerSVG = () => {
         </defs>
       </svg>
 </div>
+</div>
     </motion.div>
   );
 };
@@ -991,6 +1005,7 @@ const KubernetesDiagram = () => (
       Kubernetes Cluster Architecture
     </h4>
     <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 700 320" className="w-full max-w-2xl mx-auto min-w-[700px] lg:min-w-0">
       {/* Cluster boundary */}
       <rect x="10" y="10" width="680" height="300" rx="12" fill="none" stroke="#326ce530" strokeWidth="2" strokeDasharray="6 4" />
@@ -1082,6 +1097,7 @@ const KubernetesDiagram = () => (
       </text>
     </svg>
 </div>
+</div>
   </motion.div>
 );
 
@@ -1100,10 +1116,10 @@ const Collapsible = ({
     <div className="border border-slate-300/50 dark:border-slate-700/50 rounded-lg mb-3 overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-4 py-3 bg-slate-800/40 hover:bg-slate-800/70 transition-colors text-left"
+        className="w-full flex items-center justify-between px-4 py-3 bg-slate-200/60 dark:bg-slate-800/40 hover:bg-slate-300/60 dark:hover:bg-slate-800/70 transition-colors text-left"
       >
         <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{title}</span>
-        {open ? <ChevronUp className="w-4 h-4 text-slate-500 dark:text-slate-500" /> : <ChevronDown className="w-4 h-4 text-slate-500 dark:text-slate-500" />}
+        {open ? <ChevronUp className="w-4 h-4 text-slate-500 dark:text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-500 dark:text-slate-400" />}
       </button>
       <AnimatePresence>
         {open && (
@@ -1114,7 +1130,7 @@ const Collapsible = ({
             transition={{ duration: 0.3 }}
             className="overflow-hidden"
           >
-            <div className="p-4 bg-slate-900/30">{children}</div>
+            <div className="p-4 bg-slate-100/50 dark:bg-slate-900/30">{children}</div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -1176,7 +1192,7 @@ export default function Module3() {
         transition={{ duration: 0.6 }}
         className="text-center mb-12"
       >
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20 text-purple-400 text-xs font-medium mb-4">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20 text-purple-700 dark:text-purple-400 text-xs font-medium mb-4">
           <Cpu className="w-3.5 h-3.5" />
           Module 3 — Practical Implementation
         </div>
@@ -1465,7 +1481,7 @@ export default function Module3() {
               <p>2. ItemRemoved &#123; item: B, newTotal: $80 &#125;</p>
               <p>3. PaymentAuthorized &#123; method: "card", amount: $80 &#125;</p>
               <p>4. OrderConfirmed &#123; estimatedDelivery: "2024-03-15" &#125;</p>
-              <p className="text-slate-500 dark:text-slate-500"># Current state = replay all events → confirmed order, $80, 1 item</p>
+              <p className="text-slate-500 dark:text-slate-400"># Current state = replay all events → confirmed order, $80, 1 item</p>
             </div>
             <p className="mt-2 text-slate-600 dark:text-slate-400 text-xs">
               <strong>Benefits:</strong> Full audit trail, temporal queries ("what was the state at time T?"),
@@ -2300,7 +2316,7 @@ class CircuitBreaker {
                 Checks metrics every 15s by default. Uses a stabilization window to prevent flapping.</p>
                 <div className="bg-slate-100/80 dark:bg-slate-800/50 p-2 rounded mt-1 font-mono text-[10px]">
                   <p>desiredReplicas = ceil(currentReplicas × (currentMetricValue / targetMetricValue))</p>
-                  <p className="text-slate-500 dark:text-slate-500 mt-1">Example: 3 pods × (80% CPU / 50% target) = ceil(4.8) = 5 pods</p>
+                  <p className="text-slate-500 dark:text-slate-400 mt-1">Example: 3 pods × (80% CPU / 50% target) = ceil(4.8) = 5 pods</p>
                 </div>
               </div>
               <div>

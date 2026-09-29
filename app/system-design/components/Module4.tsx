@@ -86,6 +86,7 @@ function CollaborativeEditingSVG() {
 
   return (
     <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 700 340" className="w-full max-w-3xl mx-auto min-w-[700px] lg:min-w-0">
       <defs>
         <linearGradient id="m4-bg" x1="0" y1="0" x2="1" y2="1">
@@ -225,6 +226,7 @@ function CollaborativeEditingSVG() {
       )}
     </svg>
 </div>
+</div>
   );
 }
 
@@ -329,11 +331,11 @@ function GoogleDocsSection() {
                 <span className="w-10 h-10 flex items-center justify-center rounded-lg bg-sky-900/60 border border-sky-500/40 text-sky-300 font-bold text-lg">
                   {ch}
                 </span>
-                <span className="text-[10px] text-slate-500 dark:text-slate-500 mt-1">pos {i}</span>
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">pos {i}</span>
               </motion.div>
             ))}
             <span className="text-slate-600 mx-2">→</span>
-            <span className="text-slate-500 dark:text-slate-500 text-xs">Each character is addressable</span>
+            <span className="text-slate-500 dark:text-slate-400 text-xs">Each character is addressable</span>
           </div>
         </div>
 
@@ -517,7 +519,7 @@ function GoogleDocsSection() {
           <Activity className="w-5 h-5 text-emerald-400" /> Animated Conflict Resolution
         </h3>
         <CollaborativeEditingSVG />
-        <p className="text-xs text-center text-slate-500 dark:text-slate-500 mt-2">Animation loops every ~11s — watch the full cycle</p>
+        <p className="text-xs text-center text-slate-500 dark:text-slate-400 mt-2">Animation loops every ~11s — watch the full cycle</p>
       </motion.div>
     </motion.section>
   );
@@ -742,6 +744,7 @@ function AWSDecOutageSection() {
 
         {/* Animated SVG – Network Congestion */}
         <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 600 220" className="w-full max-w-2xl mx-auto min-w-[600px] lg:min-w-0">
           <defs>
             <linearGradient id="m4-aws-bg" x1="0" y1="0" x2="1" y2="1">
@@ -820,6 +823,7 @@ function AWSDecOutageSection() {
           </text>
         </svg>
 </div>
+</div>
 
         <div className="space-y-3 text-sm text-slate-700 dark:text-slate-300">
           <p>
@@ -879,6 +883,7 @@ function ThreadExplosionSVG() {
 
   return (
     <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 600 280" className="w-full max-w-2xl mx-auto min-w-[600px] lg:min-w-0">
       <defs>
         <linearGradient id="m4-kinesis-bg" x1="0" y1="0" x2="0" y2="1">
@@ -971,6 +976,7 @@ function ThreadExplosionSVG() {
       )}
     </svg>
 </div>
+</div>
   );
 }
 
@@ -1042,7 +1048,7 @@ function AWSKinesisSection() {
                 <span key={svc.name} className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-red-950/40 border border-red-700/30 text-xs">
                   <XCircle className="w-3 h-3 text-red-400" />
                   <span className="text-red-300 font-semibold">{svc.name}</span>
-                  <span className="text-slate-500 dark:text-slate-500">— {svc.desc}</span>
+                  <span className="text-slate-500 dark:text-slate-400">— {svc.desc}</span>
                 </span>
               ))}
             </div>
@@ -1056,7 +1062,7 @@ function AWSKinesisSection() {
           <Activity className="w-5 h-5 text-red-400" /> Thread Explosion Visualization
         </h3>
         <ThreadExplosionSVG />
-        <p className="text-xs text-center text-slate-500 dark:text-slate-500 mt-2">Animation alternates between normal and crash states</p>
+        <p className="text-xs text-center text-slate-500 dark:text-slate-400 mt-2">Animation alternates between normal and crash states</p>
       </motion.div>
 
       {/* ── Hidden Dependency Map ── */}
@@ -1217,6 +1223,7 @@ function DesignLessonsSection() {
           <Activity className="w-5 h-5" /> Circuit Breaker State Machine
         </h3>
         <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 600 180" className="w-full max-w-2xl mx-auto min-w-[600px] lg:min-w-0">
           <rect width="600" height="180" rx="14" fill="#0f1219" />
 
@@ -1274,6 +1281,7 @@ function DesignLessonsSection() {
             </marker>
           </defs>
         </svg>
+</div>
 </div>
       </motion.div>
 
@@ -1400,7 +1408,7 @@ export default function Module4() {
           transition={{ duration: 0.6 }}
           className="text-center space-y-4"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-medium">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-700 dark:text-red-400 text-sm font-medium">
             <AlertTriangle className="w-4 h-4" />
             Module 4
           </div>
@@ -1411,7 +1419,7 @@ export default function Module4() {
             Learn from the most dramatic system failures in tech history — and the engineering
             principles that prevent them.
           </p>
-          <div className="flex flex-wrap justify-center gap-3 text-xs text-slate-500 dark:text-slate-500">
+          <div className="flex flex-wrap justify-center gap-3 text-xs text-slate-500 dark:text-slate-400">
             <span className="flex items-center gap-1"><FileText className="w-3 h-3" /> Google Docs Design</span>
             <span>•</span>
             <span className="flex items-center gap-1"><Siren className="w-3 h-3 text-red-400" /> Facebook 2021</span>
@@ -1450,7 +1458,7 @@ export default function Module4() {
           viewport={{ once: true }}
           className="text-center pt-10 pb-6 space-y-2"
         >
-          <p className="text-slate-500 dark:text-slate-500 text-sm">
+          <p className="text-slate-500 dark:text-slate-400 text-sm">
             Module 4 — Real‑World Cases &amp; Outages • System Design Learning Series
           </p>
           <p className="text-xs text-slate-600">

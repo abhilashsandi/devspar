@@ -67,7 +67,7 @@ export default function Quiz({ title, questions }: { title: string; questions: Q
         <Award className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
         <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">{title} Complete!</h3>
         <p className="text-lg text-slate-700 dark:text-slate-300 mb-6">
-          You scored <strong className="text-blue-500">{score}</strong> out of {questions.length}.
+          You scored <strong className="text-blue-700 dark:text-blue-500">{score}</strong> out of {questions.length}.
         </p>
         <button 
           onClick={restart}
@@ -82,16 +82,16 @@ export default function Quiz({ title, questions }: { title: string; questions: Q
   const q = questions[currentQuestion];
 
   return (
-    <div className="bg-slate-50 dark:bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700/50 rounded-xl p-6 md:p-8 my-12 max-w-3xl mx-auto shadow-lg relative overflow-hidden">
+    <div className="bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700/50 rounded-xl p-6 md:p-8 my-12 max-w-3xl mx-auto shadow-lg relative overflow-hidden">
       {/* Progress Bar */}
       <div className="absolute top-0 left-0 h-1 bg-blue-500 transition-all duration-300" style={{ width: `${((currentQuestion) / questions.length) * 100}%` }} />
       
       <div className="flex justify-between items-end mb-8 border-b border-slate-200 dark:border-slate-800 pb-4">
         <div>
-          <h3 className="text-sm font-bold text-blue-500 tracking-wider uppercase mb-1">Knowledge Check</h3>
+          <h3 className="text-sm font-bold text-blue-700 dark:text-blue-500 tracking-wider uppercase mb-1">Knowledge Check</h3>
           <h2 className="text-xl font-bold text-slate-900 dark:text-white">{title}</h2>
         </div>
-        <div className="text-sm font-mono text-slate-500 dark:text-slate-500 font-bold">
+        <div className="text-sm font-mono text-slate-500 dark:text-slate-400 font-bold">
           {currentQuestion + 1} / {questions.length}
         </div>
       </div>
@@ -104,7 +104,7 @@ export default function Quiz({ title, questions }: { title: string; questions: Q
 
       <div className="space-y-3 mb-8">
         {q.options.map((opt, idx) => {
-          let styleClass = "border-slate-300 dark:border-slate-700 bg-white dark:bg-white dark:bg-slate-800 hover:border-blue-400 dark:hover:border-blue-500 text-slate-700 dark:text-slate-300";
+          let styleClass = "border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-blue-400 dark:hover:border-blue-500 text-slate-700 dark:text-slate-300";
           let icon = null;
           
           if (showResult) {
@@ -115,7 +115,7 @@ export default function Quiz({ title, questions }: { title: string; questions: Q
               styleClass = "border-red-500 bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-300";
               icon = <XCircle className="w-5 h-5 text-red-500" />;
             } else {
-              styleClass = "border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-200/50 dark:bg-slate-900/50 text-slate-600 dark:text-slate-400 opacity-50";
+              styleClass = "border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 text-slate-600 dark:text-slate-400 opacity-50";
             }
           }
 
@@ -141,7 +141,7 @@ export default function Quiz({ title, questions }: { title: string; questions: Q
             className={`p-4 rounded-lg flex gap-3 items-start ${
               selectedOption === q.correctAnswer 
                 ? 'bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/30' 
-                : 'bg-blue-50 dark:bg-blue-100/50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/30'
+                : 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/30'
             }`}
           >
             <AlertCircle className={`w-5 h-5 flex-shrink-0 mt-0.5 ${

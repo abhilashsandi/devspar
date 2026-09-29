@@ -158,11 +158,11 @@ function CollapsibleCard({
 
 function Badge({ children, variant = 'orange' }: { children: React.ReactNode; variant?: 'orange' | 'green' | 'blue' | 'red' | 'purple' }) {
   const colors = {
-    orange: 'bg-[#FF9900]/15 text-[#FF9900] border-[#FF9900]/30',
-    green: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
-    blue: 'bg-blue-500/15 text-blue-400 border-blue-500/30',
-    red: 'bg-red-500/15 text-red-400 border-red-500/30',
-    purple: 'bg-purple-500/15 text-purple-400 border-purple-500/30',
+    orange: 'bg-[#FF9900]/15 text-[#8a5300] dark:text-[#FF9900] border-[#FF9900]/30',
+    green: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/30',
+    blue: 'bg-blue-500/15 text-blue-700 dark:text-blue-400 border-blue-500/30',
+    red: 'bg-red-500/15 text-red-700 dark:text-red-400 border-red-500/30',
+    purple: 'bg-purple-500/15 text-purple-700 dark:text-purple-400 border-purple-500/30',
   };
   return (
     <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${colors[variant]}`}>
@@ -207,6 +207,7 @@ function ComputeSpectrumSVG() {
         Compute Spectrum: Control ↔ Convenience
       </h4>
       <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 800 200" className="w-full min-w-[800px] lg:min-w-0" xmlns="http://www.w3.org/2000/svg">
         {/* gradient bar */}
         <defs>
@@ -277,6 +278,7 @@ function ComputeSpectrumSVG() {
         ))}
       </svg>
 </div>
+</div>
     </motion.div>
   );
 }
@@ -296,6 +298,7 @@ function DatabaseDecisionTreeSVG() {
         Which AWS Database Should I Use?
       </h4>
       <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 900 520" className="w-full min-w-[800px] lg:min-w-0" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <filter id="glow">
@@ -426,6 +429,7 @@ function DatabaseDecisionTreeSVG() {
         </text>
       </svg>
 </div>
+</div>
     </motion.div>
   );
 }
@@ -445,6 +449,7 @@ function VPCArchitectureSVG() {
         VPC Architecture: Public &amp; Private Subnets
       </h4>
       <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 900 550" className="w-full min-w-[800px] lg:min-w-0" xmlns="http://www.w3.org/2000/svg">
         {/* Internet */}
         <motion.g
@@ -577,6 +582,7 @@ function VPCArchitectureSVG() {
         </text>
       </svg>
 </div>
+</div>
     </motion.div>
   );
 }
@@ -615,6 +621,7 @@ function ReferenceArchitectureSVG() {
         ⭐ Reference Architecture — Production-Ready AWS
       </h4>
       <div className="w-full overflow-x-auto slick-scrollbar pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
+<div className="rounded-xl bg-slate-900 p-3 sm:p-4 ring-1 ring-white/10">
 <svg viewBox="0 0 850 490" className="w-full min-w-[800px] lg:min-w-0" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
@@ -720,6 +727,7 @@ function ReferenceArchitectureSVG() {
           );
         })}
       </svg>
+</div>
 </div>
     </motion.div>
   );

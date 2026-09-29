@@ -75,7 +75,7 @@ export default function InteractivePubSub() {
         <div className="w-full md:w-1/3 flex flex-col gap-4 z-10">
           <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-600 relative overflow-hidden">
             <h5 className="font-bold text-emerald-400 mb-1 text-sm">Email Consumer</h5>
-            <p className="text-xs text-slate-500 dark:text-slate-500 mb-2">Listens for events to send emails</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">Listens for events to send emails</p>
             <AnimatePresence>
               {messages.map(msg => (
                 <motion.div
@@ -94,7 +94,7 @@ export default function InteractivePubSub() {
 
           <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-600 relative overflow-hidden">
             <h5 className="font-bold text-blue-400 mb-1 text-sm">Analytics Consumer</h5>
-            <p className="text-xs text-slate-500 dark:text-slate-500 mb-2">Updates dashboards based on events</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">Updates dashboards based on events</p>
             <AnimatePresence>
               {messages.map(msg => (
                 <motion.div

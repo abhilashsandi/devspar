@@ -74,7 +74,7 @@ export default function InteractiveLoadBalancer() {
               <ArrowDown className="w-6 h-6 text-slate-600 mb-2" />
               <div className="w-20 h-24 bg-white dark:bg-slate-800 border border-slate-600 rounded-lg flex flex-col items-center justify-center relative overflow-hidden">
                 <Server className="w-8 h-8 text-slate-600 dark:text-slate-400 mb-2" />
-                <span className="text-xs font-mono text-slate-500 dark:text-slate-500">Node {nodeId + 1}</span>
+                <span className="text-xs font-mono text-slate-500 dark:text-slate-400">Node {nodeId + 1}</span>
                 
                 {/* Node flash on receive */}
                 <AnimatePresence>
