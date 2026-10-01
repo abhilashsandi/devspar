@@ -337,4 +337,200 @@ ${txt(10, 352, 'Tokens are issued only if SHA-256(code_verifier) matches the cha
 ${txt(10, 370, 'state protects the redirect against CSRF; with OpenID Connect the ID token (and nonce) says who the user is.', { font: 'sans', size: 10.5 })}
 `, 'OAuth 2.1 authorization code flow with PKCE');
 
+// ================================================================ Full reference architecture (browser to broker, AWS)
+D.fullStack = (() => {
+  const note = (y, k, kc, t) => txt(24, y, k, { color: kc, size: 10, weight: 700 }) + txt(124, y, t, { font: 'sans', size: 10.5 });
+  const chain = (x, ys, w, h) => ys.slice(0, -1).map((y, i) => arrow(`M${x + w / 2} ${y + h} L${x + w / 2} ${ys[i + 1] - 2}`, 'fs1')).join('');
+  const sub = (x, title) => rect(x, 660, 284, 252, 'panel-2', 'border') + txt(x + 14, 680, title, { color: 'accent', size: 9.5, weight: 700 });
+  const sec = ['Edge: WAF, TLS 1.2+, Shield DDoS protection', 'IAM: least privilege, one role per service', 'Secrets Manager + KMS, never keys in code', 'Network: private subnets, SGs, VPC endpoints', 'CI gates: SAST, dependency + secret scanning', 'Validate every input at the trust boundary', 'CloudTrail audit log: who changed what', 'Threat-model each new service up front'];
+  return wrap('0 0 900 966', `
+<defs>${M('fs1', 'muted')}${M('fs2', 'accent')}${M('fs3', 'gold')}</defs>
+
+${rect(10, 8, 880, 306, 'panel-2', 'border')}
+${txt(24, 28, '1  SYNCHRONOUS REQUEST PATH  (north-south: user to data)', { color: 'accent', size: 9.5 })}
+${box(24, 44, 116, 58, 'Browser / Mobile', 'React · Next.js · TS', 'a')}
+${box(166, 44, 116, 58, 'CloudFront', 'CDN · WAF · TLS', 'a')}
+${box(308, 44, 126, 58, 'API Gateway', 'authn · rate limit', 'a')}
+${box(460, 44, 116, 58, 'BFF', 'Node/TS · aggregates', 'g')}
+${arrow('M142 73 L162 73', 'fs2', 'accent')}${arrow('M284 73 L304 73', 'fs2', 'accent')}${arrow('M436 73 L456 73', 'fs2', 'accent')}
+${box(166, 118, 116, 44, 'S3', 'static + uploads', 'n')}${arrow('M224 104 L224 116', 'fs1')}
+${box(308, 118, 126, 46, 'Identity provider', 'Cognito · OIDC', 'g')}${arrow('M371 104 L371 116', 'fs3', 'gold', true)}
+${txt(442, 142, 'verify JWT via JWKS', { size: 9 })}
+${arrow('M82 104 L82 184 L371 184 L371 166', 'fs3', 'gold', true)}${txt(94, 178, 'OAuth 2.1 + PKCE sign-in', { color: 'gold', size: 9 })}
+${box(608, 36, 130, 34, 'Orders service', '', 'g')}${box(608, 82, 130, 34, 'Members service', '', 'g')}${box(608, 128, 130, 34, 'Notifications svc', '', 'g')}
+${txt(673, 178, 'ECS Fargate / Lambda', { anchor: 'middle', size: 9 })}
+${arrow('M578 66 L604 53', 'fs1')}${arrow('M578 73 L604 99', 'fs1')}${arrow('M578 80 L604 145', 'fs1')}
+${box(772, 36, 108, 46, 'Redis', 'ElastiCache', 'a')}${box(772, 96, 108, 46, 'Postgres', 'via RDS Proxy', 'n')}${box(772, 156, 108, 40, 'Read replica', '', 'n')}
+${arrow('M740 50 L768 56', 'fs1')}${arrow('M740 92 L768 68', 'fs1')}${arrow('M740 100 L768 112', 'fs1')}${arrow('M740 142 L768 126', 'fs1')}${arrow('M826 144 L826 154', 'fs1', 'muted', true)}
+${note(210, 'BFF', 'gold', 'one tailored API per client (web, mobile): fans out to services, aggregates, trims payloads, and owns the SSE connection')}
+${note(228, 'Gateway', 'accent', 'the single front door: JWT check, scopes, rate limits, request validation, routing, CORS. No business logic lives here')}
+${note(246, 'AuthN / AuthZ', 'gold', 'OIDC + PKCE gives a short-lived JWT. The gateway authenticates; every service still authorizes (zero trust, IAM or mTLS between them)')}
+${note(264, 'Redis', 'accent', 'cache-aside with TTLs and tag invalidation; also holds sessions, rate-limit counters and pub/sub for SSE')}
+${note(282, 'Stampede', 'danger', 'a hot key expires and thousands of requests hit the DB at once. Fix: single-flight lock (SET NX), TTL jitter, stale-while-revalidate')}
+${note(300, 'Database', 'muted', 'each service owns its schema; pooled connections (RDS Proxy / pgBouncer) so Lambda cannot exhaust them; reads go to replicas')}
+
+${rect(10, 326, 880, 296, 'panel-2', 'border')}
+${txt(24, 346, '2  ASYNCHRONOUS / EVENT-DRIVEN PATH  (east-west: service to service)', { color: 'accent', size: 9.5 })}
+${box(24, 368, 124, 58, 'Orders service', 'row + outbox, 1 tx', 'g')}
+${box(176, 368, 124, 58, 'Outbox relay', 'poller / CDC', 'a')}
+${arrow('M150 397 L172 397', 'fs3', 'gold')}${arrow('M302 397 L330 397', 'fs3', 'gold')}
+${rect(334, 356, 196, 150, 'panel', 'border', { dash: true })}${txt(344, 371, 'EVENT BACKBONE', { color: 'accent', size: 9, weight: 700 })}
+${box(344, 378, 176, 36, 'SNS → SQS + DLQ', 'AWS fan-out', 'a')}${box(344, 420, 176, 36, 'RabbitMQ', 'exchange → queues', 'g')}${box(344, 462, 176, 36, 'Kafka', 'partitions · replay', 'g')}
+${box(566, 368, 150, 58, 'Workers', 'Lambda / ECS · idempotent', 'a')}${box(566, 440, 150, 58, 'Integration svc', 'ACL · retry · breaker', 'a')}
+${box(742, 368, 138, 58, 'SES', 'transactional email', 'n')}${box(742, 440, 138, 58, 'ERP / partner APIs', 'webhooks · REST', 'n')}
+${arrow('M532 397 L562 397', 'fs3', 'gold')}${arrow('M532 469 L562 469', 'fs3', 'gold')}${arrow('M718 397 L738 397', 'fs3', 'gold')}${arrow('M718 469 L738 469', 'fs3', 'gold')}
+${txt(880, 528, 'SERVER-SENT EVENTS (SSE): push the result back to the open page', { anchor: 'end', color: 'accent', size: 9.5 })}
+${arrow('M380 508 L380 520 L109 520 L109 534', 'fs3', 'gold')}
+${box(24, 538, 170, 54, 'Notification svc', 'consumes events', 'g')}${box(236, 538, 170, 54, 'Redis pub/sub', 'reaches every BFF pod', 'a')}${box(448, 538, 222, 54, 'BFF · SSE endpoint', 'event-stream · heartbeat', 'a')}${box(712, 538, 168, 54, 'Browser EventSource', 'Last-Event-ID resume', 'n')}
+${arrow('M196 565 L232 565', 'fs2', 'accent')}${arrow('M408 565 L444 565', 'fs2', 'accent')}${arrow('M672 565 L708 565', 'fs2', 'accent')}
+${txt(24, 612, 'Transactional outbox: the DB write and the event cannot disagree. Consumers are idempotent (dedupe key); failures retry with backoff, then go to a DLQ.', { font: 'sans', size: 10.5 })}
+
+${txt(24, 648, '3  CROSS-CUTTING  (every box above shares these)', { color: 'accent', size: 9.5 })}
+${sub(10, 'OBSERVABILITY · OpenTelemetry')}
+${box(24, 692, 256, 40, 'OTel SDK in every service', 'trace-id: HTTP → queue → worker', 'a')}${arrow('M152 734 L152 744', 'fs1')}
+${box(24, 746, 256, 36, 'OTel Collector (ADOT)', 'batch · sample · route', 'n')}
+${arrow('M64 784 L64 792', 'fs1')}${arrow('M152 784 L152 792', 'fs1')}${arrow('M240 784 L240 792', 'fs1')}
+${box(24, 794, 80, 34, 'Logs', 'CloudWatch', 'n')}${box(112, 794, 80, 34, 'Metrics', 'Prometheus', 'n')}${box(200, 794, 80, 34, 'Traces', 'X-Ray / Tempo', 'n')}
+${txt(24, 850, 'SLOs · alerts · dashboards · error budgets', { font: 'sans', size: 10.5 })}${txt(24, 866, 'Structured JSON logs carry the trace id.', { font: 'sans', size: 10.5 })}
+${sub(308, 'DELIVERY · CI/CD + INFRASTRUCTURE AS CODE')}
+${[['Git PR → CI pipeline', 'lint · tsc · tests · SAST · npm audit', 'a'], ['Build + scan image → ECR', 'SBOM · immutable tag', 'n'], ['IaC: CloudFormation / CDK', 'stack per env · drift detection', 'g'], ['Deploy: blue/green + canary', 'ECS · Lambda alias · rollback', 'a']].map((r, i) => box(322, 692 + i * 46, 256, 34, r[0], r[1], r[2])).join('')}
+${chain(322, [692, 738, 784, 830], 256, 34)}
+${txt(322, 886, 'Platform team ships the paved road:', { font: 'sans', size: 10.5 })}${txt(322, 902, 'service template + pipeline + dashboards.', { font: 'sans', size: 10.5 })}
+${sub(606, 'SECURITY · SECURE SDLC')}
+${sec.map((s, i) => txt(620, 706 + i * 22, '· ' + s, { font: 'sans', size: 10.5, color: 'text' })).join('')}
+
+${txt(10, 934, 'NORTH-SOUTH', { color: 'accent', size: 9 })}${txt(92, 934, 'client → edge → gateway → BFF → service → Redis / DB', { font: 'sans', size: 10.5 })}
+${txt(470, 934, 'ASYNC', { color: 'gold', size: 9 })}${txt(512, 934, 'service → outbox → broker → worker / SES / SSE', { font: 'sans', size: 10.5 })}
+${txt(10, 954, 'Deliberately absent until needed: service mesh, sharded database, multi-region active-active, CQRS everywhere. Naming what you left out shows judgment.', { font: 'sans', size: 10.5 })}
+`, 'Full reference architecture: browser, CloudFront, API Gateway, BFF, microservices, Redis, database, event backbone, SSE, observability, delivery and security');
+})();
+// ================================================================ Layer map: design decision / optimization lever / AWS
+D.layerMap = (() => {
+  const rows = [
+    ['Client', 'browser · app', ['Rendering strategy per route', 'SSG · ISR · SSR · PPR; REST vs GraphQL'], ['Core Web Vitals', 'React Compiler · compositor-only motion'], ['S3 + CloudFront', 'Amplify · AppSync (GraphQL)']],
+    ['Network / CDN', 'the edge', ['What sits at the edge', 'CDN + cache-control headers'], ['Cache policy · HTTP/3', 'edge rendering · speculative prefetch'], ['CloudFront, Route 53', 'WAF · Lambda@Edge']],
+    ['API / Gateway', 'front door', ['Auth, limits, versioning', 'rate limiting · idempotency keys'], ['Kill N+1, paginate', 'DataLoader · cursor pagination'], ['API Gateway, Cognito', 'Application Load Balancer']],
+    ['Services', 'app tier', ['Monolith or microservices', 'BFF · team-shaped boundaries'], ['Keep the event loop free', 'worker-pool offload · autoscale out'], ['ECS Fargate, EKS', 'Lambda for event-driven pieces']],
+    ['Data', 'storage', ['SQL or NoSQL, CAP trade-off', 'replication · sharding · partitioning'], ['EXPLAIN ANALYZE, indexes', 'read replicas · batched writes'], ['Aurora, DynamoDB', 'RDS Multi-AZ · Aurora Limitless']],
+    ['Caching', 'speed layer', ['Multi-layer waterfall', 'browser → CDN → gateway → Redis → DB'], ['Right layer for the job', 'stampede + cold-start protection'], ['ElastiCache (Redis)', 'CloudFront · DAX for DynamoDB']],
+    ['Async / messaging', 'decoupling', ['Queue or pub/sub, saga', 'compensation · transactional outbox'], ['Batch + backpressure', 'scale on queue depth and age'], ['SQS, SNS, EventBridge', 'Step Functions for sagas']],
+    ['Deploy / scaling', 'ship + scale', ['Scale out, balance the load', 'canary · blue/green'], ['Autoscaling triggers', 'perf budgets enforced in CI'], ['ECS Auto Scaling, ALB', 'CodeDeploy · CodePipeline']],
+    ['Reliability', 'fail safely', ['Degrade, do not collapse', 'timeout, retry, breaker, bulkhead, fallback'], ['Golden signals, tracing', 'load-test a fix before it ships'], ['CloudWatch, X-Ray', 'Route 53 health checks · Multi-AZ']],
+  ];
+  const y0 = 34, step = 64, h = 56;
+  const body = rows.map((r, i) => {
+    const y = y0 + i * step, mid = y + h / 2;
+    return box(10, y, 130, h, r[0], r[1], 'a') + box(158, y, 250, h, r[2][0], r[2][1], 'n') + box(432, y, 250, h, r[3][0], r[3][1], 'g') + box(706, y, 184, h, r[4][0], r[4][1], 'n') +
+      arrow(`M142 ${mid} L154 ${mid}`, 'lm1') + arrow(`M410 ${mid} L428 ${mid}`, 'lm1') + arrow(`M684 ${mid} L702 ${mid}`, 'lm1') +
+      (i < rows.length - 1 ? arrow(`M75 ${y + h} L75 ${y + step - 2}`, 'lm2', 'accent') : '');
+  }).join('');
+  const foot = y0 + rows.length * step + 8;
+  return wrap(`0 0 900 ${foot + 44}`, `
+<defs>${M('lm1', 'muted')}${M('lm2', 'accent')}</defs>
+${txt(10, 20, 'LAYER  (request flows down)', { color: 'accent', size: 9.5 })}${txt(158, 20, 'DESIGN: what you decide', { color: 'muted', size: 9.5 })}${txt(432, 20, 'OPTIMIZE: what you tune once it runs', { color: 'gold', size: 9.5 })}${txt(706, 20, 'AWS: what implements it', { color: 'muted', size: 9.5 })}
+${body}
+${txt(10, foot + 14, 'Read each row left to right. When the interviewer switches from "design it" to "now make it fast", you are already standing on the next column.', { font: 'sans', size: 10.5, color: 'text' })}
+${txt(10, foot + 32, 'The same row answers a third question as well: which managed AWS service would you reach for?', { font: 'sans', size: 10.5 })}
+`, 'Layer by layer map of design decisions, optimization levers and AWS services');
+})();
+
+// ================================================================ Optimization + resilience patterns per layer, and three mechanisms
+D.resilienceMap = (() => {
+  const levels = [
+    ['Client', 'browser · app',
+      ['lazy-load + code split', 'image + font tuning', 'debounce + cancel requests', 'optimistic UI', 'stale-while-revalidate'],
+      ['retry with backoff + jitter', 'timeouts', 'offline queue', 'error boundaries', 'degraded UI']],
+    ['Edge / CDN', 'the edge',
+      ['immutable asset caching', 'stale-while-revalidate', 'HTTP/3', 'edge rendering'],
+      ['request collapsing', 'origin shield', 'stale-if-error', 'WAF + DDoS limits']],
+    ['Gateway', 'front door',
+      ['auth token caching', 'compression', 'batching / DataLoader'],
+      ['rate limit (token bucket)', '429 + Retry-After', 'idempotency keys', 'load shedding', 'timeouts']],
+    ['Services', 'app tier',
+      ['keep the event loop free', 'worker-pool offload', 'keep-alive connections', 'autoscale out'],
+      ['circuit breaker', 'bulkhead', 'retry budget', 'fallback', 'health checks']],
+    ['Cache', 'Redis · CDN',
+      ['right layer per job', 'cache-aside', 'pipelining + batching', 'good key design'],
+      ['single-flight lock', 'TTL jitter', 'early refresh', 'serve stale', 'negative caching', 'warm-up (cold-start herd)']],
+    ['Database', 'storage',
+      ['indexes + EXPLAIN', 'read replicas', 'batched writes', 'connection pooling'],
+      ['query timeouts', 'pool limits (RDS Proxy)', 'Multi-AZ failover', 'short transactions']],
+    ['Messaging', 'queues · streams',
+      ['batch consumers', 'partition by key', 'scale on depth + age'],
+      ['DLQ', 'idempotent consumers', 'retry with backoff', 'backpressure', 'visibility timeout']],
+    ['Observability', 'all layers',
+      ['profile before tuning', 'load-test the fix'],
+      ['golden signals', 'SLO burn alerts', 'distributed tracing', 'canary + auto-rollback']],
+  ];
+  const chip = (x, y, label, kind) => {
+    const w = Math.round(label.length * 5.3 + 18), g = kind === 'g';
+    return { w, svg: `<rect x="${x}" y="${y}" width="${w}" height="22" rx="11" fill="var(--${g ? 'gold-soft' : 'accent-soft'})" stroke="var(--${g ? 'gold' : 'accent'})" stroke-width="1.2"/>` + txt(x + 9, y + 15, label, { font: 'sans', size: 10, color: 'text' }) };
+  };
+  const flow = (x0, y0, maxW, labels, kind) => {
+    let cx = x0, cy = y0, lines = 1, svg = '';
+    for (const l of labels) {
+      const c = chip(cx, cy, l, kind);
+      if (cx > x0 && cx + c.w > x0 + maxW) { cx = x0; cy += 26; lines++; svg += chip(cx, cy, l, kind).svg; cx += c.w + 6; continue; }
+      svg += c.svg; cx += c.w + 6;
+    }
+    return { svg, lines };
+  };
+  let y = 38, rowsSvg = '';
+  for (const [name, sub, fast, safe] of levels) {
+    const a = flow(150, y + 8, 372, fast, 'g'), b = flow(532, y + 8, 358, safe, 'a');
+    const rh = Math.max(a.lines, b.lines) * 26 + 12;
+    rowsSvg += box(10, y, 124, rh, name, sub, 'n') + a.svg + b.svg;
+    y += rh + 6;
+  }
+  const p1End = y + 2;
+  const P = p1End + 14;                         // top of the mechanisms panel
+  const sw = 284, sh = 236, xs = [10, 308, 606];
+  const sp = (x, title) => rect(x, P + 26, sw, sh, 'panel-2', 'border') + txt(x + 14, P + 46, title, { color: 'accent', size: 9.5, weight: 700 });
+  // circuit breaker
+  const cb = (x, y0) => sp(x, 'CIRCUIT BREAKER') +
+    box(x + 14, y0 + 36, 100, 40, 'CLOSED', 'calls flow', 'a') + box(x + 170, y0 + 36, 100, 40, 'OPEN', 'fail fast', 'd') + box(x + 92, y0 + 116, 100, 40, 'HALF-OPEN', 'a few probes', 'g') +
+    arrow(`M${x + 116} ${y0 + 56} L${x + 168} ${y0 + 56}`, 'rs1') + txt(x + 142, y0 + 50, 'trip', { anchor: 'middle', size: 9, color: 'danger' }) +
+    arrow(`M${x + 214} ${y0 + 78} L${x + 178} ${y0 + 114}`, 'rs1') + txt(x + 168, y0 + 92, 'cool-down', { anchor: 'end', size: 9 }) +
+    arrow(`M${x + 94} ${y0 + 130} L${x + 66} ${y0 + 78}`, 'rs2') + txt(x + 14, y0 + 112, 'probes ok', { size: 9, color: 'accent' }) +
+    arrow(`M${x + 194} ${y0 + 146} L${x + 248} ${y0 + 146} L${x + 248} ${y0 + 80}`, 'rs1', 'muted', true) + txt(x + 200, y0 + 166, 'probe fails', { size: 9 }) +
+    txt(x + 14, y0 + 192, 'Stops hammering a sick dependency so it can', { font: 'sans', size: 10.5 }) + txt(x + 14, y0 + 207, 'recover. Callers get a fallback instead of a wait.', { font: 'sans', size: 10.5 });
+  // backoff + jitter
+  const bo = (x, y0) => sp(x, 'RETRY: BACKOFF + JITTER') +
+    [['try 1', 24, 0.6], ['try 2', 48, 0.35], ['try 3', 96, 0.75], ['try 4', 192, 0.5]].map(([l, w, f], i) => {
+      const yy = y0 + 32 + i * 30;
+      return txt(x + 14, yy + 15, l, { size: 9 }) +
+        `<rect x="${x + 56}" y="${yy}" width="${w}" height="22" rx="4" fill="none" stroke="var(--gold)" stroke-width="1.2" stroke-dasharray="3 3"/>` +
+        `<rect x="${x + 56}" y="${yy}" width="${Math.round(w * f)}" height="22" rx="4" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.2"/>`;
+    }).join('') +
+    txt(x + 14, y0 + 164, 'dashed = allowed window (doubles), solid = random wait', { size: 8.5 }) +
+    txt(x + 14, y0 + 182, 'wait = random(0, min(cap, base × 2^n))', { color: 'text', size: 9.5 }) +
+    txt(x + 14, y0 + 202, 'Without jitter every client retries together: a retry', { font: 'sans', size: 10.5 }) + txt(x + 14, y0 + 217, 'storm. Cap tries; retry only idempotent calls.', { font: 'sans', size: 10.5 });
+  // stampede
+  const st = (x, y0) => sp(x, 'CACHE STAMPEDE') +
+    txt(x + 14, y0 + 38, 'BEFORE', { color: 'danger', size: 9, weight: 700 }) +
+    box(x + 14, y0 + 46, 84, 36, 'N requests', '', 'n') + box(x + 186, y0 + 46, 84, 36, 'Database', 'melts', 'd') + arrow(`M${x + 100} ${y0 + 64} L${x + 182} ${y0 + 64}`, 'rs1', 'danger') + txt(x + 141, y0 + 58, 'all miss', { anchor: 'middle', size: 9, color: 'danger' }) +
+    txt(x + 14, y0 + 106, 'AFTER', { color: 'accent', size: 9, weight: 700 }) +
+    box(x + 14, y0 + 114, 64, 36, 'N calls', '', 'n') + box(x + 100, y0 + 114, 92, 36, 'one lock', 'rebuilds', 'a') + box(x + 214, y0 + 114, 56, 36, 'DB', '', 'n') +
+    arrow(`M${x + 80} ${y0 + 132} L${x + 98} ${y0 + 132}`, 'rs2', 'accent') + arrow(`M${x + 194} ${y0 + 132} L${x + 212} ${y0 + 132}`, 'rs2', 'accent') +
+    txt(x + 14, y0 + 172, 'The rest wait briefly or are served stale data.', { font: 'sans', size: 10.5 }) +
+    txt(x + 14, y0 + 192, 'Plus TTL jitter, early refresh, and request', { font: 'sans', size: 10.5 }) + txt(x + 14, y0 + 207, 'collapsing at the CDN. Warm caches after a deploy.', { font: 'sans', size: 10.5 });
+  const total = P + 26 + sh + 52;
+  return wrap(`0 0 900 ${total}`, `
+<defs>${M('rs1', 'muted')}${M('rs2', 'accent')}</defs>
+${txt(10, 20, 'LEVEL', { color: 'muted', size: 9.5 })}${txt(150, 20, 'MAKE IT FAST', { color: 'gold', size: 9.5 })}${txt(532, 20, 'SURVIVE FAILURE', { color: 'accent', size: 9.5 })}
+${rowsSvg}
+${txt(10, P + 14, 'THREE MECHANISMS WORTH BEING ABLE TO DRAW', { color: 'accent', size: 9.5 })}
+${cb(xs[0], P + 26)}${bo(xs[1], P + 26)}${st(xs[2], P + 26)}
+${txt(10, total - 22, 'Rule of thumb: every retry needs a timeout, every timeout needs a budget, and every breaker needs a fallback.', { font: 'sans', size: 10.5, color: 'text' })}
+${txt(10, total - 6, 'Gold chips make the happy path faster; green chips keep the system standing when a dependency is slow or down.', { font: 'sans', size: 10.5 })}
+`, 'Optimization and resilience patterns at each layer, with circuit breaker, retry backoff with jitter, and cache stampede mechanisms');
+})();
+
+// Dense diagrams are too small to read when scaled to a phone: below ~760px they scroll sideways
+// instead. tabindex + role/label make the scroll area reachable and scrollable from the keyboard.
+const scrollable = (html, label) => html.replace('<div class="diagram">', `<div class="diagram" style="overflow-x:auto" tabindex="0" role="region" aria-label="${label}, scrolls sideways on narrow screens">`).replace('<svg ', '<svg style="min-width:760px" ');
+D.fullStack = scrollable(D.fullStack, 'Full reference architecture diagram');
+D.layerMap = scrollable(D.layerMap, 'Layer by layer map diagram');
+D.resilienceMap = scrollable(D.resilienceMap, 'Optimization and resilience patterns diagram');
+
 export default D;

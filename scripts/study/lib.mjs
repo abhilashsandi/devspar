@@ -58,11 +58,14 @@ export async function load(page) {
   return { html, data: loadData(html) };
 }
 
-// Replace the DATA literal, keep everything else (styling, engine) as is.
+// Replace the DATA literal, keep everything else (styling, engine) as is. The page's
+// window.__STUDY__ config sits between DATA and the marker, so it has to be carried over or
+// upgrade() can no longer tell which guide (storage key) it is looking at.
 export function withData(html, data) {
   const ds = html.indexOf('const DATA = ['), de = html.indexOf(MARK);
   if (ds < 0 || de < 0) throw new Error('DATA/marker not found');
-  return html.slice(0, ds) + serialize(data) + '\n' + html.slice(de);
+  const cfg = html.slice(ds, de).match(CFG_RE);
+  return html.slice(0, ds) + serialize(data) + '\n' + (cfg ? cfg[0] : '') + html.slice(de);
 }
 
 // Applies the shared engine: phone menu + cross-guide search markup/CSS (once), and always
