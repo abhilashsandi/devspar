@@ -343,48 +343,54 @@ D.fullStack = (() => {
   const chain = (x, ys, w, h) => ys.slice(0, -1).map((y, i) => arrow(`M${x + w / 2} ${y + h} L${x + w / 2} ${ys[i + 1] - 2}`, 'fs1')).join('');
   const sub = (x, title) => rect(x, 660, 284, 252, 'panel-2', 'border') + txt(x + 14, 680, title, { color: 'accent', size: 9.5, weight: 700 });
   const sec = ['Edge: WAF, TLS 1.2+, Shield DDoS protection', 'IAM: least privilege, one role per service', 'Secrets Manager + KMS, never keys in code', 'Network: private subnets, SGs, VPC endpoints', 'CI gates: SAST, dependency + secret scanning', 'Validate every input at the trust boundary', 'CloudTrail audit log: who changed what', 'Threat-model each new service up front'];
-  return wrap('0 0 900 966', `
+  const hop = [[14, 'Client', 'web · mobile'], [114, 'Route 53', 'DNS · failover'], [214, 'CloudFront', 'CDN · WAF'], [314, 'API Gateway', 'authn · limits'], [414, 'ALB', 'L7 · health'], [514, 'BFF', 'Node/TS · SSE']];
+  const stacks = [[36, 'Orders service'], [74, 'Members service'], [112, 'Payments service'], [150, 'Notifications svc']];
+  return wrap('0 0 900 1034', `
 <defs>${M('fs1', 'muted')}${M('fs2', 'accent')}${M('fs3', 'gold')}</defs>
 
-${rect(10, 8, 880, 306, 'panel-2', 'border')}
+${rect(10, 8, 880, 346, 'panel-2', 'border')}
 ${txt(24, 28, '1  SYNCHRONOUS REQUEST PATH  (north-south: user to data)', { color: 'accent', size: 9.5 })}
-${box(24, 44, 116, 58, 'Browser / Mobile', 'React · Next.js · TS', 'a')}
-${box(166, 44, 116, 58, 'CloudFront', 'CDN · WAF · TLS', 'a')}
-${box(308, 44, 126, 58, 'API Gateway', 'authn · rate limit', 'a')}
-${box(460, 44, 116, 58, 'BFF', 'Node/TS · aggregates', 'g')}
-${arrow('M142 73 L162 73', 'fs2', 'accent')}${arrow('M284 73 L304 73', 'fs2', 'accent')}${arrow('M436 73 L456 73', 'fs2', 'accent')}
-${box(166, 118, 116, 44, 'S3', 'static + uploads', 'n')}${arrow('M224 104 L224 116', 'fs1')}
-${box(308, 118, 126, 46, 'Identity provider', 'Cognito · OIDC', 'g')}${arrow('M371 104 L371 116', 'fs3', 'gold', true)}
-${txt(442, 142, 'verify JWT via JWKS', { size: 9 })}
-${arrow('M82 104 L82 184 L371 184 L371 166', 'fs3', 'gold', true)}${txt(94, 178, 'OAuth 2.1 + PKCE sign-in', { color: 'gold', size: 9 })}
-${box(608, 36, 130, 34, 'Orders service', '', 'g')}${box(608, 82, 130, 34, 'Members service', '', 'g')}${box(608, 128, 130, 34, 'Notifications svc', '', 'g')}
-${txt(673, 178, 'ECS Fargate / Lambda', { anchor: 'middle', size: 9 })}
-${arrow('M578 66 L604 53', 'fs1')}${arrow('M578 73 L604 99', 'fs1')}${arrow('M578 80 L604 145', 'fs1')}
-${box(772, 36, 108, 46, 'Redis', 'ElastiCache', 'a')}${box(772, 96, 108, 46, 'Postgres', 'via RDS Proxy', 'n')}${box(772, 156, 108, 40, 'Read replica', '', 'n')}
-${arrow('M740 50 L768 56', 'fs1')}${arrow('M740 92 L768 68', 'fs1')}${arrow('M740 100 L768 112', 'fs1')}${arrow('M740 142 L768 126', 'fs1')}${arrow('M826 144 L826 154', 'fs1', 'muted', true)}
-${note(210, 'BFF', 'gold', 'one tailored API per client (web, mobile): fans out to services, aggregates, trims payloads, and owns the SSE connection')}
-${note(228, 'Gateway', 'accent', 'the single front door: JWT check, scopes, rate limits, request validation, routing, CORS. No business logic lives here')}
-${note(246, 'AuthN / AuthZ', 'gold', 'OIDC + PKCE gives a short-lived JWT. The gateway authenticates; every service still authorizes (zero trust, IAM or mTLS between them)')}
-${note(264, 'Redis', 'accent', 'cache-aside with TTLs and tag invalidation; also holds sessions, rate-limit counters and pub/sub for SSE')}
-${note(282, 'Stampede', 'danger', 'a hot key expires and thousands of requests hit the DB at once. Fix: single-flight lock (SET NX), TTL jitter, stale-while-revalidate')}
-${note(300, 'Database', 'muted', 'each service owns its schema; pooled connections (RDS Proxy / pgBouncer) so Lambda cannot exhaust them; reads go to replicas')}
+${hop.map(([x, t, s], i) => box(x, 44, 84, 58, t, s, i === 5 ? 'g' : 'a') + (i < 5 ? arrow(`M${x + 86} 73 L${x + 97} 73`, 'fs2', 'accent') : '')).join('')}
+${box(212, 118, 88, 44, 'S3', 'static', 'n')}${arrow('M256 104 L256 116', 'fs1')}
+${box(310, 118, 92, 44, 'Auth (IdP)', 'Cognito · JWKS', 'g')}${arrow('M356 104 L356 116', 'fs3', 'gold', true)}
+${box(420, 118, 72, 44, 'Autoscale', 'by load', 'n')}${arrow('M456 104 L456 116', 'fs1', 'muted', true)}
+${box(520, 118, 72, 44, 'Config', 'flags · keys', 'n')}${arrow('M556 104 L556 116', 'fs1', 'muted', true)}
+${arrow('M56 104 L56 190 L356 190 L356 164', 'fs3', 'gold', true)}${txt(70, 184, 'OAuth 2.1 + PKCE sign-in', { color: 'gold', size: 9 })}
+${stacks.map(([y, t]) => box(628, y, 124, 30, t, '', 'g')).join('')}
+${txt(690, 196, 'ECS Fargate / Lambda', { anchor: 'middle', size: 9 })}${txt(690, 208, 'service discovery: Cloud Map', { anchor: 'middle', size: 9 })}
+${[51, 89, 127, 165].map((d) => arrow(`M600 ${[66, 70, 76, 80][[51, 89, 127, 165].indexOf(d)]} L624 ${d}`, 'fs1')).join('')}
+${box(772, 36, 108, 44, 'Redis', 'ElastiCache', 'a')}${box(772, 92, 108, 46, 'Postgres', 'via RDS Proxy', 'n')}${box(772, 150, 108, 40, 'Read replica', '', 'n')}
+${arrow('M754 51 L768 56', 'fs1')}${arrow('M754 87 L768 66', 'fs1')}${arrow('M754 93 L768 108', 'fs1')}${arrow('M754 127 L768 120', 'fs1')}${arrow('M754 160 L768 170', 'fs1')}${arrow('M826 140 L826 148', 'fs1', 'muted', true)}
+${note(226, 'BFF', 'gold', 'one tailored API per client (web, mobile): fans out to services, aggregates, trims payloads, and owns the SSE connection')}
+${note(243, 'Gateway', 'accent', 'the single front door: JWT check, scopes, rate limits, request validation, routing, CORS. No business logic lives here')}
+${note(260, 'Load balancer', 'accent', 'ALB spreads requests over healthy tasks in every AZ (L7 routing, health checks); NLB for raw TCP; Cloud Map or DNS finds services')}
+${note(277, 'AuthN / AuthZ', 'gold', 'OIDC + PKCE gives a short-lived JWT. The gateway authenticates; every service still authorizes (zero trust, IAM or mTLS between them)')}
+${note(294, 'Redis', 'accent', 'cache-aside with TTLs and tag invalidation; also holds sessions, rate-limit counters and pub/sub for SSE')}
+${note(311, 'Stampede', 'danger', 'a hot key expires and thousands of requests hit the DB at once. Fix: single-flight lock (SET NX), TTL jitter, stale-while-revalidate')}
+${note(328, 'Database', 'muted', 'each service owns its schema; pooled connections (RDS Proxy / pgBouncer) so Lambda cannot exhaust them; reads go to replicas')}
+${note(345, 'Resilience', 'gold', 'every service call has a timeout, retry with backoff + jitter, a circuit breaker, a bulkhead and a fallback (see the patterns cards)')}
 
-${rect(10, 326, 880, 296, 'panel-2', 'border')}
+<g transform="translate(0,40)">
+${rect(10, 326, 880, 326, 'panel-2', 'border')}
 ${txt(24, 346, '2  ASYNCHRONOUS / EVENT-DRIVEN PATH  (east-west: service to service)', { color: 'accent', size: 9.5 })}
 ${box(24, 368, 124, 58, 'Orders service', 'row + outbox, 1 tx', 'g')}
 ${box(176, 368, 124, 58, 'Outbox relay', 'poller / CDC', 'a')}
 ${arrow('M150 397 L172 397', 'fs3', 'gold')}${arrow('M302 397 L330 397', 'fs3', 'gold')}
-${rect(334, 356, 196, 150, 'panel', 'border', { dash: true })}${txt(344, 371, 'EVENT BACKBONE', { color: 'accent', size: 9, weight: 700 })}
-${box(344, 378, 176, 36, 'SNS → SQS + DLQ', 'AWS fan-out', 'a')}${box(344, 420, 176, 36, 'RabbitMQ', 'exchange → queues', 'g')}${box(344, 462, 176, 36, 'Kafka', 'partitions · replay', 'g')}
-${box(566, 368, 150, 58, 'Workers', 'Lambda / ECS · idempotent', 'a')}${box(566, 440, 150, 58, 'Integration svc', 'ACL · retry · breaker', 'a')}
-${box(742, 368, 138, 58, 'SES', 'transactional email', 'n')}${box(742, 440, 138, 58, 'ERP / partner APIs', 'webhooks · REST', 'n')}
-${arrow('M532 397 L562 397', 'fs3', 'gold')}${arrow('M532 469 L562 469', 'fs3', 'gold')}${arrow('M718 397 L738 397', 'fs3', 'gold')}${arrow('M718 469 L738 469', 'fs3', 'gold')}
-${txt(880, 528, 'SERVER-SENT EVENTS (SSE): push the result back to the open page', { anchor: 'end', color: 'accent', size: 9.5 })}
-${arrow('M380 508 L380 520 L109 520 L109 534', 'fs3', 'gold')}
-${box(24, 538, 170, 54, 'Notification svc', 'consumes events', 'g')}${box(236, 538, 170, 54, 'Redis pub/sub', 'reaches every BFF pod', 'a')}${box(448, 538, 222, 54, 'BFF · SSE endpoint', 'event-stream · heartbeat', 'a')}${box(712, 538, 168, 54, 'Browser EventSource', 'Last-Event-ID resume', 'n')}
-${arrow('M196 565 L232 565', 'fs2', 'accent')}${arrow('M408 565 L444 565', 'fs2', 'accent')}${arrow('M672 565 L708 565', 'fs2', 'accent')}
-${txt(24, 612, 'Transactional outbox: the DB write and the event cannot disagree. Consumers are idempotent (dedupe key); failures retry with backoff, then go to a DLQ.', { font: 'sans', size: 10.5 })}
+${rect(334, 356, 196, 160, 'panel', 'border', { dash: true })}${txt(344, 371, 'EVENT BACKBONE', { color: 'accent', size: 9, weight: 700 })}
+${box(344, 378, 176, 36, 'SNS → SQS + DLQ', 'fan-out · EventBridge', 'a')}${box(344, 420, 176, 36, 'RabbitMQ', 'exchange → queues', 'g')}${box(344, 462, 176, 36, 'Kafka', 'partitions · replay', 'g')}
+${box(566, 366, 150, 44, 'Workers', 'Lambda / ECS · idempotent', 'a')}${box(566, 416, 150, 44, 'Integration svc', 'ACL · retry · breaker', 'a')}${box(566, 466, 150, 44, 'Projections', 'search + analytics feeds', 'a')}
+${box(742, 366, 138, 44, 'SES', 'transactional email', 'n')}${box(742, 416, 138, 44, 'ERP / partner APIs', 'webhooks · REST', 'n')}${box(742, 466, 138, 44, 'OpenSearch · lake', 'read models', 'n')}
+${arrow('M532 388 L562 388', 'fs3', 'gold')}${arrow('M532 438 L562 438', 'fs3', 'gold')}${arrow('M532 488 L562 488', 'fs3', 'gold')}
+${arrow('M718 388 L738 388', 'fs3', 'gold')}${arrow('M718 438 L738 438', 'fs3', 'gold')}${arrow('M718 488 L738 488', 'fs3', 'gold')}
+${txt(880, 538, 'SERVER-SENT EVENTS (SSE): push the result back to the open page', { anchor: 'end', color: 'accent', size: 9.5 })}
+${arrow('M380 518 L380 530 L109 530 L109 546', 'fs3', 'gold')}
+${box(24, 550, 170, 54, 'Notification svc', 'consumes events', 'g')}${box(236, 550, 170, 54, 'Redis pub/sub', 'reaches every BFF pod', 'a')}${box(448, 550, 222, 54, 'BFF · SSE endpoint', 'event-stream · heartbeat', 'a')}${box(712, 550, 168, 54, 'Browser EventSource', 'Last-Event-ID resume', 'n')}
+${arrow('M196 577 L232 577', 'fs2', 'accent')}${arrow('M408 577 L444 577', 'fs2', 'accent')}${arrow('M672 577 L708 577', 'fs2', 'accent')}
+${txt(24, 626, 'Transactional outbox: the DB write and the event cannot disagree. Consumers are idempotent (dedupe key); failures retry with backoff, then go to a DLQ.', { font: 'sans', size: 10.5 })}
+${txt(24, 643, 'Saga: a multi-service workflow is a chain of local transactions with compensating actions, driven by events or by Step Functions.', { font: 'sans', size: 10.5 })}
+</g>
 
+<g transform="translate(0,62)">
 ${txt(24, 648, '3  CROSS-CUTTING  (every box above shares these)', { color: 'accent', size: 9.5 })}
 ${sub(10, 'OBSERVABILITY · OpenTelemetry')}
 ${box(24, 692, 256, 40, 'OTel SDK in every service', 'trace-id: HTTP → queue → worker', 'a')}${arrow('M152 734 L152 744', 'fs1')}
@@ -398,11 +404,79 @@ ${chain(322, [692, 738, 784, 830], 256, 34)}
 ${txt(322, 886, 'Platform team ships the paved road:', { font: 'sans', size: 10.5 })}${txt(322, 902, 'service template + pipeline + dashboards.', { font: 'sans', size: 10.5 })}
 ${sub(606, 'SECURITY · SECURE SDLC')}
 ${sec.map((s, i) => txt(620, 706 + i * 22, '· ' + s, { font: 'sans', size: 10.5, color: 'text' })).join('')}
+</g>
 
-${txt(10, 934, 'NORTH-SOUTH', { color: 'accent', size: 9 })}${txt(92, 934, 'client → edge → gateway → BFF → service → Redis / DB', { font: 'sans', size: 10.5 })}
-${txt(470, 934, 'ASYNC', { color: 'gold', size: 9 })}${txt(512, 934, 'service → outbox → broker → worker / SES / SSE', { font: 'sans', size: 10.5 })}
-${txt(10, 954, 'Deliberately absent until needed: service mesh, sharded database, multi-region active-active, CQRS everywhere. Naming what you left out shows judgment.', { font: 'sans', size: 10.5 })}
-`, 'Full reference architecture: browser, CloudFront, API Gateway, BFF, microservices, Redis, database, event backbone, SSE, observability, delivery and security');
+${txt(10, 998, 'NORTH-SOUTH', { color: 'accent', size: 9 })}${txt(92, 998, 'client → DNS → CDN → gateway → load balancer → BFF → service → Redis / DB', { font: 'sans', size: 10.5 })}
+${txt(10, 1018, 'ASYNC', { color: 'gold', size: 9 })}${txt(54, 1018, 'service → outbox → broker → worker / SES / projections / SSE.   Data stores, multi-AZ and DR are on the next diagram.', { font: 'sans', size: 10.5 })}
+`, 'Full reference architecture: DNS, CloudFront, API Gateway, load balancer, BFF, microservices, Redis, database, event backbone, SSE, observability, delivery and security');
+})();
+
+// ================================================================ Data platform, topology, disaster recovery, governance
+D.platformTopology = (() => {
+  const note = (y, k, kc, t) => txt(24, y, k, { color: kc, size: 10, weight: 700 }) + txt(150, y, t, { font: 'sans', size: 10.5 });
+  const chip = (x, y, label, kind) => {
+    const w = Math.round(label.length * 5.3 + 18), c = { a: ['accent-soft', 'accent'], g: ['gold-soft', 'gold'], n: ['panel', 'border'] }[kind];
+    return { w, svg: `<rect x="${x}" y="${y}" width="${w}" height="22" rx="11" fill="var(--${c[0]})" stroke="var(--${c[1]})" stroke-width="1.2"/>` + txt(x + 9, y + 15, label, { font: 'sans', size: 10, color: 'text' }) };
+  };
+  const flow = (x0, y0, maxW, labels, kind) => {
+    let cx = x0, cy = y0, lines = 1, svg = '';
+    for (const l of labels) {
+      let c = chip(cx, cy, l, kind);
+      if (cx > x0 && cx + c.w > x0 + maxW) { cx = x0; cy += 26; lines++; c = chip(cx, cy, l, kind); }
+      svg += c.svg; cx += c.w + 6;
+    }
+    return { svg, lines };
+  };
+  const azs = [['a', 'Postgres primary', 'data subnet · writes', 'a'], ['b', 'Postgres standby', 'sync copy · auto failover', 'n'], ['c', 'Read replica', 'async · read scale-out', 'n']];
+  const az = azs.map(([k, db, dbSub, st], i) => {
+    const x = 38 + i * 198;
+    return rect(x, 402, 190, 196, 'panel', 'border', { dash: true }) + txt(x + 10, 418, 'AVAILABILITY ZONE ' + k, { size: 9, color: 'accent' }) +
+      box(x + 10, 428, 170, 40, 'ALB node', 'public subnet', 'a') + box(x + 10, 482, 170, 40, 'ECS tasks · Lambda', 'private subnet', 'g') + box(x + 10, 536, 170, 40, db, dbSub, st) +
+      arrow(`M${x + 95} 470 L${x + 95} 480`, 'pt1') + arrow(`M${x + 95} 524 L${x + 95} 534`, 'pt1');
+  }).join('');
+  const dr = [['Backup + restore', 'cheapest · RTO hours', 'n'], ['Pilot light', 'data live, app off · RTO ~1 h', 'n'], ['Warm standby', 'scaled-down copy · RTO minutes', 'g'], ['Active-active', 'every region serves · RTO ~0', 'a']]
+    .map(([t, s, st], i) => box(24 + i * 220, 676, 190, 54, t, s, st) + (i < 3 ? arrow(`M${216 + i * 220} 703 L${242 + i * 220} 703`, 'pt2', 'accent') : '')).join('');
+  const rows = [['Platform', 'a', ['feature flags (AppConfig)', 'config + secrets', 'service catalog + ownership', 'paved-road templates', 'API versioning + contracts', 'schema registry', 'contract tests']],
+    ['Operations', 'g', ['SLOs + error budgets', 'runbooks + on-call', 'incident reviews', 'capacity planning', 'cost tags + budgets', 'chaos / game days']],
+    ['Governance', 'n', ['data retention + PII', 'audit trail', 'compliance (SOC 2, GDPR)', 'DR drills', 'access reviews']]];
+  let y = 790, chipsSvg = '';
+  for (const [name, st, labels] of rows) {
+    const f = flow(168, y + 8, 712, labels, st), h = f.lines * 26 + 12;
+    chipsSvg += box(24, y, 126, h, name, '', st === 'n' ? 'n' : st) + f.svg; y += h + 6;
+  }
+  const total = y + 34;
+  return wrap(`0 0 900 ${total}`, `
+<defs>${M('pt1', 'muted')}${M('pt2', 'accent')}${M('pt3', 'gold')}</defs>
+
+${rect(10, 8, 880, 330, 'panel-2', 'border')}
+${txt(24, 28, 'A  DATA PLATFORM  (one store per access pattern, derived stores fed by change data capture)', { color: 'accent', size: 9.5 })}
+${txt(170, 44, 'SOURCE OF TRUTH', { size: 8.5 })}${txt(620, 44, 'DERIVED, REBUILDABLE', { size: 8.5 })}
+${box(24, 52, 100, 206, 'Services', 'each owns its data', 'g')}
+${[['Postgres / Aurora', 'transactions · joins · constraints', 'a'], ['DynamoDB', 'key lookups at huge scale', 'n'], ['Redis (ElastiCache)', 'hot reads · counters · locks', 'a'], ['S3', 'files · backups · lake storage', 'n']].map(([t, s, st], i) => box(170, 52 + i * 54, 230, 44, t, s, st) + arrow(`M126 ${74 + i * 54} L166 ${74 + i * 54}`, 'pt1')).join('')}
+${box(440, 106, 130, 98, 'CDC / stream', 'DMS · Kafka · Kinesis', 'a')}${txt(505, 220, 'change data capture', { anchor: 'middle', size: 9 })}
+${arrow('M402 74 L436 122', 'pt3', 'gold')}${arrow('M402 128 L436 150', 'pt3', 'gold')}
+${[['OpenSearch', 'full-text · facets · autocomplete'], ['Data lake: S3 + Athena', 'raw events, cheap, schema on read'], ['Warehouse: Redshift', 'BI, reports, big joins']].map(([t, s], i) => box(620, 68 + i * 62, 250, 48, t, s, 'n') + arrow(`M572 ${130 + i * 17} L616 ${92 + i * 62}`, 'pt3', 'gold')).join('')}
+${note(284, 'Shard key', 'accent', 'high-cardinality and evenly accessed (tenant or user id); a hot key becomes a hot partition. Resharding is painful, so choose early')}
+${note(302, 'Consistency', 'gold', 'strong inside one service, eventual across services; decide per feature (CAP: during a partition, pick availability or consistency)')}
+${note(320, 'Backups', 'muted', 'point-in-time recovery plus snapshots with restores tested on a schedule; retention and PII rules defined per store')}
+
+${rect(10, 350, 880, 394, 'panel-2', 'border')}
+${txt(24, 370, 'B  WHERE IT RUNS  (several availability zones in one region, a second region for disaster recovery)', { color: 'accent', size: 9.5 })}
+${rect(24, 380, 610, 262, 'panel', 'border')}${txt(36, 396, 'REGION A · VPC  (primary)', { size: 9, color: 'text', weight: 700 })}
+${az}
+${txt(36, 616, 'Auto Scaling spreads tasks across AZs, so losing one AZ costs about a third of capacity, not the service.', { font: 'sans', size: 10.5 })}
+${txt(36, 632, 'Standby takes over writes automatically; the ALB drops the failed AZ after health checks.', { font: 'sans', size: 10.5 })}
+${rect(650, 380, 230, 262, 'panel', 'border')}${txt(662, 396, 'REGION B · DR  (standby)', { size: 9, color: 'text', weight: 700 })}
+${box(664, 408, 212, 40, 'Route 53 failover', 'health check · DNS flip', 'a')}${box(664, 458, 212, 40, 'Cross-region replica', 'async database copy', 'n')}${box(664, 508, 212, 40, 'S3 replication', 'assets + backups', 'n')}${box(664, 558, 212, 40, 'Minimal app tier', 'pilot light / warm standby', 'g')}
+${arrow('M636 478 L660 478', 'pt3', 'gold', true)}${txt(648, 472, 'async', { anchor: 'middle', size: 8.5 })}
+${txt(664, 618, 'RPO: how much data you can lose', { size: 9 })}${txt(664, 632, 'RTO: how long recovery may take', { size: 9 })}
+${txt(24, 664, 'DR STRATEGIES  (cost goes up, recovery time goes down)', { color: 'accent', size: 9.5 })}
+${dr}
+
+${txt(24, 768, 'C  PLATFORM, GOVERNANCE AND OPERATIONS  (what keeps it running after launch)', { color: 'accent', size: 9.5 })}
+${chipsSvg}
+${txt(10, total - 10, 'Read it in layers: A is where data lives, B is where it runs, C is how teams keep it running. It pairs with the request and event diagram above.', { font: 'sans', size: 10.5, color: 'text' })}
+`, 'Data platform with change data capture, multi-AZ topology with disaster recovery, and platform and governance practices');
 })();
 // ================================================================ Layer map: design decision / optimization lever / AWS
 D.layerMap = (() => {
@@ -526,11 +600,147 @@ ${txt(10, total - 6, 'Gold chips make the happy path faster; green chips keep th
 `, 'Optimization and resilience patterns at each layer, with circuit breaker, retry backoff with jitter, and cache stampede mechanisms');
 })();
 
+// ================================================================ Mechanism panels: three per diagram, one concept each
+// Every panel is drawn relative to its top-left corner (x, y); `m` carries this diagram's arrow markers.
+const mech = (prefix, panels, foot, caption) => {
+  const m = { mu: prefix + '1', ac: prefix + '2', da: prefix + '3', go: prefix + '4' };
+  const body = panels.map((pn, i) => {
+    const x = [10, 308, 606][i], y = 10;
+    return rect(x, y, 284, 224, 'panel-2', 'border') + txt(x + 14, y + 20, pn.title, { color: 'accent', size: 9.5, weight: 700 }) + pn.draw(x, y, m) +
+      pn.lines.map((l, j) => txt(x + 14, y + 186 + j * 15, l, { font: 'sans', size: 10.5 })).join('');
+  }).join('');
+  return wrap('0 0 900 272', `<defs>${M(m.mu, 'muted')}${M(m.ac, 'accent')}${M(m.da, 'danger')}${M(m.go, 'gold')}</defs>${body}${txt(10, 256, foot, { font: 'sans', size: 10.5, color: 'text' })}`, caption);
+};
+const cell = (x, y, s, kind) => {
+  const c = { a: ['accent-soft', 'accent', 1], d: ['danger', 'danger', 0.22], g: ['gold-soft', 'gold', 1], n: ['panel', 'border', 1] }[kind];
+  return `<rect x="${x}" y="${y}" width="${s}" height="${s}" rx="3" fill="var(--${c[0]})" fill-opacity="${c[2]}" stroke="var(--${c[1]})" stroke-width="1.2"/>`;
+};
+
+// ---- protect the entrance: timeouts, token bucket, load shedding
+D.protectEntrance = mech('pe', [
+  { title: 'TIMEOUT + DEADLINE', lines: ['Each hop waits less than its caller, so failures', 'surface early. Pass the remaining deadline on.'],
+    draw: (x, y) => [['Client', '3 s', 250], ['Gateway', '2.5 s', 210], ['Service', '2 s', 170], ['Database', '1 s', 110]].map(([n, t, w], i) => {
+      const yy = y + 36 + i * 34;
+      return rect(x + 14, yy, w, 26, 'accent-soft', 'accent', { rx: 5 }) + txt(x + 22, yy + 17, n + '   ' + t, { font: 'sans', size: 10.5, color: 'text' });
+    }).join('') + txt(x + 14, y + 180, 'budget shrinks hop by hop', { size: 9 }) },
+  { title: 'TOKEN BUCKET RATE LIMIT', lines: ['Allows a burst up to the bucket size, then holds callers', 'to the refill rate. Return 429 with Retry-After.'],
+    draw: (x, y, m) => rect(x + 14, y + 40, 90, 92, 'panel', 'border') +
+      [0, 1, 2, 3, 4, 5].map((i) => { const cx = x + 36 + (i % 3) * 26, cy = y + 68 + Math.floor(i / 3) * 30; return i < 4 ? `<circle cx="${cx}" cy="${cy}" r="9" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.3"/>` : `<circle cx="${cx}" cy="${cy}" r="9" fill="none" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="3 3"/>`; }).join('') +
+      txt(x + 14, y + 148, 'refill rate = sustained rate', { size: 9 }) + txt(x + 14, y + 163, 'capacity = allowed burst', { size: 9 }) +
+      box(x + 150, y + 40, 120, 40, 'tokens left', 'allow, take 1', 'a') + box(x + 150, y + 92, 120, 40, 'bucket empty', '429 + Retry-After', 'd') +
+      arrow(`M${x + 106} ${y + 60} L${x + 146} ${y + 60}`, m.ac, 'accent') + arrow(`M${x + 106} ${y + 112} L${x + 146} ${y + 112}`, m.da, 'danger') },
+  { title: 'LOAD SHEDDING BY PRIORITY', lines: ['When the server is at its limit, drop the least valuable', 'work early instead of failing everything slowly.'],
+    draw: (x, y, m) => rect(x + 196, y + 36, 74, 116, 'panel', 'border') + txt(x + 233, y + 90, 'server', { anchor: 'middle', font: 'sans', size: 11, color: 'text', weight: 600 }) + txt(x + 233, y + 105, 'at limit', { anchor: 'middle', size: 9, color: 'danger' }) +
+      [['checkout', 'keep', 0], ['search', 'keep', 1], ['analytics', 'shed first', 2]].map(([n, t, i]) => {
+        const yy = y + 42 + i * 38;
+        return box(x + 14, yy, 92, 28, n, '', i === 2 ? 'n' : 'a') + txt(x + 150, yy + 9, t, { anchor: 'middle', size: 9, color: i === 2 ? 'danger' : 'accent' }) +
+          (i === 2 ? arrow(`M${x + 108} ${yy + 16} L${x + 160} ${yy + 16}`, m.da, 'danger', true) + txt(x + 172, yy + 22, '✕', { anchor: 'middle', size: 15, color: 'danger', weight: 700 })
+                   : arrow(`M${x + 108} ${yy + 16} L${x + 192} ${yy + 16}`, m.ac, 'accent'));
+      }).join('') },
+], 'Order matters: a timeout on every call, a rate limit at the door, and load shedding for when the system is still too busy.',
+'Timeout and deadline propagation, token bucket rate limiting and priority load shedding');
+
+// ---- contain failure and absorb bursts: bulkhead, backpressure, idempotency + DLQ
+D.containFailure = mech('cf', [
+  { title: 'BULKHEAD', lines: ['Give each dependency its own pool so one slow', 'service cannot use up every thread or connection.'],
+    draw: (x, y) => txt(x + 14, y + 42, 'ONE SHARED POOL', { size: 9, color: 'danger' }) +
+      Array.from({ length: 10 }, (_, i) => cell(x + 14 + i * 25, y + 48, 18, 'd')).join('') + txt(x + 14, y + 82, 'one slow dependency holds every thread', { font: 'sans', size: 10, color: 'danger' }) +
+      txt(x + 14, y + 108, 'SEPARATE POOLS (BULKHEADS)', { size: 9, color: 'accent' }) +
+      Array.from({ length: 5 }, (_, i) => cell(x + 14 + i * 25, y + 114, 18, 'a')).join('') + Array.from({ length: 5 }, (_, i) => cell(x + 153 + i * 25, y + 114, 18, 'd')).join('') +
+      txt(x + 14, y + 150, 'A keeps working', { font: 'sans', size: 10, color: 'accent' }) + txt(x + 153, y + 150, 'B is contained', { font: 'sans', size: 10, color: 'danger' }) },
+  { title: 'BACKPRESSURE', lines: ['Bound the queue and push back on producers instead', 'of buffering until memory or latency gives out.'],
+    draw: (x, y, m) => box(x + 14, y + 40, 70, 36, 'Producer', '', 'n') + rect(x + 100, y + 40, 90, 36, 'panel', 'gold') + [0, 1, 2, 3, 4].map((i) => cell(x + 108 + i * 15, y + 52, 12, 'g')).join('') + txt(x + 145, y + 36, 'bounded queue', { anchor: 'middle', size: 9, color: 'gold' }) +
+      box(x + 206, y + 40, 64, 36, 'Workers', '', 'a') + arrow(`M${x + 86} ${y + 58} L${x + 98} ${y + 58}`, m.mu) + arrow(`M${x + 192} ${y + 58} L${x + 204} ${y + 58}`, m.mu) +
+      arrow(`M${x + 145} ${y + 78} L${x + 145} ${y + 104} L${x + 49} ${y + 104} L${x + 49} ${y + 80}`, m.da, 'danger', true) +
+      txt(x + 14, y + 126, 'queue full: reject or slow the producer', { font: 'sans', size: 10, color: 'danger' }) + txt(x + 14, y + 148, 'scale workers on depth + oldest message age', { font: 'sans', size: 10, color: 'gold' }) },
+  { title: 'IDEMPOTENCY + DEAD-LETTER QUEUE', lines: ['A dedupe key makes redelivery harmless. Messages that', 'keep failing park in a DLQ: alarm, fix, redrive.'],
+    draw: (x, y, m) => box(x + 14, y + 40, 64, 32, 'message', '', 'n') + box(x + 94, y + 40, 72, 32, 'seen id?', '', 'g') + box(x + 184, y + 40, 86, 32, 'process', '', 'a') +
+      arrow(`M${x + 80} ${y + 56} L${x + 92} ${y + 56}`, m.mu) + arrow(`M${x + 168} ${y + 56} L${x + 182} ${y + 56}`, m.ac, 'accent') + txt(x + 175, y + 50, 'no', { anchor: 'middle', size: 9 }) +
+      arrow(`M${x + 130} ${y + 74} L${x + 130} ${y + 98}`, m.mu) + txt(x + 136, y + 90, 'yes', { size: 9 }) + box(x + 98, y + 100, 64, 30, 'skip', '', 'n') +
+      arrow(`M${x + 227} ${y + 74} L${x + 227} ${y + 98}`, m.da, 'danger') + txt(x + 233, y + 90, '3 fails', { size: 9, color: 'danger' }) + box(x + 184, y + 100, 86, 30, 'DLQ', '', 'd') +
+      txt(x + 14, y + 150, 'retry with backoff before parking it', { font: 'sans', size: 10 }) },
+], 'Isolate the failure (bulkhead), slow producers down (backpressure), and make retries safe (idempotency plus a DLQ).',
+'Bulkhead, backpressure, idempotency and dead-letter queue');
+
+// ---- keep traffic off the origin: collapsing + stale-while-revalidate, warm-up, N+1 batching
+D.offloadOrigin = mech('oo', [
+  { title: 'REQUEST COLLAPSING + STALE-WHILE-REVALIDATE', lines: ['Identical misses share one trip to the origin.', 'Users get the old copy now; it refreshes behind them.'],
+    draw: (x, y, m) => box(x + 14, y + 54, 64, 60, 'N users', '', 'n') + box(x + 110, y + 54, 70, 60, 'Edge', 'cache', 'a') + box(x + 206, y + 54, 64, 60, 'Origin', '', 'n') +
+      [66, 84, 102].map((d) => arrow(`M${x + 80} ${y + d} L${x + 108} ${y + d}`, m.mu)).join('') + arrow(`M${x + 182} ${y + 78} L${x + 204} ${y + 78}`, m.ac, 'accent') + txt(x + 193, y + 46, '1 fetch', { anchor: 'middle', size: 9, color: 'accent' }) +
+      arrow(`M${x + 204} ${y + 100} L${x + 182} ${y + 100}`, m.mu, 'muted', true) +
+      txt(x + 14, y + 138, 'collapsing: identical misses share one trip', { font: 'sans', size: 10 }) + txt(x + 14, y + 156, 'SWR: serve the old copy, refresh in background', { font: 'sans', size: 10 }) },
+  { title: 'COLD-START HERD + WARM-UP', lines: ['After a deploy or failover the cache is empty. Warm hot', 'keys first and ramp traffic so the database is not flooded.'],
+    draw: (x, y, m) => arrow(`M${x + 30} ${y + 140} L${x + 30} ${y + 40}`, m.mu) + line(x + 30, y + 140, x + 266, y + 140, 'muted') + txt(x + 38, y + 44, 'DB load', { size: 9 }) + txt(x + 266, y + 154, 'time', { anchor: 'end', size: 9 }) +
+      line(x + 64, y + 52, x + 64, y + 140, 'gold', true) + txt(x + 68, y + 62, 'deploy / failover', { size: 9, color: 'gold' }) +
+      `<path d="M${x + 30} ${y + 122} L${x + 64} ${y + 122} L${x + 74} ${y + 70} Q${x + 92} ${y + 112} ${x + 266} ${y + 118}" fill="none" stroke="var(--danger)" stroke-width="2"/>` +
+      `<path d="M${x + 64} ${y + 122} Q${x + 130} ${y + 120} ${x + 266} ${y + 126}" fill="none" stroke="var(--accent)" stroke-width="2"/>` +
+      txt(x + 112, y + 84, 'cold cache: spike', { size: 9, color: 'danger' }) + txt(x + 150, y + 136, 'warmed + ramped', { size: 9, color: 'accent' }) },
+  { title: 'N+1 QUERIES TO BATCHING', lines: ['DataLoader collects the lookups from one tick into a', 'single query. Same idea in ORMs and GraphQL resolvers.'],
+    draw: (x, y, m) => box(x + 14, y + 40, 64, 40, 'API', '', 'n') + box(x + 206, y + 40, 64, 40, 'DB', '', 'd') + [0, 1, 2, 3, 4].map((i) => arrow(`M${x + 80} ${y + 44 + i * 8} L${x + 204} ${y + 44 + i * 8}`, m.da, 'danger')).join('') + txt(x + 142, y + 36, '1 + N round trips', { anchor: 'middle', size: 9, color: 'danger' }) +
+      box(x + 14, y + 110, 64, 40, 'API', '', 'n') + box(x + 206, y + 110, 64, 40, 'DB', '', 'n') + arrow(`M${x + 80} ${y + 122} L${x + 204} ${y + 122}`, m.ac, 'accent') + arrow(`M${x + 80} ${y + 138} L${x + 204} ${y + 138}`, m.ac, 'accent') + txt(x + 142, y + 106, 'list + one batched IN (...)', { anchor: 'middle', size: 9, color: 'accent' }) },
+], 'The cheapest request is the one that never reaches the origin: collapse it, serve it stale, warm the cache, and batch the rest.',
+'Request collapsing with stale-while-revalidate, cache warm-up, and N+1 batching');
+
+// ---- protect the database: pooling, replicas, indexes
+D.protectDatabase = mech('pd', [
+  { title: 'CONNECTION POOLING', lines: ['Lambda and pods open connections faster than', 'Postgres accepts them. A proxy pools and reuses them.'],
+    draw: (x, y, m) => [0, 1, 2].map((i) => box(x + 14, y + 44 + i * 34, 58, 26, 'Lambda', '', 'n') + arrow(`M${x + 74} ${y + 57 + i * 34} L${x + 102} ${y + 57 + i * 34}`, m.da, 'danger')).join('') +
+      box(x + 104, y + 52, 76, 76, 'RDS Proxy', 'pool', 'a') + box(x + 210, y + 52, 60, 76, 'DB', 'max conns', 'n') + arrow(`M${x + 182} ${y + 80} L${x + 208} ${y + 80}`, m.ac, 'accent') + arrow(`M${x + 182} ${y + 100} L${x + 208} ${y + 100}`, m.ac, 'accent') +
+      txt(x + 14, y + 148, 'N short-lived clients', { size: 9, color: 'danger' }) + txt(x + 150, y + 148, 'few, reused', { size: 9, color: 'accent' }) },
+  { title: 'READ REPLICAS + LAG', lines: ['Replicas lag by milliseconds to seconds, so pin a user', 'to the primary briefly after their own write.'],
+    draw: (x, y, m) => box(x + 14, y + 44, 86, 38, 'Primary', 'writes', 'a') + box(x + 184, y + 44, 86, 38, 'Replica', 'reads', 'n') + arrow(`M${x + 102} ${y + 63} L${x + 182} ${y + 63}`, m.mu, 'muted', true) + txt(x + 142, y + 56, 'async lag', { anchor: 'middle', size: 9 }) +
+      box(x + 100, y + 112, 84, 34, 'App', '', 'g') + arrow(`M${x + 114} ${y + 110} L${x + 62} ${y + 86}`, m.ac, 'accent') + txt(x + 30, y + 108, 'writes', { size: 9, color: 'accent' }) +
+      arrow(`M${x + 170} ${y + 110} L${x + 222} ${y + 86}`, m.mu) + txt(x + 232, y + 108, 'reads', { size: 9 }) + txt(x + 142, y + 166, 'read-your-own-writes: primary for a few seconds', { anchor: 'middle', size: 9, color: 'gold' }) },
+  { title: 'INDEXES: SCAN VS SEEK', lines: ['EXPLAIN ANALYZE shows which one you got. Index the', 'columns you filter and sort by; weigh the write cost.'],
+    draw: (x, y) => txt(x + 14, y + 44, 'no index: sequential scan', { font: 'sans', size: 10, color: 'text' }) + Array.from({ length: 10 }, (_, i) => cell(x + 14 + i * 25, y + 52, 18, 'd')).join('') + txt(x + 14, y + 86, 'reads every row', { size: 9, color: 'danger' }) +
+      txt(x + 14, y + 112, 'with an index: index scan', { font: 'sans', size: 10, color: 'text' }) + Array.from({ length: 10 }, (_, i) => cell(x + 14 + i * 25, y + 120, 18, i === 6 ? 'a' : 'n')).join('') + txt(x + 14, y + 154, 'jumps straight to the matching row', { size: 9, color: 'accent' }) },
+], 'Protect the database: pool the connections, spread the reads, and make every query touch fewer rows.',
+'Connection pooling, read replicas with lag, and indexes versus sequential scans');
+
+// ---- the browser: cancel stale requests, optimistic UI, graceful degradation
+D.clientSide = mech('cs', [
+  { title: 'DEBOUNCE + CANCEL STALE REQUESTS', lines: ['Debounce waits for a pause in typing. AbortController', 'cancels the old requests so a stale result never wins.'],
+    draw: (x, y) => [['r', 0, 70], ['re', 30, 70], ['rea', 60, 70], ['reac', 90, 100]].map(([k, off, w], i) => {
+      const yy = y + 38 + i * 28, last = i === 3;
+      return txt(x + 14, yy + 13, k, { size: 10, color: 'text' }) + `<rect x="${x + 50 + off}" y="${yy}" width="${w}" height="18" rx="4" fill="var(--${last ? 'accent-soft' : 'danger'})" fill-opacity="${last ? 1 : 0.22}" stroke="var(--${last ? 'accent' : 'danger'})" stroke-width="1.2"/>` +
+        (last ? txt(x + 50 + off + w + 8, yy + 13, 'render', { size: 9, color: 'accent' }) : txt(x + 50 + off + w + 8, yy + 14, '✕', { size: 13, color: 'danger', weight: 700 }));
+    }).join('') + txt(x + 14, y + 160, 'time →', { size: 9 }) },
+  { title: 'OPTIMISTIC UI', lines: ['Show the result first and reconcile with the server after.', 'Keep the previous state so a failure can roll back.'],
+    draw: (x, y, m) => box(x + 14, y + 44, 60, 34, 'click', '', 'n') + box(x + 92, y + 44, 92, 34, 'UI updates', 'instantly', 'a') + box(x + 202, y + 44, 68, 34, 'Server', '', 'g') +
+      arrow(`M${x + 76} ${y + 61} L${x + 90} ${y + 61}`, m.mu) + arrow(`M${x + 186} ${y + 61} L${x + 200} ${y + 61}`, m.mu) +
+      arrow(`M${x + 226} ${y + 80} L${x + 186} ${y + 106}`, m.ac, 'accent') + txt(x + 176, y + 92, 'ok', { anchor: 'end', size: 9, color: 'accent' }) + box(x + 128, y + 108, 62, 32, 'keep', '', 'a') +
+      arrow(`M${x + 246} ${y + 80} L${x + 246} ${y + 106}`, m.da, 'danger') + txt(x + 252, y + 98, 'fail', { size: 9, color: 'danger' }) + box(x + 214, y + 108, 56, 32, 'undo', '', 'd') },
+  { title: 'GRACEFUL DEGRADATION', lines: ['An error boundary limits a failure to one widget, with a', 'fallback, so the rest of the page keeps working.'],
+    draw: (x, y) => rect(x + 14, y + 38, 256, 116, 'panel', 'border') + box(x + 22, y + 46, 240, 24, 'header', '', 'a') + box(x + 22, y + 78, 116, 32, 'product', '', 'a') + box(x + 146, y + 78, 116, 32, 'recommendations', 'failed', 'd') +
+      box(x + 22, y + 118, 116, 28, 'cart', '', 'a') + box(x + 146, y + 118, 116, 28, 'fallback: hide', '', 'g') },
+], 'The browser is a layer too: cancel what is stale, show results optimistically, and degrade one widget instead of the whole page.',
+'Debounce with request cancellation, optimistic UI, and graceful degradation with error boundaries');
+
+// ---- operate it safely: health checks, canary + rollback, golden signals + SLO burn
+D.operateSafely = mech('os', [
+  { title: 'HEALTH CHECKS', lines: ['Liveness restarts a dead process. Readiness keeps traffic', 'off an instance that is up but not ready yet.'],
+    draw: (x, y, m) => box(x + 14, y + 62, 64, 52, 'LB', 'GET /health', 'a') + [['instance 1', 'a'], ['instance 2', 'a'], ['instance 3', 'd']].map(([n, st], i) => {
+      const yy = y + 40 + i * 38;
+      return box(x + 150, yy, 120, 28, n, '', st) + (st === 'a' ? arrow(`M${x + 80} ${y + 88} L${x + 146} ${yy + 14}`, m.ac, 'accent') : arrow(`M${x + 80} ${y + 90} L${x + 126} ${yy + 14}`, m.da, 'danger', true) + txt(x + 136, yy + 20, '✕', { anchor: 'middle', size: 13, color: 'danger', weight: 700 }));
+    }).join('') },
+  { title: 'CANARY + AUTO-ROLLBACK', lines: ['Ship to a few users, watch error rate and latency,', 'and let automation roll back before people notice.'],
+    draw: (x, y, m) => [['5%', 'canary', 14], ['25%', '', 112], ['100%', '', 210]].map(([t, s, xx]) => box(x + xx, y + 48, 62, 34, t, s, s ? 'g' : 'a')).join('') +
+      arrow(`M${x + 78} ${y + 65} L${x + 110} ${y + 65}`, m.ac, 'accent') + arrow(`M${x + 176} ${y + 65} L${x + 208} ${y + 65}`, m.ac, 'accent') + txt(x + 94, y + 44, 'gate', { anchor: 'middle', size: 9, color: 'gold' }) + txt(x + 192, y + 44, 'gate', { anchor: 'middle', size: 9, color: 'gold' }) +
+      arrow(`M${x + 143} ${y + 84} L${x + 143} ${y + 112}`, m.da, 'danger', true) + box(x + 60, y + 114, 166, 36, 'metric breach', 'auto-rollback to previous', 'd') },
+  { title: 'GOLDEN SIGNALS + SLO BURN', lines: ['Alert on how fast the error budget burns, not on one', 'noisy threshold. Page before the budget is gone.'],
+    draw: (x, y, m) => [['latency', 0, 0], ['traffic', 1, 0], ['errors', 0, 1], ['saturation', 1, 1]].map(([n, c, r]) => box(x + 14 + c * 104, y + 40 + r * 38, 96, 30, n, '', 'n')).join('') +
+      rect(x + 232, y + 40, 38, 68, 'panel', 'border') + `<rect x="${x + 232}" y="${y + 74}" width="38" height="34" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.2"/>` + txt(x + 251, y + 122, 'budget', { anchor: 'middle', size: 9 }) +
+      arrow(`M${x + 110} ${y + 116} L${x + 110} ${y + 126}`, m.go, 'gold') + box(x + 14, y + 128, 208, 34, 'SLO burn-rate alert', 'page before the budget is gone', 'g') },
+], 'Run it safely: probe every instance, release in small steps with an automatic way back, and alert on the SLO rather than the symptom.',
+'Health checks, canary release with automatic rollback, and golden signals with SLO burn alerts');
+
 // Dense diagrams are too small to read when scaled to a phone: below ~760px they scroll sideways
 // instead. tabindex + role/label make the scroll area reachable and scrollable from the keyboard.
 const scrollable = (html, label) => html.replace('<div class="diagram">', `<div class="diagram" style="overflow-x:auto" tabindex="0" role="region" aria-label="${label}, scrolls sideways on narrow screens">`).replace('<svg ', '<svg style="min-width:760px" ');
 D.fullStack = scrollable(D.fullStack, 'Full reference architecture diagram');
+D.platformTopology = scrollable(D.platformTopology, 'Data platform, topology and disaster recovery diagram');
 D.layerMap = scrollable(D.layerMap, 'Layer by layer map diagram');
 D.resilienceMap = scrollable(D.resilienceMap, 'Optimization and resilience patterns diagram');
+for (const [k, label] of [['protectEntrance', 'Timeout, rate limit and load shedding mechanisms'], ['containFailure', 'Bulkhead, backpressure and dead-letter queue mechanisms'], ['offloadOrigin', 'Request collapsing, warm-up and batching mechanisms'], ['protectDatabase', 'Connection pooling, replicas and index mechanisms'], ['clientSide', 'Debounce, optimistic UI and graceful degradation mechanisms'], ['operateSafely', 'Health check, canary and golden signal mechanisms']]) D[k] = scrollable(D[k], label);
 
 export default D;
