@@ -7,7 +7,7 @@ import { SITE_URL } from './lib/siteUrl';
 // see robots.ts, which disallows /study/ for the same reason.
 const GUIDES = [
   ['interview-prep', 0.9], ['interview-cheatsheet', 0.7], ['genai', 0.8],
-  ['javascript', 0.8], ['react-training', 0.8], ['reactjs', 0.8], ['nextjs', 0.8],
+  ['javascript', 0.8], ['typescript', 0.8], ['react-training', 0.8], ['reactjs', 0.8], ['nextjs', 0.8],
   ['nodejs', 0.8], ['tailwind-css', 0.8], ['coding-questions', 0.8],
   ['system-design', 0.8], ['system-design-scale', 0.7], ['performance-optimization', 0.7],
   ['web-platform', 0.8],

@@ -743,4 +743,50 @@ D.layerMap = scrollable(D.layerMap, 'Layer by layer map diagram');
 D.resilienceMap = scrollable(D.resilienceMap, 'Optimization and resilience patterns diagram');
 for (const [k, label] of [['protectEntrance', 'Timeout, rate limit and load shedding mechanisms'], ['containFailure', 'Bulkhead, backpressure and dead-letter queue mechanisms'], ['offloadOrigin', 'Request collapsing, warm-up and batching mechanisms'], ['protectDatabase', 'Connection pooling, replicas and index mechanisms'], ['clientSide', 'Debounce, optimistic UI and graceful degradation mechanisms'], ['operateSafely', 'Health check, canary and golden signal mechanisms']]) D[k] = scrollable(D[k], label);
 
+// ================================================================ TypeScript
+D.tsPipeline = wrap('0 0 900 300', `
+<defs>${M('tp1', 'muted')}${M('tp2', 'accent', 'accent')}</defs>
+${txt(20, 26, 'FULL COMPILER (tsc): parse, bind, check, emit', { color: 'accent', size: 9.5 })}
+${box(20, 40, 140, 64, 'Source', '.ts / .tsx', 'n')}${box(200, 40, 140, 64, 'Parser', 'text → AST', 'n')}${box(380, 40, 140, 64, 'Binder', 'names → symbols', 'n')}${box(560, 40, 140, 64, 'Checker', 'types + errors', 'a')}${box(740, 40, 140, 64, 'Emitter', 'JS + .d.ts + map', 'n')}
+${arrow('M162 72 L196 72', 'tp1')}${arrow('M342 72 L376 72', 'tp1')}${arrow('M522 72 L556 72', 'tp1')}${arrow('M702 72 L736 72', 'tp1')}
+${txt(630, 126, 'the only step that reports type errors', { anchor: 'middle', color: 'accent', size: 10 })}
+${txt(20, 168, 'TRANSPILE-ONLY (what bundlers and runtimes do): no checker', { color: 'accent', size: 9.5 })}
+${box(20, 182, 140, 64, 'Source', '.ts / .tsx', 'n')}${box(220, 182, 220, 64, 'Erase the types', 'no type information used', 'g')}${box(500, 182, 140, 64, 'JavaScript', 'runs as is', 'n')}
+${arrow('M162 214 L216 214', 'tp1')}${arrow('M442 214 L496 214', 'tp1')}
+${txt(670, 200, 'esbuild, swc, Babel', { size: 10.5, color: 'text' })}${txt(670, 218, 'Vite, Next.js (SWC)', { size: 10.5, color: 'text' })}${txt(670, 236, 'Node.js type stripping', { size: 10.5, color: 'text' })}
+${txt(450, 280, 'Speed comes from the transpiler; safety comes from tsc --noEmit in CI and the editor.', { anchor: 'middle', color: 'muted', size: 10.5 })}
+`, 'The TypeScript compiler pipeline compared with transpile-only tools that erase types without checking them');
+
+D.tsLattice = wrap('0 0 900 340', `
+${rect(20, 24, 520, 300, 'panel-2', 'border')}${txt(36, 46, 'unknown  (top type: every value fits here)', { color: 'text', size: 11, weight: 700 })}
+${rect(50, 62, 460, 250, 'panel', 'border')}${txt(66, 84, 'string', { color: 'text', size: 11, weight: 700 })}
+${rect(80, 98, 400, 196, 'panel-2', 'border')}${txt(96, 120, "'a' | 'b'", { color: 'text', size: 11, weight: 700 })}
+${rect(110, 134, 340, 144, 'panel', 'accent')}${txt(126, 156, "'a'", { color: 'accent', size: 11, weight: 700 })}
+${rect(150, 196, 260, 62, 'accent-soft', 'accent')}${txt(280, 222, 'never', { anchor: 'middle', color: 'text', size: 12, weight: 700 })}${txt(280, 240, 'no values; fits anywhere', { anchor: 'middle', size: 9.5 })}
+${box(580, 24, 300, 70, 'any', 'opts out: assignable to and from everything', 'd')}
+${txt(580, 130, 'Assignable means safe to use in that place:', { color: 'accent', size: 10 })}
+${txt(580, 156, "'a'   →  string     OK   (narrow into wide)", { size: 10.5, color: 'text' })}
+${txt(580, 178, "string →  'a'        error (needs a check first)", { size: 10.5, color: 'text' })}
+${txt(580, 200, 'never  →  anything  OK', { size: 10.5, color: 'text' })}
+${txt(580, 222, 'anything → unknown  OK', { size: 10.5, color: 'text' })}
+${txt(580, 244, 'unknown → string   error (narrow it first)', { size: 10.5, color: 'text' })}
+${txt(580, 280, 'Prefer unknown to any: both accept every value,', { size: 10, color: 'muted' })}
+${txt(580, 296, 'but unknown forces the checks any skips.', { size: 10, color: 'muted' })}
+`, 'Nested sets showing never inside a string literal inside a literal union inside string inside unknown, with any outside the system');
+
+D.tsNarrow = wrap('0 0 900 320', `
+<defs>${M('tn1', 'muted')}${M('tn2', 'danger', 'danger')}</defs>
+${box(290, 16, 320, 60, 'shape: Circle | Square | Triangle', 'every member has a literal kind field', 'a')}
+${[
+  ['case "circle"', 'shape: Circle  →  radius', 20, 'n'],
+  ['case "square"', 'shape: Square  →  side', 240, 'n'],
+  ['case "triangle"', 'shape: Triangle  →  base, height', 460, 'n'],
+  ['default', 'shape: never', 680, 'd'],
+].map((b) => box(b[2], 140, 200, 62, b[0], b[1], b[3]) + arrow(`M450 78 C450 112 ${b[2] + 100} 106 ${b[2] + 100} 136`, b[3] === 'd' ? 'tn2' : 'tn1', b[3] === 'd' ? 'danger' : 'muted', b[3] === 'd')).join('')}
+${txt(274, 50, 'switch (shape.kind)', { anchor: 'end', color: 'accent', size: 10.5 })}
+${txt(450, 246, 'In default the compiler has ruled out every member, so shape has type never.', { anchor: 'middle', size: 10.5, color: 'text' })}
+${txt(450, 268, 'const _exhaustive: never = shape   // adding a Pentagon to the union now fails to compile', { anchor: 'middle', size: 10.5, color: 'accent' })}
+${txt(450, 296, 'The compiler lists every switch that needs the new case.', { anchor: 'middle', size: 10.5, color: 'muted' })}
+`, 'A switch on a discriminant narrows a union member by member and leaves never in the default branch');
+
 export default D;
