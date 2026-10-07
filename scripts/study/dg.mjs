@@ -789,4 +789,5 @@ ${txt(450, 268, 'const _exhaustive: never = shape   // adding a Pentagon to the 
 ${txt(450, 296, 'The compiler lists every switch that needs the new case.', { anchor: 'middle', size: 10.5, color: 'muted' })}
 `, 'A switch on a discriminant narrows a union member by member and leaves never in the default branch');
 
+export { box, txt, arrow, rect, wrap, M, line, X };
 export default D;
