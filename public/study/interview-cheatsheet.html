@@ -608,6 +608,78 @@ const DATA = [
     {
       q:"forwardRef with generics",
       a:`<p>The built-in type erases generics; cast the result to a generic function type or use React 19's &lt;code&gt;ref&lt;/code&gt; as a prop.</p><p class="deeper">Full answer: <a href="/interview-prep#react" target="_top">interview-prep → react</a></p>`
+    },
+    {
+      q:"Types are erased",
+      a:`<p>Types exist only at compile time and are removed on emit, so data from outside needs a run-time schema; <code>x as User</code> is a promise, not a check.</p><p class="deeper">Full answer: <a href="/typescript#ts1:0" target="_top">typescript → What does TypeScript do at build time</a></p>`
+    },
+    {
+      q:"Structural typing",
+      a:`<p>Types are compatible when their <em>shapes</em> match, whatever their names; use a branded type when you need nominal behaviour.</p><p class="deeper">Full answer: <a href="/typescript#ts1:2" target="_top">typescript → Why does TypeScript use structural typing</a></p>`
+    },
+    {
+      q:"strict and tsconfig",
+      a:`<p>Start with <code>strict</code>, then add <code>noUncheckedIndexedAccess</code>, <code>exactOptionalPropertyTypes</code> and <code>verbatimModuleSyntax</code>; when migrating, enable <code>strictNullChecks</code> last.</p><p class="deeper">Full answer: <a href="/typescript#ts1:3" target="_top">typescript → Which tsconfig options should every new project turn on</a></p>`
+    },
+    {
+      q:"unknown vs. any",
+      a:`<p>Both accept any value; <code>unknown</code> forces you to narrow before use, <code>any</code> switches checking off. Use <code>unknown</code> for external data.</p><p class="deeper">Full answer: <a href="/typescript#ts1:5" target="_top">typescript → Which of any, unknown, never, void and object to use</a></p>`
+    },
+    {
+      q:"satisfies vs. as vs. annotation",
+      a:`<p><code>satisfies</code> validates without widening, an annotation widens to the declared type, and <code>as</code> overrides the compiler unchecked.</p><p class="deeper">Full answer: <a href="/typescript#ts1:9" target="_top">typescript → satisfies vs. a type annotation vs. as</a></p>`
+    },
+    {
+      q:"Exhaustive switch",
+      a:`<p>Discriminated union plus <code>switch</code>; in <code>default</code> the value is <code>never</code>, so <code>assertNever(x)</code> turns a new union member into a compile error.</p><p class="deeper">Full answer: <a href="/typescript#ts3:2" target="_top">typescript → An exhaustive switch over a union</a></p>`
+    },
+    {
+      q:"Type guards",
+      a:`<p><code>x is T</code> tells the compiler what a <code>true</code> result means, <code>asserts x is T</code> throws otherwise. The body is trusted, not verified; 5.5 infers simple predicates.</p><p class="deeper">Full answer: <a href="/typescript#ts3:3" target="_top">typescript → User-defined type guards and assertion functions</a></p>`
+    },
+    {
+      q:"enum vs. literal union",
+      a:`<p>Prefer a union of literals or an <code>as const</code> object: enums emit run-time code and clash with <code>erasableSyntaxOnly</code> and Node type stripping.</p><p class="deeper">Full answer: <a href="/typescript#ts2:1" target="_top">typescript → Why do many teams avoid enum</a></p>`
+    },
+    {
+      q:"keyof with generics",
+      a:`<p><code>K extends keyof T</code> ties a key to its object so <code>T[K]</code> is the exact property type: the basis of type-safe <code>get</code> and <code>pick</code>.</p><p class="deeper">Full answer: <a href="/typescript#ts4:2" target="_top">typescript → keyof and indexed access with generics</a></p>`
+    },
+    {
+      q:"Variance",
+      a:`<p>Producers are covariant, consumers contravariant (<code>strictFunctionTypes</code>); arrays are covariant too, which is unsound; <code>in</code>/<code>out</code> annotate it.</p><p class="deeper">Full answer: <a href="/typescript#ts4:3" target="_top">typescript → Variance, covariance and contravariance</a></p>`
+    },
+    {
+      q:"Utility types",
+      a:`<p><code>Partial</code>, <code>Pick</code>, <code>Omit</code>, <code>Record</code>, <code>Exclude</code>, <code>ReturnType</code> are all mapped or conditional types; <code>Omit</code> does not check that the key exists.</p><p class="deeper">Full answer: <a href="/typescript#ts5:0" target="_top">typescript → Which built-in utility types do you use daily</a></p>`
+    },
+    {
+      q:"Conditional types and infer",
+      a:`<p><code>T extends U ? X : Y</code>; <code>infer</code> captures a piece of the match; a naked type parameter distributes over a union, <code>[T]</code> turns that off.</p><p class="deeper">Full answer: <a href="/typescript#ts5:1" target="_top">typescript → Conditional types: infer and distribution</a></p>`
+    },
+    {
+      q:"Branded types",
+      a:`<p>Intersect with a phantom property so a <code>UserId</code> is not an <code>OrderId</code>; the brand is erased, so it costs nothing at run time.</p><p class="deeper">Full answer: <a href="/typescript#ts6:0" target="_top">typescript → Branded (opaque) types</a></p>`
+    },
+    {
+      q:"Validate at the boundary",
+      a:`<p>Parse HTTP bodies, <code>JSON.parse</code> output and env vars with a schema (Zod, Valibot) and derive the type from it; trust the types inside.</p><p class="deeper">Full answer: <a href="/typescript#ts7:0" target="_top">typescript → Compile-time types vs run-time validation</a></p>`
+    },
+    {
+      q:"Migrating JS to TS",
+      a:`<p><code>allowJs</code>, convert leaf files first, ratchet strict flags one at a time, validate the boundaries, and make new code strict from day one.</p><p class="deeper">Full answer: <a href="/typescript#ts7:5" target="_top">typescript → Migrating a large JavaScript codebase</a></p>`
+    },
+    {
+      q:"ts-expect-error vs. ts-ignore",
+      a:`<p><code>@ts-expect-error</code> fails when the error disappears, so it cannot rot; <code>@ts-ignore</code> and <code>as any</code> hide problems for good. Lint for a reason.</p><p class="deeper">Full answer: <a href="/typescript#ts7:6" target="_top">typescript → @ts-ignore vs @ts-expect-error vs "as any"</a></p>`
+    },
+    {
+      q:"Running .ts on Node",
+      a:`<p>Node strips types and runs erasable syntax only (no enums or parameter properties); it does not type-check, so keep <code>tsc --noEmit</code> in CI.</p><p class="deeper">Full answer: <a href="/typescript#ts7:9" target="_top">typescript → Running TypeScript on Node 24 without a build step</a></p>`
+    },
+    {
+      q:"Slow tsc",
+      a:`<p>Measure with <code>--extendedDiagnostics</code> or <code>--generateTrace</code>; usual causes are huge unions and deep conditional types; fix with project references and a separate transpiler.</p><p class="deeper">Full answer: <a href="/typescript#ts7:8" target="_top">typescript → Why can compilation be slow</a></p>`
     }
   ]
 },
