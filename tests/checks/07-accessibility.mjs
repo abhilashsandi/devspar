@@ -13,10 +13,24 @@ export async function run({ browser, base, ok }) {
     ok(`axe: ${label}`, violations.length === 0, violations.map((v) => `${v.id} (${v.nodes.length})`).join(', '));
   };
 
+  // The homepage fades its content in (framer-motion, up to ~1.1 s) and the theme toggle runs a
+  // 300 ms colour transition. axe measuring text mid-fade sees half-transparent text and reports a
+  // contrast failure that depends on runner speed, so wait for both to finish before checking:
+  // a floor that covers the longest animation (framer-motion's JS-driven tweens don't appear in
+  // document.getAnimations()), then until no finite CSS/WAAPI animation or transition is running.
+  const settle = async (minMs) => {
+    await page.waitForTimeout(minMs);
+    await page.waitForFunction(
+      () => document.getAnimations().every((a) => a.playState !== 'running' || a.effect?.getTiming().iterations === Infinity),
+      null, { timeout: 5000 },
+    ).catch(() => {});
+  };
+
   await page.goto(`${base}/`, { waitUntil: 'networkidle' });
+  await settle(1500);
   await axe('homepage (light)');
   await page.click('button[title="Toggle theme"]');
-  await page.waitForTimeout(300);
+  await settle(500);
   await axe('homepage (dark)');
 
   await page.goto(`${base}/nextjs`, { waitUntil: 'networkidle' });
