@@ -178,7 +178,7 @@ function renderContent(forceIdx){
     empty.textContent = prefs.coreOnly ? 'No core questions in this section with the current filters. Untick "Core only" to see all.' : 'Everything here is reviewed. Untick "Hide reviewed" to see it again.';
     content.appendChild(empty);
   }
-  visible.forEach(i=> content.appendChild(buildCard(entry(section.id, i), { open: section.id === 'review' })));
+  visible.forEach(i=> content.appendChild(buildCard(entry(section.id, i), { open: section.id === 'review' || !!window.__STUDY__.openAll })));
   const pager = document.createElement('div');
   pager.className = 'pager';
   const prev = DATA[idx-1], next = DATA[idx+1];

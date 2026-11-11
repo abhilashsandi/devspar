@@ -13,6 +13,7 @@ const PAGES = {
   'interview-prep': 'Interview Prep', 'interview-cheatsheet': 'Cheatsheet', genai: 'GenAI', javascript: 'JavaScript', typescript: 'TypeScript', 'react-training': 'React',
   reactjs: 'React + TypeScript', nextjs: 'Next.js', nodejs: 'Node.js', 'tailwind-css': 'CSS & Tailwind', 'coding-questions': 'Coding Practice',
   'system-design': 'System Design', 'system-design-scale': 'System Design at Scale', 'performance-optimization': 'Performance', 'web-platform': 'Web Platform',
+  'crash-course': 'Crash Course', aws: 'AWS',
 };
 
 const ent = (s) => s.replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&mdash;/g, '—').replace(/&rarr;/g, '→').replace(/&[a-z]+;/g, ' ');

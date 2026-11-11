@@ -10,7 +10,7 @@ const GUIDES = [
   ['javascript', 0.8], ['typescript', 0.8], ['react-training', 0.8], ['reactjs', 0.8], ['nextjs', 0.8],
   ['nodejs', 0.8], ['tailwind-css', 0.8], ['coding-questions', 0.8],
   ['system-design', 0.8], ['system-design-scale', 0.7], ['performance-optimization', 0.7],
-  ['web-platform', 0.8],
+  ['web-platform', 0.8], ['crash-course', 0.8], ['aws', 0.8],
 ] as const;
 const LABS = ['coding-questions/labs', 'javascript/labs', 'react-training/labs', 'system-design/labs'];
 const TOOLS = ['csv-tools', 'pdf-tools'];

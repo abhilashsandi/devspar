@@ -79,9 +79,9 @@ export async function upgrade(html) {
   // Config: prefer an existing window.__STUDY__ assignment; else fall back to the old
   // per-page literal engine text, for a page that predates the shared engine.
   const cfgMatch = h.match(CFG_RE);
-  let key, core;
+  let key, core, extra = {};
   if (cfgMatch) {
-    ({ key, core } = JSON.parse(cfgMatch[1]));
+    ({ key, core, ...extra } = JSON.parse(cfgMatch[1]));
     h = h.slice(0, cfgMatch.index);
   } else {
     const eng = html.slice(mi);
@@ -110,7 +110,7 @@ export async function upgrade(html) {
     h = h.replace(fcCoreBtn, (m) => m + '\n      <button id="fcWeak" class="fc-start alt" type="button" hidden>↻ Review weak cards</button>');
   }
   const engine = await engineWithCloser();
-  return h + 'window.__STUDY__ = ' + JSON.stringify({ key, core }) + ';\n' + engine;
+  return h + 'window.__STUDY__ = ' + JSON.stringify({ key, core, ...extra }) + ';\n' + engine;
 }
 
 export async function save(page, html) {

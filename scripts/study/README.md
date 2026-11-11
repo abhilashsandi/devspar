@@ -108,6 +108,11 @@ const html = await H.newPage(
 await lib.save('graphql', await lib.upgrade(html));
 ```
 
+Pass `openAll: true` in that config to render every card expanded by default (the Crash Course
+uses it so it reads top to bottom; see `add-crash-course.mjs`). The Crash Course and AWS guides are
+built by `add-crash-course.mjs` / `add-aws-guide.mjs` from `crash-content-*.mjs` / `aws-content-*.mjs`
+(authoring helpers in `cc-kit.mjs`, AWS diagrams in `dg-aws.mjs`).
+
 Then create `app/graphql/page.tsx` (copy an existing one, e.g. `app/nextjs/page.tsx`, and change
 the slug/title/description), add it to the homepage's `GROUPS` in `app/page.tsx`, and run
 `npm run study:build`.

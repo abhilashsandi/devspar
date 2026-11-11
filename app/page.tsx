@@ -20,6 +20,8 @@ import {
   FlaskConical,
   Palette,
   ListChecks,
+  Cloud,
+  Timer,
   type LucideIcon,
 } from 'lucide-react';
 import { ThemeToggle } from './components/ThemeToggle';
@@ -61,9 +63,10 @@ const GROUPS: Group[] = [
   {
     id: 'start',
     title: 'Start here',
-    blurb: 'The three pages to open first, whatever the role.',
+    blurb: 'The pages to open first, whatever the role.',
     guides: [
       { slug: 'interview-prep', title: 'Interview Prep Guide', desc: 'Everything in one place, starting with a timed 2-hour review: JavaScript, TypeScript, React, Next.js, Node.js, databases, system design, performance, testing and more.', icon: FileText, color: 'text-indigo-500 dark:text-indigo-400', bg: 'bg-indigo-100 dark:bg-indigo-400/10' },
+      { slug: 'crash-course', title: 'Interview Crash Course', desc: 'A 5–12 minute refresher per stream, read top to bottom right before the interview: key ideas, code snippets, diagrams and rapid-fire answers.', icon: Timer, color: 'text-orange-500 dark:text-orange-400', bg: 'bg-orange-100 dark:bg-orange-400/10' },
       { slug: 'interview-cheatsheet', title: 'Interview Cheatsheet', desc: 'A last-two-hours plan and a one-line answer for every topic, with a 30-minute must-know pass.', icon: ListChecks, color: 'text-fuchsia-500 dark:text-fuchsia-400', bg: 'bg-fuchsia-100 dark:bg-fuchsia-400/10' },
       { slug: 'genai', title: 'GenAI Explained', desc: 'LLMs, embeddings, RAG, tool calling, MCP and agents, streaming to React, and a full worked example of an AI quote-comparison flow.', icon: Brain, color: 'text-teal-500 dark:text-teal-400', bg: 'bg-teal-100 dark:bg-teal-400/10' },
     ],
@@ -91,6 +94,7 @@ const GROUPS: Group[] = [
       { slug: 'system-design', title: 'System Design', desc: 'Architectural styles, microservices, messaging, sagas, real outages and AWS building blocks.', icon: Network, color: 'text-cyan-500 dark:text-cyan-400', bg: 'bg-cyan-100 dark:bg-cyan-400/10' },
       { slug: 'system-design-scale', title: 'System Design at Scale', desc: 'A senior-level answer to “design a full-stack app for millions of users”, end to end.', icon: Server, color: 'text-violet-500 dark:text-violet-400', bg: 'bg-violet-100 dark:bg-violet-400/10' },
       { slug: 'performance-optimization', title: 'Optimize at Every Layer', desc: 'Client, edge, API, server, cache and database: the full performance playbook and the numbers to know.', icon: Gauge, color: 'text-amber-500 dark:text-amber-400', bg: 'bg-amber-100 dark:bg-amber-400/10' },
+      { slug: 'aws', title: 'AWS', desc: 'IAM, VPC, Lambda, ECS, S3, RDS/Aurora, DynamoDB, SQS/SNS/EventBridge, observability, IaC, DR and cost, with reference architectures and quizzes.', icon: Cloud, color: 'text-orange-500 dark:text-orange-400', bg: 'bg-orange-100 dark:bg-orange-400/10' },
     ],
   },
   {

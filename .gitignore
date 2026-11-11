@@ -43,3 +43,6 @@ next-env.d.ts
 # backend
 backend/.cache/
 backend/node_modules/
+
+# private plaintext (encrypted copy lives in app/my-prep/private.enc.json)
+/private/

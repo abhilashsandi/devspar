@@ -96,7 +96,7 @@ export async function newPage(cfg, data) {
   rep(/(<div class="hero">[\s\S]*?<\/h1>\s*)<p>[\s\S]*?<\/p>/, (m, a) => a + '<p>' + cfg.lede + '</p>');
   // The shell we copied from nextjs carries nextjs's own window.__STUDY__ config; replace it
   // with this new guide's, or lib.upgrade() would key its progress storage as "nextjs".
-  rep(/window\.__STUDY__\s*=\s*\{[^;]*\};/, () => 'window.__STUDY__ = ' + JSON.stringify({ key: cfg.key, core: cfg.core || 'the 2-Hour Review' }) + ';');
+  rep(/window\.__STUDY__\s*=\s*\{[^;]*\};/, () => 'window.__STUDY__ = ' + JSON.stringify({ key: cfg.key, core: cfg.core || 'the 2-Hour Review', ...(cfg.openAll ? { openAll: true } : {}) }) + ';');
   if (cfg.eyebrow) rep(/<p class="eyebrow-free">[\s\S]*?<\/p>/, () => '<p class="eyebrow-free">' + esc(cfg.eyebrow) + '</p>');
   return lib.withData(h, data);
 }
