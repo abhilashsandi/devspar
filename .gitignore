@@ -46,3 +46,6 @@ backend/node_modules/
 
 # private plaintext (encrypted copy lives in app/my-prep/private.enc.json)
 /private/
+
+# scripts/study/preview-diagrams.mjs output
+.diagram-preview.html

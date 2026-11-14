@@ -7,6 +7,52 @@ const navToggle = document.getElementById('navToggle');
 const navToggleLbl = document.getElementById('navToggleLbl');
 function closeNav(){ sidebarEl.classList.remove('open'); navToggle.setAttribute('aria-expanded','false'); }
 navToggle.addEventListener('click', ()=>{ const o = sidebarEl.classList.toggle('open'); navToggle.setAttribute('aria-expanded', String(o)); });
+// Sidebar top row: a way back to the list of guides and a light/dark switch. The guide runs in an
+// iframe on the site, so the link targets the top window and the switch writes the same `theme`
+// key next-themes reads (the site then follows via the storage event).
+(function(){
+  if(document.querySelector('.side-top')) return;
+  const top = document.createElement('div');
+  top.className = 'side-top';
+  top.innerHTML = '<a class="home-link" href="/" target="_top" aria-label="All guides">←<span> All guides</span></a>' +
+    '<button class="theme-btn" type="button" aria-label="Switch between light and dark" title="Light / dark">◐</button>';
+  sidebarEl.insertBefore(top, sidebarEl.firstChild);
+  top.querySelector('.theme-btn').addEventListener('click', ()=>{
+    const root = document.documentElement;
+    const dark = root.getAttribute('data-theme') ? root.getAttribute('data-theme') === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    const next = dark ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try{ localStorage.setItem('theme', next); }catch(e){}
+  });
+})();
+
+// ---- answer polish: colour code blocks and let wide tables scroll sideways on their own.
+// A <pre class="plain"> (prompts, sample output) is never coloured; other blocks only when they look like code.
+const CODE_SIGNS = /\b(const|let|var|function|return|import|export|class|interface|type|await|async|SELECT|INSERT|UPDATE|CREATE|def|func|public|private)\b|=>|===|!==|\(\)\s*\{|;\s*$|<\/?[A-Za-z][\w.-]*[\s>]|^\s*(\$|npm|npx|git|docker|kubectl|curl|node|aws)\s/m;
+const TOKEN_RE = /(\/\*[\s\S]*?\*\/|(?<![:\w])\/\/[^\n]*|(?<=^|\s)#(?=\s|!)[^\n]*)|("(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*'|`(?:\\.|[^`\\])*`)|\b(const|let|var|function|return|if|else|for|while|do|switch|case|break|continue|import|from|export|default|class|extends|implements|new|async|await|try|catch|finally|throw|typeof|instanceof|in|of|type|interface|enum|readonly|public|private|protected|static|as|satisfies|keyof|infer|yield|void|null|undefined|true|false|this|super|SELECT|FROM|WHERE|JOIN|LEFT|INNER|ON|GROUP BY|ORDER BY|LIMIT|INSERT|INTO|VALUES|UPDATE|SET|DELETE|CREATE|TABLE|INDEX|BEGIN|COMMIT|AND|OR|NOT)\b|\b(\d+(?:\.\d+)?)\b/gm;
+const escCode = (s)=> s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function colourCode(pre){
+  if(pre.dataset.hl || pre.children.length || pre.classList.contains('plain')) return;
+  pre.dataset.hl = '1';
+  const src = pre.textContent;
+  if(src.length > 6000 || !CODE_SIGNS.test(src)) return;
+  let out = '', last = 0;
+  src.replace(TOKEN_RE, (m, c, str, k, n, at)=>{
+    out += escCode(src.slice(last, at)) + '<span class="tk-' + (c ? 'c' : str ? 's' : k ? 'k' : 'n') + '">' + escCode(m) + '</span>';
+    last = at + m.length;
+    return m;
+  });
+  pre.innerHTML = out + escCode(src.slice(last));
+}
+function enhance(root){
+  root.querySelectorAll('pre').forEach(colourCode);
+  root.querySelectorAll('table.cmp').forEach(t=>{
+    const p = t.parentElement;
+    if(p.classList.contains('tscroll') || /overflow/.test(p.getAttribute('style') || '')) return;
+    const w = document.createElement('div'); w.className = 'tscroll';
+    p.insertBefore(w, t); w.appendChild(t);
+  });
+}
 const STORAGE_KEY = window.__STUDY__.key + '-reviewed-v1';
 const PREFS_KEY = window.__STUDY__.key + '-prefs-v1';
 
@@ -127,6 +173,7 @@ function buildCard(e, opts){
   const body = document.createElement('div');
   body.className = 'qbody';
   body.innerHTML = e.item.a;
+  enhance(body);
   card.appendChild(qhead);
   card.appendChild(body);
   return card;
@@ -405,6 +452,7 @@ function renderFc(){
   body.innerHTML = '<div class="qchips"><span class="qsec">' + e.section.title + '</span>' + (CORE.has(key) ? '<span class="qcore">★ core</span>' : '') + (reviewed[key] ? '<span class="qsec">reviewed</span>' : '') + '</div>' +
     '<h3 class="fc-q">' + e.item.q + '</h3>' +
     (fc.revealed ? '<div class="qbody fc-a">' + e.item.a + '</div>' : '<p class="fc-prompt">Answer it out loud first: the main point, one example, one trade-off. Then reveal.</p>');
+  enhance(body);
   body.scrollTop = 0;
   actions.innerHTML = fc.revealed
     ? '<button data-fc="prev" title="Previous (←)">←</button><button data-fc="again" class="again">Again <kbd>1</kbd></button><button data-fc="got" class="primary">Got it <kbd>2</kbd></button>'

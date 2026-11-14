@@ -3,22 +3,89 @@
 /* Enable class-based dark mode */
 @variant dark (&:is(.dark *));
 
+/* Site tokens: the same whiteboard (light) / chalkboard (dark) palette the study guides use
+   (scripts/study/theme.css). Pages built from these follow the theme without dark: variants. */
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --board: #F5F7FA;
+  --surface: #FFFFFF;
+  --surface-2: #EEF2F7;
+  --line: #D3DAE5;
+  --ink: #14213D;
+  --ink-2: #4F5D78;
+  --marker: #1B55C5;
+  --marker-ink: #FFFFFF;
+  --marker-soft: #E4EDFC;
+  --hl: #FFF1B8;
+  --hl-ink: #7A5200;
+  --done: #126B4B;
+  --done-soft: #DDF3E9;
+  --red-marker: #B42318;
+}
+.dark {
+  --board: #101A19;
+  --surface: #17231F;
+  --surface-2: #1E2D29;
+  --line: #33493F;
+  --ink: #ECF1EE;
+  --ink-2: #A9B8B1;
+  --marker: #93BCFF;
+  --marker-ink: #0A1730;
+  --marker-soft: #1D3048;
+  --hl: #3A3216;
+  --hl-ink: #F0CF6B;
+  --done: #7FD6A8;
+  --done-soft: #173327;
+  --red-marker: #F5A99C;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --color-board: var(--board);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-marker: var(--marker);
+  --color-marker-ink: var(--marker-ink);
+  --color-marker-soft: var(--marker-soft);
+  --color-hl: var(--hl);
+  --color-hl-ink: var(--hl-ink);
+  --color-done: var(--done);
+  --color-done-soft: var(--done-soft);
+  --color-red-marker: var(--red-marker);
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-display), var(--font-body), sans-serif;
+  --font-hand: var(--font-hand), cursive;
   --font-mono: var(--font-geist-mono);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Homepage whiteboard sketch: strokes draw in once on load. */
+.sketch .draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: sketch-draw 0.7s ease-out forwards;
+  animation-delay: calc(var(--i, 0) * 0.16s);
+}
+.sketch .ink-in {
+  opacity: 0;
+  animation: sketch-ink 0.35s ease-out forwards;
+  animation-delay: calc(var(--i, 0) * 0.16s + 0.25s);
+}
+@keyframes sketch-draw { to { stroke-dashoffset: 0; } }
+@keyframes sketch-ink { to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .sketch .draw { animation: none; stroke-dashoffset: 0; }
+  .sketch .ink-in { animation: none; opacity: 1; }
 }
 
 /* Style native date inputs nicely in dark mode */

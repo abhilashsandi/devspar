@@ -14,6 +14,28 @@ import { C } from './cheatsheet-content-c.mjs';
 
 const CONTENT = { ...A, ...B, ...C };
 const SKIP = new Set(['review', 'typescript']);
+// Cheatsheet card (section|content key) -> the start of the matching card title in the Whiteboard guide.
+// Each of these gets a "practise explaining it" link under its answer.
+const WHITEBOARD = {
+  'javascript|Closures': 'Whiteboard: what is a closure',
+  'javascript|Event loop': 'Whiteboard: how does the JavaScript event loop work',
+  'react|Reconciliation and keys': 'Whiteboard: why do list items need keys',
+  'react|React Server Components': 'Whiteboard: Server Components, Client Components and hydration',
+  'node-js|Event loop ordering': 'Whiteboard: how does Node.js handle thousands of connections',
+  'node-js|Backpressure': 'Whiteboard: what is backpressure in streams',
+  'databases|N+1 / DataLoader': 'Whiteboard: what is the N+1 query problem',
+  'databases|Caching strategies': 'Whiteboard: how does a cache sit in front of a database',
+  'databases|Index types': 'Whiteboard: how does a database index make a query fast',
+  'architecture|Circuit breaker': 'Whiteboard: what is a circuit breaker',
+  'architecture|Reliable RabbitMQ': 'Whiteboard: how do a queue and a worker make a system reliable',
+  'architecture|Why queue + SSE': 'Whiteboard: the user clicks Pay',
+  'security|OAuth 2.0 at a glance': 'Whiteboard: how does login work with OAuth 2 and PKCE',
+  'system-design|Member portal at scale': 'Whiteboard: how do you lay out the board for a system design question',
+  'scale-design|Opening the question': 'Whiteboard: how do you lay out the board for a system design question',
+  'next-js|Server vs. Client Components': 'Whiteboard: Server Components, Client Components and hydration',
+  'next-js|SSR vs. SSG vs. ISR vs. CSR': 'Whiteboard: SSG, ISR, SSR and CSR',
+};
+const wb = await lib.load('whiteboard');
 const norm = (s) => plainTitle(s).replace(/&amp;/g, '&').replace(/&rarr;/g, '→').toLowerCase();
 
 const { html, data } = await lib.load('interview-cheatsheet');
@@ -38,10 +60,17 @@ for (const sec of data) {
       if (!diagram) { problems.push('unknown diagram ' + d); continue; }
       diagrams++;
     }
-    q.a = a + diagram + deeper;
+    let wbLink = '';
+    const wbTitle = WHITEBOARD[sec.id + '|' + keys[0]];
+    if (wbTitle) {
+      const hit = H.findCard(wb.data, wbTitle);
+      wbLink = '<p class="deeper wb">Practise explaining it: <a href="/whiteboard#' + hit.s.id + ':' + hit.i + '" target="_top">whiteboard version, with what to draw and say</a></p>';
+    }
+    q.a = a + diagram + wbLink + deeper;
     updated++;
   }
 }
+for (const k of Object.keys(WHITEBOARD)) if (!used.has(k)) problems.push('whiteboard link key never matched a card: ' + k);
 for (const [sid, content] of Object.entries(CONTENT)) {
   for (const k of Object.keys(content)) if (!used.has(sid + '|' + k)) problems.push('content key never matched a card: ' + sid + ' / ' + k);
 }

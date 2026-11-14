@@ -11,6 +11,8 @@
     "study:emit": "node scripts/study/emit-static.mjs",
     "study:index": "node scripts/study/build-index.mjs",
     "study:build": "npm run study:emit && npm run study:index",
+    "study:upgrade": "node scripts/study/upgrade-all.mjs",
+    "study:freshness": "node scripts/study/freshness.mjs",
     "test": "node tests/run-all.mjs"
   },
   "dependencies": {

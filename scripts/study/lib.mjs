@@ -15,32 +15,15 @@ import { loadData, serialize, MARK } from './parsePage.mjs';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 export const APP = path.join(ROOT, 'app');
 
-const V3_CSS = `
-  /* study-v3: compact phone menu + cross-guide search results */
-  .nav-toggle{display:none;}
-  .ghits{margin-top:22px;}
-  .gh-head{display:flex; justify-content:space-between; gap:10px; font-family:var(--mono); font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin:0 0 8px;}
-  .gh{display:block; text-decoration:none; color:var(--text); background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:10px 14px; margin-bottom:8px;}
-  .gh:hover{border-color:var(--accent);}
-  .gh-t{display:block; font-weight:600; font-size:14.5px;}
-  .gh-m{display:block; font-family:var(--mono); font-size:11.5px; color:var(--accent); margin:2px 0;}
-  .gh-s{display:block; font-size:13px; color:var(--muted);}
-  .gh-note{font-size:13px; color:var(--muted);}
-  @media (max-width: 820px){
-    .sidebar{position:sticky; top:0; z-index:30; display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:10px 14px; background:var(--bg);}
-    .sidebar .brand{display:none;}
-    .sidebar .search{flex:1 1 130px; width:auto; min-width:0; margin:0;}
-    .nav-toggle{display:flex; align-items:center; justify-content:space-between; gap:8px; flex:0 1 54%; min-width:0; padding:9px 12px; font:inherit; font-size:13.5px; font-weight:600; color:var(--text); background:var(--accent-soft); border:1px solid var(--accent); border-radius:8px; cursor:pointer;}
-    .nav-toggle span{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-    .nav-toggle i{font-style:normal; color:var(--accent); transition:transform .15s;}
-    .sidebar.open .nav-toggle i{transform:rotate(180deg);}
-    .nav-panel{display:none; flex:1 0 100%; max-height:calc(100vh - 96px); overflow-y:auto; border-top:1px solid var(--border); padding-top:8px;}
-    .sidebar.open .nav-panel{display:block;}
-    .hero{margin-top:0;}
-  }
-  button.fc-start.alt{background:var(--panel); color:var(--accent); border:1px solid var(--accent); cursor:pointer;}
-  button.fc-start.alt:hover{background:var(--accent-soft);}
-`;
+// The one stylesheet and font link every guide uses. upgrade() swaps each guide's own <style> for
+// theme.css, so a design change is one file plus `npm run study:upgrade`.
+const THEME_PATH = path.join(ROOT, 'scripts', 'study', 'theme.css');
+const FONTS_LINK = '<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,500;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">';
+let _theme;
+async function theme() {
+  if (!_theme) _theme = '<style>\n' + (await readFile(THEME_PATH, 'utf8')).trimEnd() + '\n</style>';
+  return _theme;
+}
 
 const ENGINE_JS_PATH = path.join(ROOT, 'scripts', 'study', 'engine.js');
 const CFG_RE = /window\.__STUDY__\s*=\s*(\{[^;]*\});\s*$/;
@@ -68,9 +51,10 @@ export function withData(html, data) {
   return html.slice(0, ds) + serialize(data) + '\n' + (cfg ? cfg[0] : '') + html.slice(de);
 }
 
-// Applies the shared engine: phone menu + cross-guide search markup/CSS (once), and always
-// refreshes the engine script itself from scripts/study/engine.js (so an engine fix or feature
-// reaches every guide by editing one file and re-running this).
+// Applies everything shared: the theme (scripts/study/theme.css), the font link, the phone menu
+// markup (once), and the engine script itself from scripts/study/engine.js. So a design change, an
+// engine fix or a feature reaches every guide by editing one file and re-running this
+// (`npm run study:upgrade` does it for every guide).
 export async function upgrade(html) {
   const mi = html.indexOf(MARK);
   if (mi < 0) throw new Error('no engine marker');
@@ -90,10 +74,15 @@ export async function upgrade(html) {
   }
   if (!key) throw new Error('storage key not found');
 
-  if (!h.includes('/* study-v3')) {
-    const ce = h.indexOf('</style>');
-    if (ce < 0) throw new Error('no style');
-    h = h.slice(0, ce) + V3_CSS + h.slice(ce);
+  // Styling: always the current shared theme and fonts.
+  const styleRe = /<style>[\s\S]*?<\/style>/;
+  if (!styleRe.test(h)) throw new Error('no style');
+  const css = await theme();
+  h = h.replace(styleRe, () => css);
+  h = h.replace(/<link href="https:\/\/fonts\.googleapis\.com\/css2[^>]*>/, () => FONTS_LINK);
+
+  // Markup that a page from before the phone menu / cross-guide search needs, once.
+  if (!h.includes('id="navToggle"')) {
     const inp = /<input class="search" id="searchInput"[^>]*>\s*<div id="navList"><\/div>/;
     if (!inp.test(h)) throw new Error('sidebar markup not found');
     h = h.replace(inp, () =>

@@ -12,7 +12,7 @@ const APP = path.join(ROOT, 'app');
 const PAGES = {
   'interview-prep': 'Interview Prep', 'interview-cheatsheet': 'Cheatsheet', genai: 'GenAI', javascript: 'JavaScript', typescript: 'TypeScript', 'react-training': 'React',
   reactjs: 'React + TypeScript', nextjs: 'Next.js', nodejs: 'Node.js', 'tailwind-css': 'CSS & Tailwind', 'coding-questions': 'Coding Practice',
-  'system-design': 'System Design', 'system-design-scale': 'System Design at Scale', 'performance-optimization': 'Performance', 'web-platform': 'Web Platform',
+  'system-design': 'System Design', 'system-design-scale': 'System Design at Scale', 'performance-optimization': 'Performance', 'web-platform': 'Web Platform', 'ai-dev': 'AI-Assisted Development', whiteboard: 'Whiteboard',
   'crash-course': 'Crash Course', aws: 'AWS',
 };
 
