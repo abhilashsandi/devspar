@@ -518,6 +518,29 @@
   .xladder .ladder-count{font-size:13px; color:var(--muted);}
   .xladder .ladder-next{font:inherit; font-size:14px; font-weight:700; color:var(--accent); background:var(--panel); border:1px solid var(--accent); border-radius:10px; padding:7px 14px; cursor:pointer;}
   .xladder .ladder-next:hover{background:var(--accent-soft);}
+  /* in-browser SQL runner (scripts/study/sqlrun) */
+  .sqlrun{margin:0 0 16px;}
+  .sqlrun .sqlr-open, .sqlr-bar button{font:inherit; font-size:14px; font-weight:700; color:var(--accent); background:var(--panel); border:1px solid var(--accent); border-radius:10px; padding:7px 14px; cursor:pointer;}
+  .sqlr-bar button.sqlr-primary{background:var(--accent); color:var(--accent-ink);}
+  .sqlrun button:disabled{opacity:.55; cursor:default;}
+  .sqlr-bar{display:flex; flex-wrap:wrap; gap:8px; margin:8px 0;}
+  .sqlr-status{font-size:13.5px; color:var(--muted); margin:0 0 8px;}
+  .sqlr-sql{width:100%; box-sizing:border-box; font-family:var(--mono); font-size:13.5px; line-height:1.5; color:var(--text); background:var(--panel-2); border:1px solid var(--border); border-radius:10px; padding:10px 12px; resize:vertical;}
+  .sqlr-result{margin:10px 0;}
+  .sqlr-foot{font-size:13px; color:var(--muted); margin:4px 0;}
+  .sqlr-error{font-family:var(--mono); font-size:13px; color:var(--danger); border:1px solid var(--danger); border-radius:10px; padding:10px 12px; margin:10px 0; white-space:pre-wrap;}
+  .sqlr-verdict{font-weight:700; margin:8px 0; padding:8px 12px; border-radius:10px;}
+  .sqlr-ok{color:var(--accent-ink); background:var(--accent);}
+  .sqlr-bad{color:var(--danger); border:1px solid var(--danger);}
+  .sqlr-note{font-size:12.5px; color:var(--muted); margin:8px 0 0;}
+  ul.plan{list-style:none; margin:6px 0 0 0; padding:0 0 0 18px; border-left:2px solid var(--border);}
+  ul.plan.plan-root{padding-left:0; border-left:0;}
+  ul.plan li{margin:8px 0;}
+  .plan-row{display:flex; flex-wrap:wrap; gap:4px 10px; align-items:baseline;}
+  .plan-target{font-family:var(--mono); font-size:13px;}
+  .plan-meta{font-size:13px; color:var(--muted);}
+  .plan-bar{display:block; height:5px; background:var(--accent); border-radius:3px; margin-top:3px; min-width:2px;}
+  .plan-flag{font-size:13px; color:var(--danger); margin:3px 0 0;}
   /* "say this" script blocks used by the whiteboard guide */
   .say{border-left:4px solid var(--gold); background:var(--gold-soft); border-radius:0 10px 10px 0; padding:10px 16px; margin:0 0 16px; max-width:var(--measure);}
   .say > :last-child{margin-bottom:0;}
@@ -602,7 +625,7 @@
     <div class="hero">
       <p class="eyebrow-free">Prep guide</p>
       <h1>Data and SQL</h1>
-      <p>Indexes, transactions and isolation, query puzzles, schema changes without downtime, and PostgreSQL from Node.js. Every statement was run on a real PostgreSQL 17.6 database and every result shown is pasted from that run.</p>
+      <p>Indexes, transactions and isolation, query puzzles, schema changes without downtime, and PostgreSQL from Node.js. Every statement was run on a real PostgreSQL 17.6 database and every result shown is pasted from that run. You can also run every puzzle in your browser.</p>
       <div class="hero-actions"><button id="fcCore" class="fc-start" type="button">▶ Flashcards: all ★ core questions</button>
       <button id="fcWeak" class="fc-start alt" type="button" hidden>↻ Review weak cards</button></div>
       <div class="source-note"><span id="heroMeta"></span><br><span class="keys"><kbd>/</kbd> search · <kbd>j</kbd> <kbd>k</kbd> move · <kbd>o</kbd> open · <kbd>x</kbd> mark reviewed · <kbd>n</kbd> <kbd>p</kbd> next / previous section · <kbd>Esc</kbd> clear</span></div>
@@ -1013,13 +1036,13 @@ B update row 1     UPDATE 1                &lt;- the survivor continues</pre><ul
   questions:[
     {
       q:"How do you approach a SQL question in an interview?",
-      a:`<ol><li><strong>Restate it</strong> and ask about the edge cases: ties, NULLs, empty groups, duplicates.</li><li><strong>Name the grain</strong> of the result: one row per what? Per customer, per month, per department?</li><li><strong>Write the simplest correct query</strong> first, on a small example you can check by eye. Say the plan aloud: “join, group, then filter”.</li><li><strong>Check the traps:</strong> <code>NULL</code> in a <code>NOT IN</code>, a <code>LEFT JOIN</code> filtered in <code>WHERE</code>, <code>COUNT(*)</code> against <code>COUNT(col)</code>, integer division, time zones.</li><li><strong>Then talk about performance:</strong> which index would serve it, what the plan would do on a hundred million rows.</li></ol><p>Interviewers mostly watch for the first two steps. A correct query reached by clear steps beats a clever one-liner you cannot explain.</p><p><strong>Trap:</strong> Do not start typing at once. A candidate who asks “what if two people tie?” has already passed half the question.</p><p class="deeper"><strong>Go deeper:</strong> <a href="/coding-questions" target="_top">Coding Questions</a></p>`
+      a:`<ol><li><strong>Restate it</strong> and ask about the edge cases: ties, NULLs, empty groups, duplicates.</li><li><strong>Name the grain</strong> of the result: one row per what? Per customer, per month, per department?</li><li><strong>Write the simplest correct query</strong> first, on a small example you can check by eye. Say the plan aloud: “join, group, then filter”.</li><li><strong>Check the traps:</strong> <code>NULL</code> in a <code>NOT IN</code>, a <code>LEFT JOIN</code> filtered in <code>WHERE</code>, <code>COUNT(*)</code> against <code>COUNT(col)</code>, integer division, time zones.</li><li><strong>Then talk about performance:</strong> which index would serve it, what the plan would do on a hundred million rows.</li></ol><p>Try any query against the practice tables.</p><div class="sqlrun" data-free="1"></div><p>Interviewers mostly watch for the first two steps. A correct query reached by clear steps beats a clever one-liner you cannot explain.</p><p><strong>Trap:</strong> Do not start typing at once. A candidate who asks “what if two people tie?” has already passed half the question.</p><p class="deeper"><strong>Go deeper:</strong> <a href="/coding-questions" target="_top">Coding Questions</a></p>`
     },
     {
       q:"Puzzle: Find the second-highest salary",
       a:`<p>Return the second-highest <strong>distinct</strong> salary. Two people tie for the top salary.</p><p class="codelabel">Tables</p><pre class="plain">employees(id, name, department_id, manager_id, salary, hired_on)  -- 12 rows
 Ada 150000, Grace 150000, Alan 120000, Linus 110000, Margaret 95000, Sam 90000,
-Sue 85000, Sid 85000, Nora 72000, Cora 70000, Cal 65000, Fiona 60000</pre><details class="reveal"><summary>Show a solution</summary><p class="codelabel">SQL</p><pre>select name, salary from (
+Sue 85000, Sid 85000, Nora 72000, Cora 70000, Cal 65000, Fiona 60000</pre><div class="sqlrun" data-ordered="0"></div><details class="reveal"><summary>Show a solution</summary><p class="codelabel">SQL</p><pre>select name, salary from (
   select name, salary, dense_rank() over (order by salary desc) as r
   from employees) x
 where r = 2;</pre><p class="codelabel">Result</p><pre class="plain">name | salary
@@ -1032,7 +1055,7 @@ Alan | 120000
       a:`<p>One row per person, at most two per department. People with no department should be treated as their own group. If two people tie, any consistent choice is fine.</p><p class="codelabel">Tables</p><pre class="plain">employees(id, name, department_id, manager_id, salary, hired_on)  -- 12 rows
 Ada 150000, Grace 150000, Alan 120000, Linus 110000, Margaret 95000, Sam 90000,
 Sue 85000, Sid 85000, Nora 72000, Cora 70000, Cal 65000, Fiona 60000
-Nora has no department.</pre><details class="reveal"><summary>Show a solution</summary><p class="codelabel">SQL</p><pre>select department_id, name, salary, rn from (
+Nora has no department.</pre><div class="sqlrun" data-ordered="0"></div><details class="reveal"><summary>Show a solution</summary><p class="codelabel">SQL</p><pre>select department_id, name, salary, rn from (
   select department_id, name, salary,
          row_number() over (partition by department_id order by salary desc, id) as rn
   from employees) x
@@ -1050,7 +1073,7 @@ order by department_id nulls last, rn;</pre><p class="codelabel">Result</p><pre 
     },
     {
       q:"Puzzle: Show each of customer 42’s orders with their running spend",
-      a:`<p>For customer 42, list orders in date order with the cumulative total so far. Show the first five.</p><p class="codelabel">Tables</p><pre class="plain">orders(id, customer_id, status, total_cents, created_at)  -- 200,000 rows</pre><details class="reveal"><summary>Show a solution</summary><p class="codelabel">SQL</p><pre>select id, created_at::date as day, total_cents,
+      a:`<p>For customer 42, list orders in date order with the cumulative total so far. Show the first five.</p><p class="codelabel">Tables</p><pre class="plain">orders(id, customer_id, status, total_cents, created_at)  -- 200,000 rows</pre><div class="sqlrun" data-ordered="1"></div><details class="reveal"><summary>Show a solution</summary><p class="codelabel">SQL</p><pre>select id, created_at::date as day, total_cents,
        sum(total_cents) over (partition by customer_id order by created_at, id) as running_cents
 from orders
 where customer_id = 42
@@ -1068,7 +1091,7 @@ limit 5;</pre><p class="codelabel">Result</p><pre class="plain">  id | day      
       q:"Puzzle: Find duplicate emails, then delete all but the lowest id",
       a:`<p>In <code>contacts</code> some emails appear more than once. List them with how many copies there are, then delete every copy except the one with the lowest <code>id</code>.</p><p class="codelabel">Tables</p><pre class="plain">contacts(id, email)  -- 6 rows
 1 ada@example.com   2 grace@example.com   3 ada@example.com
-4 alan@example.com  5 grace@example.com   6 ada@example.com</pre><details class="reveal"><summary>Show a solution</summary><p class="codelabel">SQL</p><pre>select email, count(*) as copies, min(id) as keep_id
+4 alan@example.com  5 grace@example.com   6 ada@example.com</pre><div class="sqlrun" data-ordered="0"></div><details class="reveal"><summary>Show a solution</summary><p class="codelabel">SQL</p><pre>select email, count(*) as copies, min(id) as keep_id
 from contacts group by email having count(*) &gt; 1 order by email;
 
 delete from contacts c
@@ -1091,7 +1114,7 @@ id | email
     {
       q:"Puzzle: List the customers who have never placed an order",
       a:`<p>Return how many customers have no orders. Then explain why <code>NOT IN</code> can be dangerous here.</p><p class="codelabel">Tables</p><pre class="plain">customers(id, email, country, created_at)         -- 2,000 rows
-orders(id, customer_id, status, total_cents, ...)  -- 200,000 rows; customer_id is NOT NULL</pre><details class="reveal"><summary>Show a solution</summary><p class="codelabel">SQL</p><pre>select count(*) as no_orders
+orders(id, customer_id, status, total_cents, ...)  -- 200,000 rows; customer_id is NOT NULL</pre><div class="sqlrun" data-ordered="0"></div><details class="reveal"><summary>Show a solution</summary><p class="codelabel">SQL</p><pre>select count(*) as no_orders
 from customers c
 where not exists (select 1 from orders o where o.customer_id = c.id);</pre><p class="codelabel">Result</p><pre class="plain">no_orders
 ---------
@@ -1100,7 +1123,7 @@ where not exists (select 1 from orders o where o.customer_id = c.id);</pre><p cl
     },
     {
       q:"Puzzle: Show, for each country, how many orders are paid, refunded and cancelled as columns",
-      a:`<p>One row per country with three count columns. (The lab’s data is synthetic, so the counts follow a pattern.)</p><p class="codelabel">Tables</p><pre class="plain">orders(id, customer_id, status, ...)   customers(id, country, ...)</pre><details class="reveal"><summary>Show a solution</summary><p class="codelabel">SQL</p><pre>select c.country,
+      a:`<p>One row per country with three count columns. (The lab’s data is synthetic, so the counts follow a pattern.)</p><p class="codelabel">Tables</p><pre class="plain">orders(id, customer_id, status, ...)   customers(id, country, ...)</pre><div class="sqlrun" data-ordered="0"></div><details class="reveal"><summary>Show a solution</summary><p class="codelabel">SQL</p><pre>select c.country,
        count(*) filter (where o.status = 'paid')      as paid,
        count(*) filter (where o.status = 'refunded')  as refunded,
        count(*) filter (where o.status = 'cancelled') as cancelled
@@ -1118,7 +1141,7 @@ US      | 36000 |     4000 |         0
     },
     {
       q:"Puzzle: Show monthly paid revenue and the change from the previous month",
-      a:`<p>One row per month, with revenue and the difference from the month before. Show the first six months.</p><p class="codelabel">Tables</p><pre class="plain">orders(id, customer_id, status, total_cents, created_at)  -- January 2024 to February 2025</pre><details class="reveal"><summary>Show a solution</summary><p class="codelabel">SQL</p><pre>with monthly as (
+      a:`<p>One row per month, with revenue and the difference from the month before. Show the first six months.</p><p class="codelabel">Tables</p><pre class="plain">orders(id, customer_id, status, total_cents, created_at)  -- January 2024 to February 2025</pre><div class="sqlrun" data-ordered="1"></div><details class="reveal"><summary>Show a solution</summary><p class="codelabel">SQL</p><pre>with monthly as (
   select date_trunc('month', created_at) as m, sum(total_cents) as revenue
   from orders where status = 'paid' group by 1
 )
@@ -1139,7 +1162,7 @@ limit 6;</pre><p class="codelabel">Result</p><pre class="plain">month      |  re
     {
       q:"Puzzle: Find each user’s longest run of consecutive login days",
       a:`<p>For every user, return the length of their longest streak and the day it started.</p><p class="codelabel">Tables</p><pre class="plain">logins(user_id, day)  -- 18 rows, March 2024
-user 1: 1, 2, 3, 5, 6, 8     user 2: 1, 2, 3, 4, 5, 10     user 3: 2, 4, 5, 6, 7, 9</pre><details class="reveal"><summary>Show a solution</summary><p class="codelabel">SQL</p><pre>with numbered as (
+user 1: 1, 2, 3, 5, 6, 8     user 2: 1, 2, 3, 4, 5, 10     user 3: 2, 4, 5, 6, 7, 9</pre><div class="sqlrun" data-ordered="0"></div><details class="reveal"><summary>Show a solution</summary><p class="codelabel">SQL</p><pre>with numbered as (
   select user_id, day,
          day - (row_number() over (partition by user_id order by day))::int as grp
   from logins
@@ -1159,7 +1182,7 @@ order by user_id, days desc, first_day;</pre><p class="codelabel">Result</p><pre
     },
     {
       q:"Puzzle: Return the most recent order for every customer",
-      a:`<p>One row per customer with their latest order. Show customers 1 to 3.</p><p class="codelabel">Tables</p><pre class="plain">orders(id, customer_id, status, total_cents, created_at)</pre><details class="reveal"><summary>Show a solution</summary><p class="codelabel">SQL</p><pre>select distinct on (customer_id) customer_id, id, created_at
+      a:`<p>One row per customer with their latest order. Show customers 1 to 3.</p><p class="codelabel">Tables</p><pre class="plain">orders(id, customer_id, status, total_cents, created_at)</pre><div class="sqlrun" data-ordered="0"></div><details class="reveal"><summary>Show a solution</summary><p class="codelabel">SQL</p><pre>select distinct on (customer_id) customer_id, id, created_at
 from orders
 where customer_id &lt;= 3
 order by customer_id, created_at desc, id desc;</pre><p class="codelabel">Result</p><pre class="plain">customer_id |     id | created_at
@@ -1172,7 +1195,7 @@ order by customer_id, created_at desc, id desc;</pre><p class="codelabel">Result
     {
       q:"Puzzle: List everyone who reports to Ada, directly or indirectly, with their depth",
       a:`<p>Walk the management chain from Ada (id 1) down, showing how many levels below Ada each person is.</p><p class="codelabel">Tables</p><pre class="plain">employees(id, name, manager_id)
-Ada (no manager) -&gt; Grace, Alan, Sam, Cora -&gt; Linus, Margaret (Grace), Fiona (Alan), Sue, Sid, Nora (Sam), Cal (Cora)</pre><details class="reveal"><summary>Show a solution</summary><p class="codelabel">SQL</p><pre>with recursive tree as (
+Ada (no manager) -&gt; Grace, Alan, Sam, Cora -&gt; Linus, Margaret (Grace), Fiona (Alan), Sue, Sid, Nora (Sam), Cal (Cora)</pre><div class="sqlrun" data-ordered="0"></div><details class="reveal"><summary>Show a solution</summary><p class="codelabel">SQL</p><pre>with recursive tree as (
   select id, name, manager_id, 0 as depth
   from employees where id = 1
   union all
@@ -1201,7 +1224,7 @@ select id, name, depth from tree order by depth, id;</pre><p class="codelabel">R
       a:`<p>Return pairs of bookings in the same room whose times overlap. A booking that ends at 10:00 and one that starts at 10:00 do not overlap.</p><p class="codelabel">Tables</p><pre class="plain">bookings(id, room, starts_at, ends_at)  -- 8 rows, 1 May 2024
 room 1: 09:00-10:00, 09:30-10:30, 11:00-12:00
 room 2: 09:00-10:00, 10:00-11:00, 13:00-14:00, 13:30-14:30
-room 3: 09:00-10:00</pre><details class="reveal"><summary>Show a solution</summary><p class="codelabel">SQL</p><pre>select a.room, a.id as first, b.id as second
+room 3: 09:00-10:00</pre><div class="sqlrun" data-ordered="0"></div><details class="reveal"><summary>Show a solution</summary><p class="codelabel">SQL</p><pre>select a.room, a.id as first, b.id as second
 from bookings a
 join bookings b
   on a.room = b.room

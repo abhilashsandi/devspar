@@ -3,9 +3,10 @@
 import { P, L, N, T, C, TRAP, K, GO, QUIZ, SAMPLE, REVEAL, md } from './cc-kit.mjs';
 
 // title: the task, never the technique. answerSql and output come from the lab run.
-export const PUZZLE = (title, task, tables, answerSql, output, why) => ({
+// opts.ordered: the task names an order, so the in-browser runner also checks the sequence of the rows.
+export const PUZZLE = (title, task, tables, answerSql, output, why, opts = {}) => ({
   q: 'Puzzle: ' + md(title),
-  a: '<p>' + md(task) + '</p>' + SAMPLE('Tables', tables) +
+  a: '<p>' + md(task) + '</p>' + SAMPLE('Tables', tables) + '<div class="sqlrun" data-ordered="' + (opts.ordered ? '1' : '0') + '"></div>' +
     REVEAL('Show a solution', C(answerSql, 'SQL'), SAMPLE('Result', output), ...[].concat(why).map((x) => '<p>' + md(x) + '</p>')),
 });
 
@@ -16,6 +17,7 @@ Sue 85000, Sid 85000, Nora 72000, Cora 70000, Cal 65000, Fiona 60000`;
 export const puzzles = [
   K('How do you approach a SQL question in an interview?',
     N('**Restate it** and ask about the edge cases: ties, NULLs, empty groups, duplicates.', '**Name the grain** of the result: one row per what? Per customer, per month, per department?', '**Write the simplest correct query** first, on a small example you can check by eye. Say the plan aloud: “join, group, then filter”.', '**Check the traps:** `NULL` in a `NOT IN`, a `LEFT JOIN` filtered in `WHERE`, `COUNT(*)` against `COUNT(col)`, integer division, time zones.', '**Then talk about performance:** which index would serve it, what the plan would do on a hundred million rows.'),
+    '<p>Try any query against the practice tables.</p><div class="sqlrun" data-free="1"></div>',
     P('Interviewers mostly watch for the first two steps. A correct query reached by clear steps beats a clever one-liner you cannot explain.'),
     TRAP('Do not start typing at once. A candidate who asks “what if two people tie?” has already passed half the question.'),
     GO(['/coding-questions', 'Coding Questions']),
@@ -69,7 +71,7 @@ limit 5;`,
 6079 | 2024-01-13 |        9923 |         36572
 8039 | 2024-01-17 |        1443 |         38015
 (5 rows)`,
-    ['A window `sum` with an `order by` accumulates from the first row to the current one. The default frame treats rows with equal `created_at` as peers, so add `id` to break ties and get a strict running total.', 'Without `partition by customer_id` the total would run across all customers. The `where` runs first, so for one customer the partition is a convenience, but it is the form that works for all customers at once.']),
+    ['A window `sum` with an `order by` accumulates from the first row to the current one. The default frame treats rows with equal `created_at` as peers, so add `id` to break ties and get a strict running total.', 'Without `partition by customer_id` the total would run across all customers. The `where` runs first, so for one customer the partition is a convenience, but it is the form that works for all customers at once.'], { ordered: true }),
   PUZZLE('Find duplicate emails, then delete all but the lowest id',
     'In `contacts` some emails appear more than once. List them with how many copies there are, then delete every copy except the one with the lowest `id`.',
     `contacts(id, email)  -- 6 rows
@@ -149,7 +151,7 @@ limit 6;`,
 2024-05-01 | 76239462 |  2527302
 2024-06-01 | 73568160 | -2671302
 (6 rows)`,
-    ['`lag(x) over (order by m)` reads the value from the previous row in that order. The first month has no previous row, so `change` is `NULL`: say so rather than hiding it, or pass a default as the third argument.', 'The `with` clause aggregates first, then the window runs over the monthly rows. A window function cannot see inside a `group by` in the same step.', 'For a percentage change, divide by `lag(revenue)` and guard against zero with `nullif(lag(revenue) over (order by m), 0)`.']),
+    ['`lag(x) over (order by m)` reads the value from the previous row in that order. The first month has no previous row, so `change` is `NULL`: say so rather than hiding it, or pass a default as the third argument.', 'The `with` clause aggregates first, then the window runs over the monthly rows. A window function cannot see inside a `group by` in the same step.', 'For a percentage change, divide by `lag(revenue)` and guard against zero with `nullif(lag(revenue) over (order by m), 0)`.'], { ordered: true }),
   PUZZLE('Find each user’s longest run of consecutive login days',
     'For every user, return the length of their longest streak and the day it started.',
     `logins(user_id, day)  -- 18 rows, March 2024

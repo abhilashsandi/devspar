@@ -274,10 +274,31 @@ function mountLadders(root){
   });
 }
 // ---- ladder:end
+// ---- sqlrun:start
+// A puzzle card carries <div class="sqlrun">. It gets a "Try it here" button; the runner itself (a worker with
+// PostgreSQL compiled to WebAssembly, about 15 MB) is only fetched when that button is pressed.
+function mountSqlRun(root){
+  root.querySelectorAll('.sqlrun').forEach(el=>{
+    if(el.dataset.mounted) return;
+    el.dataset.mounted = '1';
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'sqlr-open'; b.textContent = '▶ Try it here';
+    el.appendChild(b);
+    b.addEventListener('click', ()=>{
+      b.disabled = true; b.textContent = 'Loading…';
+      import('/study/sqlrun/sqlrun.js').then(m=>{
+        const body = el.closest('.qbody') || root;
+        const pre = body.querySelector('details.reveal pre');
+        m.mount(el, { solution: (el.dataset.free === '1' || !pre) ? null : pre.textContent, ordered: el.dataset.ordered === '1' });
+      }).catch(()=>{ el.textContent = 'The SQL runner could not load.'; });
+    });
+  });
+}
+// ---- sqlrun:end
 function enhance(root){
   drawDiagrams(root);
   mountDepths(root);
   mountLadders(root);
+  mountSqlRun(root);
   root.querySelectorAll('pre').forEach(colourCode);
   root.querySelectorAll('table.cmp').forEach(t=>{
     const p = t.parentElement;

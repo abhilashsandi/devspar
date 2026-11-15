@@ -279,3 +279,24 @@ follow-up questions, kept apart from the guide's own text as an overlay.
 `/mock` builds a round from the card bank (`app/lib/mock.mjs`). Which cards can appear in a segment is decided by
 `kindOf` in `app/lib/bank.mjs` (and, for the concept questions, the ★ core cards of Interview Prep). A new guide
 that should feed a segment needs a rule there. `/mock?seed=<text>` reproduces a round exactly.
+
+## Runnable SQL
+
+Each puzzle card in the Data and SQL guide has **Try it here**: a runner (`scripts/study/sqlrun/`) with the seeded
+practice database, **Run**, **Check against the solution**, **Explain** (the plan as a tree) and **Reset data**.
+
+- **Engine.** PGlite, PostgreSQL compiled to WebAssembly, pinned in `package.json` (a dev dependency: the app never
+  imports it). `vendor-pglite.mjs` copies its browser files to `public/vendor/pglite-<version>/` on every
+  `study:emit` (git-ignored; about 15 MB, fetched only when a reader presses the button). It runs in a Web Worker
+  (`worker.js`) and keeps its data in IndexedDB (`devspar-sql-lab-v1`), so the 200,000-row seed loads once.
+- **Worker protocol.** Messages `{ id, op, sql }` with `op` one of `init`, `run`, `explain`, `reset`; replies echo the `id`;
+  `{ progress }` messages carry none. Requests are served one at a time. Every run is `begin ... rollback`, and
+  three row counts afterwards tell whether the reader escaped the wrapper (`The data has changed`). **Stop** terminates
+  the worker and starts a new one.
+- **Comparing.** A result is compared with the solution run live in the same database (never with the printed text):
+  column names are ignored, row order only when the card says so (`PUZZLE(..., { ordered: true })`).
+- **Upgrading PGlite.** Change the version in `package.json` and in `worker.js`, run `npm run study:sql-lab` (it runs the
+  seed and the puzzle file on PGlite and compares with the printed PostgreSQL 17.6 run) and read any difference. The
+  guide's printed results are never edited to match; report a difference to the owner.
+- **Tests.** `tests/checks/13-sqlrun.mjs` loads the engine, runs and checks a puzzle, stops a runaway query and
+  reloads. The first load seeds the data, so it takes about 40 seconds.

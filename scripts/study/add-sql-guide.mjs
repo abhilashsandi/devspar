@@ -29,7 +29,7 @@ const html = await H.newPage(
     brandSub: 'indexes, transactions, queries',
     h1: 'Data and SQL',
     eyebrow: 'Prep guide',
-    lede: 'Indexes, transactions and isolation, query puzzles, schema changes without downtime, and PostgreSQL from Node.js. Every statement was run on a real PostgreSQL 17.6 database and every result shown is pasted from that run.',
+    lede: 'Indexes, transactions and isolation, query puzzles, schema changes without downtime, and PostgreSQL from Node.js. Every statement was run on a real PostgreSQL 17.6 database and every result shown is pasted from that run. You can also run every puzzle in your browser.',
   },
   data,
 );

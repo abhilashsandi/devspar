@@ -12,6 +12,14 @@ const nextConfig: NextConfig = {
           { key: "Cache-Control", value: "public, max-age=600, must-revalidate" },
         ],
       },
+      {
+        // The in-browser SQL engine (scripts/study/vendor-pglite.mjs): the folder name carries the
+        // version, so the files never change under one URL and can be cached for a year.
+        source: "/vendor/:path*",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+        ],
+      },
     ];
   },
 };

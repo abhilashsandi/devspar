@@ -74,6 +74,9 @@ Everything a reader types stays in their browser.
 
 - `/mock`: a timed 45-minute round (behavioural, concepts, whiteboard, a bug, a SQL puzzle) with a scorecard
   that feeds the weak cards.
+- The Data and SQL puzzles run in the browser (PostgreSQL compiled to WebAssembly, `@electric-sql/pglite`):
+  write a query, check it against the solution, read the plan as a tree. The engine is copied to
+  `public/vendor/` at build time; see "Runnable SQL" in `scripts/study/README.md`.
 
 ## SEO
 

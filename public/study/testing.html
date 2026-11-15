@@ -518,6 +518,29 @@
   .xladder .ladder-count{font-size:13px; color:var(--muted);}
   .xladder .ladder-next{font:inherit; font-size:14px; font-weight:700; color:var(--accent); background:var(--panel); border:1px solid var(--accent); border-radius:10px; padding:7px 14px; cursor:pointer;}
   .xladder .ladder-next:hover{background:var(--accent-soft);}
+  /* in-browser SQL runner (scripts/study/sqlrun) */
+  .sqlrun{margin:0 0 16px;}
+  .sqlrun .sqlr-open, .sqlr-bar button{font:inherit; font-size:14px; font-weight:700; color:var(--accent); background:var(--panel); border:1px solid var(--accent); border-radius:10px; padding:7px 14px; cursor:pointer;}
+  .sqlr-bar button.sqlr-primary{background:var(--accent); color:var(--accent-ink);}
+  .sqlrun button:disabled{opacity:.55; cursor:default;}
+  .sqlr-bar{display:flex; flex-wrap:wrap; gap:8px; margin:8px 0;}
+  .sqlr-status{font-size:13.5px; color:var(--muted); margin:0 0 8px;}
+  .sqlr-sql{width:100%; box-sizing:border-box; font-family:var(--mono); font-size:13.5px; line-height:1.5; color:var(--text); background:var(--panel-2); border:1px solid var(--border); border-radius:10px; padding:10px 12px; resize:vertical;}
+  .sqlr-result{margin:10px 0;}
+  .sqlr-foot{font-size:13px; color:var(--muted); margin:4px 0;}
+  .sqlr-error{font-family:var(--mono); font-size:13px; color:var(--danger); border:1px solid var(--danger); border-radius:10px; padding:10px 12px; margin:10px 0; white-space:pre-wrap;}
+  .sqlr-verdict{font-weight:700; margin:8px 0; padding:8px 12px; border-radius:10px;}
+  .sqlr-ok{color:var(--accent-ink); background:var(--accent);}
+  .sqlr-bad{color:var(--danger); border:1px solid var(--danger);}
+  .sqlr-note{font-size:12.5px; color:var(--muted); margin:8px 0 0;}
+  ul.plan{list-style:none; margin:6px 0 0 0; padding:0 0 0 18px; border-left:2px solid var(--border);}
+  ul.plan.plan-root{padding-left:0; border-left:0;}
+  ul.plan li{margin:8px 0;}
+  .plan-row{display:flex; flex-wrap:wrap; gap:4px 10px; align-items:baseline;}
+  .plan-target{font-family:var(--mono); font-size:13px;}
+  .plan-meta{font-size:13px; color:var(--muted);}
+  .plan-bar{display:block; height:5px; background:var(--accent); border-radius:3px; margin-top:3px; min-width:2px;}
+  .plan-flag{font-size:13px; color:var(--danger); margin:3px 0 0;}
   /* "say this" script blocks used by the whiteboard guide */
   .say{border-left:4px solid var(--gold); background:var(--gold-soft); border-radius:0 10px 10px 0; padding:10px 16px; margin:0 0 16px; max-width:var(--measure);}
   .say > :last-child{margin-bottom:0;}
