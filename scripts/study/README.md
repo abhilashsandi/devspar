@@ -253,3 +253,23 @@ iframe, so they use these seams. Plans for each live in `docs/superpowers/plans/
   only `function` declarations are visible to the test, not top-level `const`/`let`.
 - **Tests.** `npm run test:unit` runs `tests/unit/*.test.mjs` (no browser, no build). `npm run build && npm test`
   still runs the browser checks.
+
+## Short answers and follow-ups
+
+Each ★ core card of Interview Prep carries a 15-second and a 60-second spoken version and a ladder of two or three
+follow-up questions, kept apart from the guide's own text as an overlay.
+
+- **An entry** (`scripts/study/extras/<slug>-*.mjs`, default export an array) is
+  `{ sec, card, s15, s60, ladder: [[question, answer], ...] }`. The card is matched by its normalised title.
+  Budgets, checked by `check-extras.mjs`: `s15` 20 to 45 words, `s60` 110 to 170, two or three rungs, a rung question
+  ends in `?` (at most 25 words) and its answer is 15 to 60 words. `s15` and `s60` only compress what the card says;
+  a ladder answer may go one step further, and any such fact is checked before it is written (run the code, or look
+  it up) and listed in the commit message.
+- **Commands.** `npm run study:extras` applies the entries (re-running replaces each block, never adds a second);
+  `node scripts/study/check-extras.mjs interview-prep [--list] [--require-all]` lists the core cards or validates the
+  entries; `node scripts/study/show-card.mjs interview-prep 1 9` prints core cards 1 to 9 as plain text for writing.
+- **The engine** (blocks `depths` and `ladder`) turns the block into a switch (`15 s`, `60 s`, `Full answer`, remembered
+  in `study-depth-pref-v1`) and an interviewer ladder (`Push harder →`). A card without the block gets neither. The
+  block is left out of every summary and Quick Reference line.
+- **Rebuilding.** A guide that is rebuilt from content modules must call `applyExtras(data, entries)` in its builder
+  before `lib.save`, or a rebuild drops the overlay. Interview Prep is edited in place, so it is safe today.

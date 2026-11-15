@@ -93,7 +93,7 @@ export async function run({ browser, base, ok }) {
   ok('the revealed answer in flashcards carries the switch when the card has extras', found);
   await page.keyboard.press('Escape');
 
-  ok('guides with extras: the number of cards that carry them is reported', target.count >= 3, String(target.count));
+  ok('all 60 core cards of Interview Prep carry short answers and follow-ups', target.count === 60, String(target.count));
 
   // a guide with no extras at all
   const sql = await browser.newPage({ viewport: { width: 1280, height: 900 } });
