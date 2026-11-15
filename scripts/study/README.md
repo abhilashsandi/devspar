@@ -181,6 +181,10 @@ Readers see it **drawn by hand**, like the event loop sketch on the homepage:
   arrowheads become open chevrons, neutral outlines become marker ink, strokes draw in when the card
   opens. The wobble is seeded from each shape's coordinates, so a diagram never changes between visits.
 - `theme.css` sets the board, the handwriting face (Caveat, sized by x-height) and the draw-in.
+- **Code is never handwritten.** A label that looks like a snippet (SQL, a call with arguments, a tag,
+  a path, `snake_case`, operators) keeps the type it was authored in, because code is read character
+  by character. Plain words and short calls such as `main()` are written by hand. The rule is
+  `sketchIsCode` in `engine.js`; `AUDIT_LIST=1 npm run study:audit` lists every label it catches.
 - **Nothing is thrown away.** The authored SVG is kept, and the switch under every diagram
   (`✎ Whiteboard` / `▭ Tidy`) flips all diagrams between the two. The choice is remembered across
   guides. `⤢ Enlarge` opens the diagram as wide as the window, which is where small labels are

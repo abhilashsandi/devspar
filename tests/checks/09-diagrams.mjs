@@ -55,6 +55,13 @@ export async function run({ browser, base, ok }) {
   await f.click(`.qcard[data-sec="${t2.sec}"][data-q="${t2.q}"] .dg-bar button[data-dg="sketch"]`);
   s = await state(f, t2);
   ok('switching back redraws the sketch with nothing lost', s.sketched && s.labels === t2.labels, `${s.labels} of ${t2.labels}`);
+  // code and SQL inside a sketch are not handwritten: they keep the type they were authored in
+  const fonts = await f.evaluate(({ sec, q }) => {
+    const svg = document.querySelector(`.qcard[data-sec="${sec}"][data-q="${q}"] .diagram svg`);
+    const code = svg.querySelector('text.sk-code'), hand = svg.querySelector('text:not(.sk-code)');
+    return { code: code ? code.textContent + ' | ' + getComputedStyle(code).fontFamily.slice(0, 22) : null, hand: getComputedStyle(hand).fontFamily.slice(0, 8) };
+  }, t2);
+  ok('code inside a sketch stays in its authored type, the rest is handwritten', !!fonts.code && !/Caveat/.test(fonts.code) && /Caveat/.test(fonts.hand), fonts.code);
   // Enlarge: the same diagram, as wide as the window, in a dialog that Esc closes
   await f.click(`.qcard[data-sec="${t2.sec}"][data-q="${t2.q}"] .dg-bar button[data-dg="zoom"]`);
   const z = await f.evaluate(() => { const d = document.getElementById('dgZoom'), svg = d.querySelector('svg'); return { open: d.open, labels: svg.querySelectorAll('text').length, width: Math.round(svg.getBoundingClientRect().width), sk: svg.classList.contains('sk') }; });

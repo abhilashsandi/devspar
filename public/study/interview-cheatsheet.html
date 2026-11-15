@@ -323,10 +323,11 @@
   /* Handwriting is sized by x-height (font-size-adjust) so it reads as large as the type it replaces.
      These values are the largest at which every label in every guide still fits its box:
      `node scripts/study/audit-diagrams.mjs` proves it, so re-run that after changing them. */
-  .diagram svg.sk text{font-family:var(--hand); font-size-adjust:.50; font-weight:600; letter-spacing:.012em;}
-  .diagram svg.sk text[font-family="var(--mono)"]{font-size-adjust:.60;}
-  .diagram svg.sk text.sk-caps{font-size-adjust:.44;}
-  .diagram svg.sk text[font-weight="600"], .diagram svg.sk text[font-weight="700"]{font-weight:700;}
+  .diagram svg.sk text:not(.sk-code){font-family:var(--hand); font-size-adjust:.50; font-weight:600; letter-spacing:.012em;}
+  .diagram svg.sk text[font-family="var(--mono)"]:not(.sk-code){font-size-adjust:.60;}
+  .diagram svg.sk text.sk-caps:not(.sk-code){font-size-adjust:.44;}
+  .diagram svg.sk text[font-weight="600"]:not(.sk-code), .diagram svg.sk text[font-weight="700"]:not(.sk-code){font-weight:700;}
+  /* Code and SQL are never handwritten (engine.js sketchIsCode): .sk-code keeps the authored type. */
   .diagram svg.sk .sk-s{stroke-width:1.9px; stroke-linecap:round; stroke-linejoin:round;}
   @media (prefers-reduced-motion: no-preference){
     .diagram svg.sk .sk-d{animation:sk-draw .5s ease-out backwards; animation-delay:var(--d, 0ms);}

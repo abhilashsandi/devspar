@@ -72,6 +72,21 @@ function sketchPath(from, d){
   from.replaceWith(p);
   return p;
 }
+// Code and SQL are read character by character, so they are not handwritten: a label that looks like
+// a snippet keeps the type it was authored in. Plain words, names and short calls such as main() are
+// still written by hand, as you would on a board.
+const SK_SQL = /\b(SELECT|FROM|WHERE|JOIN|UPDATE|SET|INSERT|INTO|VALUES|DELETE|CREATE|ALTER|DROP|TABLE|INDEX|BEGIN|COMMIT|ROLLBACK|EXPLAIN|ANALYZE|GROUP BY|ORDER BY|LIMIT|OFFSET|HAVING|FOR UPDATE|ON CONFLICT|RETURNING)\b/g;
+function sketchIsCode(s){
+  if(s.length < 4) return false;
+  // A sentence that merely mentions code is still a sentence: mostly plain words means handwriting.
+  const words = s.trim().split(/\s+/), plain = words.filter(w=> /^[“"'(]?[A-Za-z][A-Za-z’'-]*[)”"',.:!?]*$/.test(w)).length;
+  if(plain >= 5 && plain / words.length >= 0.7) return false;
+  const t = s.replace(/\b[A-Z][A-Za-z0-9]*\.js\b/g, ' ');                                               // Next.js, Node.js are names, not files
+  if(/=>|[{}\[\]$`]|;\s*$|::|[!=<>]=|\w_\w|\s=\s|--[a-z]|<\/?[A-Za-z][\w.-]*[\s/>]/.test(t)) return true;  // operators, snake_case, flags, tags
+  if(/\w\.\w+\(|\w\([^)]*[,"'.=][^)]*\)/.test(t)) return true;                                           // obj.method( … ) or a call with arguments
+  if(/^(GET|POST|PUT|PATCH|DELETE|HEAD)\s+\/|(^|\s)\/[\w-]+\/[\w\/:-]*|\b[\w-]+\.(m?[jt]sx?|json|md|html|css|sql|ya?ml|env)\b/.test(t)) return true;   // requests, paths, file names
+  return (t.match(SK_SQL) || []).length >= 2;                                                           // a SQL statement, not one keyword in a sentence
+}
 function sketch(svg){
   if(svg.classList.contains('sk')) return;
   svg.classList.add('sk');
@@ -116,8 +131,9 @@ function sketch(svg){
     el.style.setProperty('--d', Math.round(i * step) + 'ms');
     if(el.tagName === 'text'){
       el.classList.add('sk-t');
-      const s = el.textContent;                                   // capitals are wide in a handwriting face
-      if(s.length > 10 && !/[a-z]/.test(s)) el.classList.add('sk-caps');
+      const s = el.textContent;
+      if(sketchIsCode(s)){ el.classList.add('sk-code'); return; }   // code stays in the type it was authored in
+      if(s.length > 10 && !/[a-z]/.test(s)) el.classList.add('sk-caps');   // capitals are wide in a handwriting face
       return;
     }
     const stroke = el.getAttribute('stroke');

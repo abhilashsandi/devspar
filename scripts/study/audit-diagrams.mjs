@@ -96,7 +96,7 @@ const report = await page.evaluate(() => {
       if (overlap > 1) problems.push('runs into the next label by ' + overlap.toFixed(1) + 'px: ' + st[i].s.slice(0, 40) + ' | ' + st[j].s.slice(0, 20));
     }
     if (problems.length) pair.classList.add('bad');
-    return { i: Number(pair.dataset.i), problems, ratios };
+    return { i: Number(pair.dataset.i), problems, ratios, code: [...sk.querySelectorAll('text.sk-code')].map((t) => t.textContent) };
   });
 });
 await browser.close();
@@ -106,6 +106,8 @@ const pct = (p) => (all.length ? all[Math.min(all.length - 1, Math.floor(all.len
 const bad = report.filter((r) => r.problems.length);
 console.log(`audit: ${items.length} diagram(s) in ${slugs.length} guide(s), ${all.length} labels`);
 console.log(`label width, sketch / tidy: median ${pct(0.5)}, 95th percentile ${pct(0.95)}, widest ${pct(0.9999)}`);
+const code = report.flatMap((r) => r.code);
+console.log(`kept in their authored type because they are code: ${code.length} label(s)` + (process.env.AUDIT_LIST ? '\n  ' + [...new Set(code)].join('\n  ') : '  (AUDIT_LIST=1 lists them)'));
 for (const r of bad) console.log('  FAIL ' + items[r.i].where + '\n    - ' + r.problems.slice(0, 6).join('\n    - ') + (r.problems.length > 6 ? '\n    - … ' + (r.problems.length - 6) + ' more' : ''));
 console.log(bad.length ? `audit: FAIL (${bad.length} diagram(s))  see ${out}` : `audit: OK  (side by side: ${out})`);
 process.exitCode = bad.length ? 1 : 0;
