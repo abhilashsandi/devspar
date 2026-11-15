@@ -1,0 +1,242 @@
+-- P1 second-highest salary, ties handled: subquery form
+select max(salary) as second_highest from employees where salary < (select max(salary) from employees);
+second_highest
+--------------
+        120000
+(1 row)
+
+-- P1 DENSE_RANK form
+select name, salary from (select name, salary, dense_rank() over (order by salary desc) as r from employees) x where r = 2;
+name | salary
+-----+-------
+Alan | 120000
+(1 row)
+
+-- P1 the trap: OFFSET 1 returns a tied top earner
+select name, salary from employees order by salary desc limit 1 offset 1;
+name | salary
+-----+-------
+Ada  | 150000
+(1 row)
+
+-- P2 top two earners per department
+select department_id, name, salary, rn from (
+  select department_id, name, salary,
+         row_number() over (partition by department_id order by salary desc, id) as rn
+  from employees) x
+where rn <= 2 order by department_id nulls last, rn;
+department_id | name  | salary | rn
+--------------+-------+--------+---
+            1 | Ada   | 150000 |  1
+            1 | Grace | 150000 |  2
+            2 | Sam   |  90000 |  1
+            2 | Sue   |  85000 |  2
+            3 | Cora  |  70000 |  1
+            3 | Cal   |  65000 |  2
+         NULL | Nora  |  72000 |  1
+(7 rows)
+
+-- P3 running total per customer
+select id, created_at::date::text as day, total_cents,
+       sum(total_cents) over (partition by customer_id order by created_at, id) as running_cents
+from orders where customer_id = 42 order by created_at, id limit 5;
+  id | day        | total_cents | running_cents
+-----+------------+-------------+--------------
+ 199 | 2024-01-01 |        8363 |          8363
+2159 | 2024-01-05 |        8883 |         17246
+4119 | 2024-01-09 |        9403 |         26649
+6079 | 2024-01-13 |        9923 |         36572
+8039 | 2024-01-17 |        1443 |         38015
+(5 rows)
+
+-- P4 duplicate emails
+select email, count(*) as copies, min(id) as keep_id from contacts group by email having count(*) > 1 order by email;
+email             | copies | keep_id
+------------------+--------+--------
+ada@example.com   |      3 |       1
+grace@example.com |      2 |       2
+(2 rows)
+
+begin;
+BEGIN
+
+delete from contacts c using contacts d where c.email = d.email and c.id > d.id;
+DELETE 3
+
+select id, email from contacts order by id;
+id | email            
+---+------------------
+ 1 | ada@example.com  
+ 2 | grace@example.com
+ 4 | alan@example.com 
+(3 rows)
+
+rollback;
+ROLLBACK
+
+-- P5 customers with no orders: NOT EXISTS
+select count(*) as no_orders from customers c where not exists (select 1 from orders o where o.customer_id = c.id);
+no_orders
+---------
+       40
+(1 row)
+
+-- P5 LEFT JOIN ... IS NULL
+select count(*) as no_orders from customers c left join orders o on o.customer_id = c.id where o.id is null;
+no_orders
+---------
+       40
+(1 row)
+
+-- P5 NOT IN works here only because orders.customer_id is NOT NULL
+select count(*) as no_orders from customers where id not in (select customer_id from orders);
+no_orders
+---------
+       40
+(1 row)
+
+-- P5 the trap: managers.manager_id contains a NULL (Ada has no manager)
+select name from employees where id not in (select manager_id from employees);
+name
+----
+(0 rows)
+
+select name from employees e where not exists (select 1 from employees m where m.manager_id = e.id) order by id;
+name    
+--------
+Linus   
+Margaret
+Sue     
+Sid     
+Cal     
+Fiona   
+Nora    
+(7 rows)
+
+-- P6 orders per status as columns
+select c.country,
+       count(*) filter (where o.status = 'paid') as paid,
+       count(*) filter (where o.status = 'refunded') as refunded,
+       count(*) filter (where o.status = 'cancelled') as cancelled
+from orders o join customers c on c.id = o.customer_id
+group by c.country order by c.country;
+country |  paid | refunded | cancelled
+--------+-------+----------+----------
+DE      | 40000 |        0 |         0
+FR      | 40000 |        0 |         0
+GB      | 30000 |        0 |     10000
+IN      | 40000 |        0 |         0
+US      | 36000 |     4000 |         0
+(5 rows)
+
+-- P7 month over month revenue change
+with monthly as (
+  select date_trunc('month', created_at) as m, sum(total_cents) as revenue
+  from orders where status = 'paid' group by 1)
+select m::date::text as month, revenue, revenue - lag(revenue) over (order by m) as change
+from monthly order by m limit 6;
+month      |  revenue |   change
+-----------+----------+---------
+2024-01-01 | 75952502 |     NULL
+2024-02-01 | 71099218 | -4853284
+2024-03-01 | 76107302 |  5008084
+2024-04-01 | 73712160 | -2395142
+2024-05-01 | 76239462 |  2527302
+2024-06-01 | 73568160 | -2671302
+(6 rows)
+
+-- P8 longest login streak per user (gaps and islands)
+with numbered as (
+  select user_id, day, day - (row_number() over (partition by user_id order by day))::int as grp from logins),
+streaks as (
+  select user_id, count(*) as days, min(day) as first_day from numbered group by user_id, grp)
+select distinct on (user_id) user_id, days, first_day::text from streaks order by user_id, days desc, first_day;
+user_id | days | first_day 
+--------+------+-----------
+      1 |    3 | 2024-03-01
+      2 |    5 | 2024-03-01
+      3 |    4 | 2024-03-04
+(3 rows)
+
+-- P8 the intermediate step, user 3
+select user_id, day::text, day - (row_number() over (partition by user_id order by day))::int as grp from logins where user_id = 3 order by day;
+user_id | day        | grp       
+--------+------------+-----------
+      3 | 2024-03-02 | 2024-03-01
+      3 | 2024-03-04 | 2024-03-02
+      3 | 2024-03-05 | 2024-03-02
+      3 | 2024-03-06 | 2024-03-02
+      3 | 2024-03-07 | 2024-03-02
+      3 | 2024-03-09 | 2024-03-03
+(6 rows)
+
+-- P9 latest order per customer: DISTINCT ON
+select distinct on (customer_id) customer_id, id, created_at::text from orders where customer_id <= 3 order by customer_id, created_at desc, id desc;
+customer_id |     id | created_at            
+------------+--------+-----------------------
+          1 | 199920 | 2025-02-20 12:00:00+00
+          2 | 199399 | 2025-02-19 09:57:00+00
+          3 | 198878 | 2025-02-18 07:54:00+00
+(3 rows)
+
+-- P9 ROW_NUMBER
+select customer_id, id, created_at::text from (
+  select customer_id, id, created_at, row_number() over (partition by customer_id order by created_at desc, id desc) as rn
+  from orders where customer_id <= 3) x where rn = 1 order by customer_id;
+customer_id |     id | created_at            
+------------+--------+-----------------------
+          1 | 199920 | 2025-02-20 12:00:00+00
+          2 | 199399 | 2025-02-19 09:57:00+00
+          3 | 198878 | 2025-02-18 07:54:00+00
+(3 rows)
+
+-- P10 everyone under Ada with depth
+with recursive tree as (
+  select id, name, manager_id, 0 as depth from employees where id = 1
+  union all
+  select e.id, e.name, e.manager_id, t.depth + 1 from employees e join tree t on e.manager_id = t.id)
+select id, name, depth from tree order by depth, id;
+id | name     | depth
+---+----------+------
+ 1 | Ada      |     0
+ 2 | Grace    |     1
+ 3 | Alan     |     1
+ 6 | Sam      |     1
+ 9 | Cora     |     1
+ 4 | Linus    |     2
+ 5 | Margaret |     2
+ 7 | Sue      |     2
+ 8 | Sid      |     2
+10 | Cal      |     2
+11 | Fiona    |     2
+12 | Nora     |     2
+(12 rows)
+
+-- P11 overlapping bookings
+select a.room, a.id as first, b.id as second
+from bookings a join bookings b on a.room = b.room and a.id < b.id and a.starts_at < b.ends_at and b.starts_at < a.ends_at
+order by a.room, a.id;
+room | first | second
+-----+-------+-------
+   1 |     1 |      2
+   2 |     6 |      7
+(2 rows)
+
+-- P11 prevent them with an exclusion constraint
+create extension if not exists btree_gist;
+CREATE
+
+create temp table bookings2 (id serial primary key, room int, starts_at timestamptz, ends_at timestamptz, exclude using gist (room with =, tstzrange(starts_at, ends_at) with &&));
+CREATE
+
+insert into bookings2 (room, starts_at, ends_at) values (1, '2024-05-01 09:00+00', '2024-05-01 10:00+00'), (1, '2024-05-01 10:00+00', '2024-05-01 11:00+00');
+INSERT 2
+
+insert into bookings2 (room, starts_at, ends_at) values (1, '2024-05-01 09:30+00', '2024-05-01 10:30+00');
+ERROR: conflicting key value violates exclusion constraint "bookings2_room_tstzrange_excl" (SQLSTATE 23P01)
+DETAIL: Key (room, tstzrange(starts_at, ends_at))=(1, ["2024-05-01 09:30:00+00","2024-05-01 10:30:00+00")) conflicts with existing key (room, tstzrange(starts_at, ends_at))=(1, ["2024-05-01 09:00:00+00","2024-05-01 10:00:00+00")).
+
+-- P12 filtering on a window function result
+select name, salary, row_number() over (order by salary desc) as rn from employees where row_number() over (order by salary desc) <= 3;
+ERROR: window functions are not allowed in WHERE (SQLSTATE 42P20)
+
