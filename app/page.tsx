@@ -7,6 +7,7 @@ import {
   BookOpen,
   Bot,
   Braces,
+  Database,
   FlaskRound,
   MessagesSquare,
   Bug,
@@ -95,6 +96,7 @@ const GROUPS: Group[] = [
     blurb: 'Server-side depth and the senior-level design conversation.',
     guides: [
       { slug: 'nodejs', title: 'Node.js', desc: 'Event loop, streams, workers, security, scaling, database patterns, testing with node:test and modules.', icon: Hexagon },
+      { slug: 'sql', title: 'Data and SQL', desc: 'Indexes, transactions and isolation, query puzzles, schema changes without downtime, and PostgreSQL from Node.js. Every result comes from a real run.', icon: Database },
       { slug: 'architecture', title: 'Architecture Patterns', desc: 'Monolith to microservices, BFF, micro-frontends, event-driven, hexagonal and CQRS for the frontend and Node.js, plus design answers for a banking app, a heavy-data dashboard and a ticket system.', icon: Layers },
       { slug: 'system-design', title: 'System Design', desc: 'Architectural styles, microservices, messaging, sagas, real outages and AWS building blocks.', icon: Network },
       { slug: 'system-design-scale', title: 'System Design at Scale', desc: 'A senior-level answer to “design a full-stack app for millions of users”, end to end.', icon: Server },

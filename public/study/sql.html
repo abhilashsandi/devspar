@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Data and SQL: Interview Prep</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,500;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* study-theme v4 "whiteboard": the one stylesheet every guide uses. Edit here, then run
+     `npm run study:upgrade` to apply it to every guide (lib.upgrade swaps each guide's <style> for this file).
+     Token names are also used inside the SVG diagrams (dg*.mjs), so rename none of them. */
+  :root{
+    /* light: a whiteboard. Navy ink, blue marker for actions, green for done, yellow highlighter. */
+    --bg:#F5F7FA;
+    --panel:#FFFFFF;
+    --panel-2:#EEF2F7;
+    --border:#D3DAE5;
+    --text:#14213D;
+    --muted:#4F5D78;
+    --accent:#1B55C5;
+    --accent-ink:#FFFFFF;
+    --accent-soft:#E4EDFC;
+    --gold:#7A5200;
+    --gold-soft:#FFF1B8;
+    --ok:#126B4B;
+    --ok-soft:#DDF3E9;
+    --code-bg:#EEF2F7;
+    --danger:#B42318;
+    --shadow: 0 1px 2px rgba(20,33,61,.06), 0 4px 14px rgba(20,33,61,.04);
+    --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: 'Atkinson Hyperlegible Next', 'Atkinson Hyperlegible', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --display: 'Bricolage Grotesque', var(--sans);
+    --measure: 76ch;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      /* dark: a chalkboard. Chalk white text, chalk blue / yellow / green accents. */
+      --bg:#101A19;
+      --panel:#17231F;
+      --panel-2:#1E2D29;
+      --border:#33493F;
+      --text:#ECF1EE;
+      --muted:#A9B8B1;
+      --accent:#93BCFF;
+      --accent-ink:#0A1730;
+      --accent-soft:#1D3048;
+      --gold:#F0CF6B;
+      --gold-soft:#3A3216;
+      --ok:#7FD6A8;
+      --ok-soft:#173327;
+      --code-bg:#0C1513;
+      --danger:#F5A99C;
+      --shadow: 0 1px 2px rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#101A19;
+    --panel:#17231F;
+    --panel-2:#1E2D29;
+    --border:#33493F;
+    --text:#ECF1EE;
+    --muted:#A9B8B1;
+    --accent:#93BCFF;
+    --accent-ink:#0A1730;
+    --accent-soft:#1D3048;
+    --gold:#F0CF6B;
+    --gold-soft:#3A3216;
+    --ok:#7FD6A8;
+    --ok-soft:#173327;
+    --code-bg:#0C1513;
+    --danger:#F5A99C;
+    --shadow: 0 1px 2px rgba(0,0,0,.4);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  html{color-scheme:light dark; scroll-padding-top:16px;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+  a{color:var(--accent); text-underline-offset:2px;}
+  :focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:4px;}
+  ::selection{background:var(--gold-soft); color:var(--text);}
+
+  .app{display:flex; min-height:100vh;}
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    width:288px;
+    flex:0 0 288px;
+    border-right:1px solid var(--border);
+    background:var(--panel);
+    padding:18px 14px 24px;
+    position:sticky;
+    top:0;
+    height:100vh;
+    overflow-y:auto;
+    scrollbar-width:thin;
+  }
+  .side-top{display:flex; align-items:center; justify-content:space-between; gap:8px; margin:0 0 14px;}
+  .home-link{display:inline-flex; align-items:center; gap:6px; font-size:14px; font-weight:500; color:var(--muted); text-decoration:none; padding:6px 8px; border-radius:8px;}
+  .home-link:hover{color:var(--accent); background:var(--accent-soft);}
+  .theme-btn{font:inherit; font-size:15px; line-height:1; width:34px; height:34px; color:var(--muted); background:transparent; border:1px solid var(--border); border-radius:8px; cursor:pointer;}
+  .theme-btn:hover{color:var(--accent); border-color:var(--accent);}
+  .brand{
+    font-size:13.5px;
+    line-height:1.45;
+    color:var(--muted);
+    padding:0 8px 16px;
+    border-bottom:1px solid var(--border);
+    margin-bottom:14px;
+  }
+  .brand b{display:block; font-family:var(--display); font-size:19px; font-weight:700; letter-spacing:-0.01em; color:var(--text);}
+  .brand br{display:none;}
+  .nav-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    width:100%;
+    text-align:left;
+    padding:9px 10px;
+    border-radius:9px;
+    border:1px solid transparent;
+    background:transparent;
+    color:var(--text);
+    font-family:var(--sans);
+    font-size:15px;
+    line-height:1.35;
+    cursor:pointer;
+    margin-bottom:2px;
+  }
+  .nav-item:hover{background:var(--panel-2);}
+  .nav-item.active{background:var(--accent-soft); color:var(--text); font-weight:700; box-shadow:inset 3px 0 0 var(--accent);}
+  .nav-num{font-size:12.5px; font-variant-numeric:tabular-nums; color:var(--muted); width:20px; flex:0 0 20px;}
+  .nav-item.active .nav-num{color:var(--accent);}
+  .nav-label{flex:1;}
+  .nav-count{
+    font-size:12px;
+    font-variant-numeric:tabular-nums;
+    color:var(--muted);
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    padding:1px 7px;
+    border-radius:999px;
+  }
+  .nav-item.complete .nav-count{color:var(--ok); border-color:var(--ok); background:var(--ok-soft);}
+  .progress-box{
+    margin-top:20px;
+    padding:14px 12px;
+    border:1px solid var(--border);
+    border-radius:12px;
+    background:var(--panel-2);
+  }
+  .progress-box .label{font-size:12.5px; font-weight:700; color:var(--muted); margin-bottom:8px; text-transform:lowercase;}
+  .progress-box .label::first-letter{text-transform:uppercase;}
+  .progress-track{height:8px; border-radius:999px; background:var(--border); overflow:hidden;}
+  .progress-fill{height:100%; background:var(--ok); width:0%; transition:width .25s ease;}
+  .progress-num{margin-top:8px; font-size:13.5px; font-variant-numeric:tabular-nums; color:var(--text);}
+  .reset-btn{
+    margin-top:10px;
+    width:100%;
+    font-family:var(--sans);
+    font-size:13px;
+    color:var(--muted);
+    background:transparent;
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:7px 8px;
+    cursor:pointer;
+  }
+  .reset-btn:hover{color:var(--danger);border-color:var(--danger);}
+
+  /* ---------- Main ---------- */
+  .main{
+    flex:1;
+    min-width:0;
+    padding:40px 48px 96px;
+    max-width:1080px;
+  }
+  .hero{margin-bottom:36px;}
+  .hero .eyebrow-free{display:none;}
+  .hero h1{
+    font-family:var(--display);
+    font-size:clamp(28px, 3.4vw, 40px);
+    line-height:1.12;
+    margin:0 0 14px;
+    font-weight:700;
+    letter-spacing:-0.02em;
+    text-wrap:balance;
+  }
+  .hero p{color:var(--muted); max-width:68ch; margin:0 0 6px; font-size:16.5px;}
+  .hero p strong{color:var(--text);}
+  .hero .source-note{font-size:13.5px; color:var(--muted); margin-top:18px; line-height:1.9;}
+
+  .section-head{
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+    margin:44px 0 14px;
+    padding-bottom:12px;
+    border-bottom:2px solid var(--text);
+  }
+  .section-head .num{font-family:var(--display); color:var(--accent); font-size:17px; font-weight:700; font-variant-numeric:tabular-nums;}
+  .section-head h2{font-family:var(--display); font-size:26px; line-height:1.2; margin:0; font-weight:700; letter-spacing:-0.015em;}
+  .section-head .count{margin-left:auto; font-size:13.5px; font-variant-numeric:tabular-nums; color:var(--muted); white-space:nowrap;}
+
+  .qcard{
+    border:1px solid var(--border);
+    border-radius:14px;
+    background:var(--panel);
+    margin-bottom:10px;
+    overflow:hidden;
+    box-shadow:var(--shadow);
+  }
+  .qcard:hover{border-color:var(--accent);}
+  .qcard.open{border-color:var(--accent); box-shadow:inset 4px 0 0 var(--accent), var(--shadow);}
+  .qcard.focused{outline:2px solid var(--accent); outline-offset:1px;}
+  .qhead{
+    display:flex;
+    align-items:flex-start;
+    gap:14px;
+    padding:15px 18px;
+    cursor:pointer;
+    user-select:none;
+  }
+  .qcheck{
+    margin-top:3px;
+    flex:0 0 auto;
+    width:20px;height:20px;
+    border-radius:6px;
+    border:1.5px solid var(--muted);
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    background:var(--panel);
+  }
+  .qcheck:hover{border-color:var(--ok);}
+  .qcheck.done{background:var(--ok); border-color:var(--ok);}
+  .qcheck.done::after{content:"✓"; color:var(--panel); font-size:13px; font-weight:700;}
+  .qmain{flex:1; min-width:0; display:flex; flex-direction:column; gap:5px;}
+  .qtext{flex:1; font-size:16.5px; line-height:1.4; font-weight:700;}
+  .qtext.done-text{color:var(--muted); font-weight:500;}
+  .qchips{display:flex; gap:6px; flex-wrap:wrap;}
+  .qsec,.qcore{font-size:12px; padding:1px 8px; border-radius:99px; border:1px solid var(--border); color:var(--muted); background:var(--panel-2);}
+  .qcore{color:var(--gold); border-color:var(--gold); background:var(--gold-soft);}
+  .qsum{font-size:14.5px; color:var(--muted); line-height:1.5; max-width:var(--measure);}
+  .qcard.open .qsum{display:none;}
+  .qchevron{
+    flex:0 0 auto;
+    color:var(--muted);
+    font-size:20px;
+    line-height:1;
+    transform:rotate(0deg);
+    transition:transform .15s ease;
+    margin-top:2px;
+  }
+  .qcard.open .qchevron{transform:rotate(90deg); color:var(--accent);}
+  .qbody{
+    display:none;
+    padding:2px 22px 22px 52px;
+    border-top:1px solid var(--border);
+    font-size:16px;
+    line-height:1.65;
+  }
+  .qcard.open .qbody{display:block; padding-top:18px;}
+  /* Prose keeps a readable line length; tables, code and diagrams may use the full card width. */
+  .qbody > p, .qbody > ul, .qbody > ol, .qbody > blockquote, .qbody > .callout, .qbody > h3, .qbody > h4{max-width:var(--measure);}
+  .qbody p{margin:0 0 14px;}
+  .qbody ul, .qbody ol{margin:0 0 14px; padding-left:22px;}
+  .qbody li{margin-bottom:7px;}
+  .qbody li::marker{color:var(--accent);}
+  .qbody strong{color:var(--text); font-weight:700;}
+  .qbody h3, .qbody h4{font-family:var(--display); font-size:17px; margin:20px 0 8px; letter-spacing:-0.01em;}
+  code{
+    font-family:var(--mono);
+    background:var(--code-bg);
+    border:1px solid var(--border);
+    padding:0 5px;
+    border-radius:5px;
+    font-size:0.875em;
+    overflow-wrap:anywhere;
+  }
+  pre{
+    font-family:var(--mono);
+    background:var(--code-bg);
+    color:var(--text);
+    padding:14px 16px;
+    border-radius:10px;
+    overflow-x:auto;
+    font-size:13.5px;
+    line-height:1.65;
+    margin:0 0 16px;
+    border:1px solid var(--border);
+    tab-size:2;
+  }
+  pre code{background:none; border:0; padding:0; font-size:inherit;}
+  /* syntax colouring added by the engine (comments, strings, keywords, numbers) */
+  .tk-c{color:var(--muted); font-style:italic;}
+  .tk-s{color:var(--ok);}
+  .tk-k{color:var(--accent); font-weight:500;}
+  .tk-n{color:var(--gold);}
+  .diagram{
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:16px;
+    margin:0 0 16px;
+    overflow-x:auto;
+  }
+  .diagram svg{display:block; margin:0 auto; max-width:100%; height:auto;}
+  .diagram.lightbg{background:#F8FAFC; border-color:#CBD5E1;}
+  .diagram.lightbg .codelabel{color:#334155;}
+  .tag{
+    display:inline-block;
+    font-size:12px;
+    color:var(--gold);
+    background:var(--gold-soft);
+    border:1px solid var(--gold);
+    border-radius:6px;
+    padding:1px 7px;
+    margin-bottom:10px;
+  }
+  .tscroll{overflow-x:auto; margin:0 0 16px;}
+  .tscroll > table.cmp{margin:0;}
+  table.cmp{
+    width:100%;
+    border-collapse:collapse;
+    margin:0 0 16px;
+    font-size:14.5px;
+    line-height:1.5;
+  }
+  table.cmp th, table.cmp td{
+    border:1px solid var(--border);
+    padding:9px 12px;
+    text-align:left;
+    vertical-align:top;
+  }
+  table.cmp th{background:var(--panel-2); font-size:13.5px; font-weight:700;}
+  table.cmp tr:nth-child(odd) td{background:color-mix(in srgb, var(--panel-2) 45%, transparent);}
+
+  .tbadge{display:inline-block; font-size:12px; font-weight:700; color:var(--gold); background:var(--gold-soft); border:1px solid var(--gold); border-radius:99px; padding:2px 10px; margin-bottom:10px;}
+  .deeper{margin-top:16px; padding-top:12px; border-top:1px dashed var(--border); font-size:14.5px; line-height:1.9;}
+  .deeper + .deeper{margin-top:2px; padding-top:0; border-top:0;}
+  a.go{color:var(--accent); text-decoration:none; border-bottom:1px solid color-mix(in srgb, var(--accent) 35%, transparent);}
+  a.go:hover{border-bottom-color:var(--accent);}
+
+  .search{width:100%; box-sizing:border-box; margin:0 0 14px; padding:10px 12px; font:inherit; font-size:14.5px; color:var(--text); background:var(--bg); border:1px solid var(--border); border-radius:10px;}
+  .search::placeholder{color:var(--muted);}
+  .search:focus{outline:2px solid var(--accent); outline-offset:1px;}
+  .qcheck:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+  mark{background:var(--gold-soft); color:var(--text); border-radius:3px; padding:0 2px;}
+  .toolbar{display:flex; flex-wrap:wrap; align-items:center; gap:10px 16px; margin:0 0 18px; font-size:14px; color:var(--muted);}
+  .toolbar .tmeta{font-size:13.5px; margin-right:auto;}
+  .toolbar .tgroup{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
+  .toolbar button{font:inherit; font-size:13.5px; color:var(--text); background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:6px 12px; cursor:pointer;}
+  .toolbar button:hover{border-color:var(--accent); color:var(--accent);}
+  .toolbar label{display:flex; gap:6px; align-items:center; cursor:pointer; white-space:nowrap;}
+  .toolbar input{accent-color:var(--accent); width:15px; height:15px;}
+  .empty{color:var(--muted); font-size:15px; padding:18px; border:1px dashed var(--border); border-radius:12px;}
+  .pager{display:flex; justify-content:space-between; gap:12px; margin-top:28px;}
+  .pager button{font:inherit; font-size:14.5px; font-weight:500; color:var(--accent); background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:12px 16px; cursor:pointer; max-width:48%; text-align:left;}
+  .pager button:last-child{text-align:right;}
+  .pager button:hover{border-color:var(--accent); background:var(--accent-soft);}
+  .back-btn{position:fixed; right:22px; bottom:22px; z-index:10; font:inherit; font-size:14px; font-weight:700; color:var(--accent-ink); background:var(--accent); border:0; border-radius:99px; padding:11px 18px; cursor:pointer; box-shadow:0 6px 18px rgba(0,0,0,.22);}
+  .keys{display:inline-block; margin-top:6px;}
+  kbd{font-family:var(--mono); font-size:11.5px; padding:0 5px; border:1px solid var(--border); border-bottom-width:2px; border-radius:5px; background:var(--panel); color:var(--text);}
+  .hero-actions{margin-top:18px; display:flex; flex-wrap:wrap; gap:10px;}
+  .fc-start,.toolbar .flash-btn{font:inherit; font-weight:700; color:var(--accent-ink); background:var(--accent); border:1px solid var(--accent); border-radius:10px; cursor:pointer;}
+  .fc-start{font-size:15px; padding:10px 18px;}
+  .toolbar .flash-btn{color:var(--accent-ink);}
+  .toolbar .flash-btn:hover{color:var(--accent-ink);}
+  .fc-start:hover,.toolbar .flash-btn:hover{filter:brightness(1.1);}
+  button.fc-start.alt{background:var(--panel); color:var(--accent); border:1px solid var(--accent);}
+  button.fc-start.alt:hover{background:var(--accent-soft); filter:none;}
+  a.fc-start.alt{display:inline-block; text-decoration:none; background:var(--panel); color:var(--accent); border:1px solid var(--accent);}
+
+  /* ---------- Flashcards ---------- */
+  body.fc-lock{overflow:hidden;}
+  .fc{position:fixed; inset:0; z-index:50; background:rgba(8,14,26,.6); display:flex; align-items:center; justify-content:center; padding:24px;}
+  .fc[hidden]{display:none;}
+  .fc-dialog{width:min(920px,100%); max-height:100%; display:flex; flex-direction:column; background:var(--panel); border:1px solid var(--border); border-radius:18px; box-shadow:0 24px 70px rgba(0,0,0,.4); outline:none;}
+  .fc-head{display:flex; justify-content:space-between; align-items:flex-start; gap:12px; padding:18px 22px 12px;}
+  .fc-title{font-family:var(--display); font-size:17px; font-weight:700;}
+  .fc-count{font-size:13px; font-variant-numeric:tabular-nums; color:var(--muted); margin-top:3px;}
+  .fc-tools{display:flex; gap:12px; align-items:center; font-size:14px; color:var(--muted);}
+  .fc-tools label{display:flex; gap:6px; align-items:center; cursor:pointer;}
+  .fc-tools input{accent-color:var(--accent);}
+  .fc-tools button{font:inherit; font-size:15px; color:var(--muted); background:transparent; border:1px solid var(--border); border-radius:8px; width:34px; height:34px; cursor:pointer;}
+  .fc-bar{height:5px; background:var(--border); margin:0 22px; border-radius:99px; overflow:hidden;}
+  .fc-bar i{display:block; height:100%; width:0; background:var(--ok); transition:width .2s ease;}
+  .fc-body{flex:1; overflow-y:auto; padding:24px 26px; min-height:220px;}
+  .fc-q{font-family:var(--display); font-size:25px; line-height:1.3; margin:12px 0 18px; font-weight:700; letter-spacing:-0.015em; text-wrap:balance;}
+  .fc-prompt{color:var(--muted); font-size:15px; border:1px dashed var(--border); border-radius:12px; padding:28px 18px; text-align:center;}
+  .fc .qbody.fc-a{display:block; border-top:1px solid var(--border); padding:18px 0 0; font-size:16px;}
+  .fc-done h3{font-family:var(--display); font-size:22px; margin:0 0 8px;}
+  .fc-done .fc-sub{color:var(--muted); margin:14px 0 6px;}
+  .fc-done ul{padding-left:20px; font-size:15px;}
+  .fc-actions{display:flex; gap:10px; justify-content:flex-end; padding:14px 22px; border-top:1px solid var(--border); flex-wrap:wrap;}
+  .fc-actions button{font:inherit; font-size:15px; color:var(--text); background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:10px 18px; cursor:pointer;}
+  .fc-actions button.primary{color:var(--accent-ink); background:var(--accent); border-color:var(--accent); font-weight:700;}
+  .fc-actions button.again{border-color:var(--gold); color:var(--gold);}
+  .fc-actions button:first-child{margin-right:auto;}
+  .fc-actions kbd{margin-left:6px; background:transparent; border-color:currentColor; color:inherit; opacity:.8;}
+  .fc-keys{font-size:12.5px; color:var(--muted); padding:0 22px 16px; text-align:right;}
+
+  /* ---------- Answer building blocks ---------- */
+  .lede{font-size:17px; color:var(--text); font-weight:500;}
+  .callout{background:var(--accent-soft); border:1px solid color-mix(in srgb, var(--accent) 45%, transparent); border-left:4px solid var(--accent); border-radius:10px; padding:12px 16px; margin:0 0 16px;}
+  .callout.warning{background:var(--gold-soft); border-color:var(--gold);}
+  .callout > :last-child{margin-bottom:0;}
+  .note{font-size:14px; color:var(--muted);}
+  .codelabel{font-size:13px; font-weight:700; color:var(--accent); margin:12px 0 5px;}
+  .verified{font-size:13.5px; color:var(--muted); border-top:1px dashed var(--border); padding-top:8px; margin-top:12px;}
+  .verified strong{color:var(--accent);}
+  .keyline{font-family:var(--mono); font-size:13px; color:var(--accent);}
+  .followup{border-left:3px solid var(--gold); padding-left:12px; color:var(--text);}
+  .gcards{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:12px; margin:0 0 16px;}
+  .gcard{border:1px solid var(--border); border-radius:12px; background:var(--panel-2); padding:14px 16px;}
+  .gcard h3,.gcard h4{margin:0 0 6px; font-size:15px; font-family:var(--sans);}
+  .gcard ul{margin:0; padding-left:18px;}
+  .rail{display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin:0 0 16px; font-size:14px;}
+  .rail span{background:var(--panel-2); border:1px solid var(--border); border-radius:8px; padding:6px 10px;}
+  .rail span b{display:block; font-size:11.5px; color:var(--accent);}
+  .rail i{font-style:normal; color:var(--muted);}
+  ol.steps li{margin-bottom:7px;}
+  blockquote{margin:0 0 16px; padding:12px 16px; border-left:4px solid var(--accent); background:var(--panel-2); border-radius:0 10px 10px 0;}
+  blockquote > :last-child{margin-bottom:0;}
+  .quizopts{display:block; font-weight:400; font-size:14px; color:var(--muted); margin-top:4px; line-height:1.55;}
+  ol.quiz{padding-left:26px;} ol.quiz li{margin-bottom:6px;}
+  ol.quiz li.right{color:var(--ok); font-weight:700;}
+  hr{border:0; border-top:1px dashed var(--border); margin:16px 0;}
+  /* an answer the reader opens after trying (Bug Clinic) */
+  details.reveal{border:1px solid var(--border); border-radius:12px; background:var(--panel-2); margin:0 0 16px;}
+  details.reveal > summary{cursor:pointer; padding:12px 16px; font-weight:700; color:var(--accent); list-style:none; display:flex; align-items:center; gap:8px;}
+  details.reveal > summary::-webkit-details-marker{display:none;}
+  details.reveal > summary::before{content:"▸"; transition:transform .15s ease;}
+  details.reveal[open] > summary::before{transform:rotate(90deg);}
+  details.reveal[open] > summary{border-bottom:1px solid var(--border);}
+  details.reveal > :not(summary){margin-left:16px; margin-right:16px;}
+  details.reveal > summary + *{margin-top:14px;}
+  details.reveal > p{max-width:var(--measure);}
+  /* "say this" script blocks used by the whiteboard guide */
+  .say{border-left:4px solid var(--gold); background:var(--gold-soft); border-radius:0 10px 10px 0; padding:10px 16px; margin:0 0 16px; max-width:var(--measure);}
+  .say > :last-child{margin-bottom:0;}
+  .say::before{content:"Say"; display:block; font-size:12.5px; font-weight:700; color:var(--gold); margin-bottom:2px;}
+  ol.draw{counter-reset:d; list-style:none; padding-left:0; max-width:var(--measure);}
+  ol.draw > li{counter-increment:d; position:relative; padding-left:40px; margin-bottom:12px;}
+  ol.draw > li::before{content:counter(d); position:absolute; left:0; top:1px; width:26px; height:26px; border-radius:50%; background:var(--accent); color:var(--accent-ink); font-size:13.5px; font-weight:700; display:flex; align-items:center; justify-content:center;}
+
+  /* study-v3: compact phone menu + cross-guide search results */
+  .nav-toggle{display:none;}
+  .ghits{margin-top:24px;}
+  .gh-head{display:flex; justify-content:space-between; gap:10px; font-size:14px; font-weight:700; color:var(--muted); margin:0 0 8px;}
+  .gh{display:block; text-decoration:none; color:var(--text); background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:11px 15px; margin-bottom:8px;}
+  .gh:hover{border-color:var(--accent);}
+  .gh-t{display:block; font-weight:700; font-size:15.5px;}
+  .gh-m{display:block; font-size:12.5px; color:var(--accent); margin:2px 0;}
+  .gh-s{display:block; font-size:14px; color:var(--muted);}
+  .gh-note{font-size:14px; color:var(--muted);}
+
+  @media (max-width: 820px){
+    .app{flex-direction:column;}
+    .main{padding:22px 16px 72px; max-width:100%;}
+    .sidebar{position:sticky; top:0; z-index:30; width:100%; flex:none; height:auto; display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:10px 12px; background:var(--panel); border-right:none; border-bottom:1px solid var(--border);}
+    .sidebar .brand{display:none;}
+    .side-top{margin:0; flex:0 0 auto;}
+    .side-top .home-link span, .side-top .theme-btn{display:none;}
+    .sidebar .search{flex:1 1 110px; width:auto; min-width:0; margin:0;}
+    .nav-toggle{display:flex; align-items:center; justify-content:space-between; gap:8px; flex:0 1 48%; min-width:0; padding:10px 12px; font:inherit; font-size:14px; font-weight:700; color:var(--text); background:var(--accent-soft); border:1px solid var(--accent); border-radius:10px; cursor:pointer;}
+    .nav-toggle span{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+    .nav-toggle i{font-style:normal; color:var(--accent); transition:transform .15s;}
+    .sidebar.open .nav-toggle i{transform:rotate(180deg);}
+    .nav-panel{display:none; flex:1 0 100%; max-height:calc(100vh - 96px); overflow-y:auto; border-top:1px solid var(--border); padding-top:8px;}
+    .sidebar.open .nav-panel{display:block;}
+    .hero{margin-top:0;}
+    .hero h1{font-size:27px;}
+    .section-head{margin-top:32px;}
+    .section-head h2{font-size:22px;}
+    .qhead{padding:13px 14px; gap:11px;}
+    .qbody{padding:2px 16px 18px 16px;}
+    .keys{display:none;}
+    .toolbar .tmeta{width:100%;}
+    .fc{padding:0;} .fc-dialog{height:100%; border-radius:0;} .fc-keys{display:none;} .fc-q{font-size:21px;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important; scroll-behavior:auto !important;}
+  }
+  @media print{
+    .sidebar,.toolbar,.pager,.back-btn,.hero-actions,.source-note{display:none !important;}
+    .main{max-width:none; padding:0;}
+    .qcard{break-inside:avoid; box-shadow:none;}
+    .qbody{display:block !important;}
+    .qsum{display:none;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="sidebar" id="sidebar">
+    <div class="brand"><b>Data and SQL</b><br>indexes, transactions, queries</div>
+    <input class="search" id="searchInput" type="search" placeholder="Search all guides   /" aria-label="Search all guides">
+    <button class="nav-toggle" id="navToggle" type="button" aria-expanded="false" aria-controls="navPanel"><span id="navToggleLbl">Sections</span><i>▾</i></button>
+    <div class="nav-panel" id="navPanel">
+    <div id="navList"></div>
+    <div class="progress-box">
+      <div class="label">REVIEWED</div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-num" id="progressNum">0 / 0</div>
+      <button class="reset-btn" id="resetBtn">Reset progress</button>
+    </div>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="hero">
+      <p class="eyebrow-free">Prep guide</p>
+      <h1>Data and SQL</h1>
+      <p>Indexes, transactions and isolation, query puzzles, schema changes without downtime, and PostgreSQL from Node.js. Every statement was run on a real PostgreSQL 17.6 database and every result shown is pasted from that run.</p>
+      <div class="hero-actions"><button id="fcCore" class="fc-start" type="button">▶ Flashcards: all ★ core questions</button>
+      <button id="fcWeak" class="fc-start alt" type="button" hidden>↻ Review weak cards</button></div>
+      <div class="source-note"><span id="heroMeta"></span><br><span class="keys"><kbd>/</kbd> search · <kbd>j</kbd> <kbd>k</kbd> move · <kbd>o</kbd> open · <kbd>x</kbd> mark reviewed · <kbd>n</kbd> <kbd>p</kbd> next / previous section · <kbd>Esc</kbd> clear</span></div>
+    </div>
+    <div id="content"></div>
+    <button id="backBtn" class="back-btn" hidden></button>
+    <div id="fc" class="fc" hidden>
+      <div class="fc-dialog" role="dialog" aria-modal="true" aria-label="Flashcards" tabindex="-1">
+        <div class="fc-head">
+          <div><div class="fc-title"></div><div class="fc-count"></div></div>
+          <div class="fc-tools"><label><input type="checkbox" id="fcShuffle"> Shuffle</label><button data-fc="close" aria-label="Close flashcards">✕</button></div>
+        </div>
+        <div class="fc-bar"><i></i></div>
+        <div class="fc-body"></div>
+        <div class="fc-actions"></div>
+        <div class="fc-keys"><kbd>Space</kbd> reveal · <kbd>1</kbd> again · <kbd>2</kbd> got it (marks reviewed) · <kbd>←</kbd> <kbd>→</kbd> back / skip · <kbd>Esc</kbd> close</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+const DATA = [
+{
+  id:"quickref", title:"Quick Reference",
+  questions:[
+    {
+      q:"Cheat sheet: 1. Relational Basics",
+      a:`<table class="cmp"><tr><th>Question</th><th>One-line answer</th></tr><tr><td><a class="go" href="#sq1:0" data-go="sq1:0">What do primary keys, foreign keys and constraints guarantee, and why let the database enforce them?</a></td><td>A constraint is a rule the database checks on every write, from every application, script and person that connects.</td></tr><tr><td><a class="go" href="#sq1:1" data-go="sq1:1">What is normalisation, and when do you denormalise on purpose?</a></td><td>Normalising means storing each fact once, so that changing it is one update and cannot leave two copies disagreeing.</td></tr><tr><td><a class="go" href="#sq1:3" data-go="sq1:3">Why does a comparison with NULL not behave like true or false?</a></td><td>NULL means unknown , not “empty”. Comparing anything with an unknown gives unknown, which WHERE treats as not true.</td></tr><tr><td><a class="go" href="#sq1:5" data-go="sq1:5">WHERE or HAVING: which filter goes where?</a></td><td>WHERE filters rows before they are grouped.</td></tr></table>`
+    },
+    {
+      q:"Cheat sheet: 2. Indexing",
+      a:`<table class="cmp"><tr><th>Question</th><th>One-line answer</th></tr><tr><td><a class="go" href="#sq2:2" data-go="sq2:2">What are covering and partial indexes?</a></td><td>A covering index holds every column a query needs, so PostgreSQL answers from the index without touching the table (an index-only scan ).</td></tr><tr><td><a class="go" href="#sq2:3" data-go="sq2:3">Why is my query not using the index?</a></td><td>Look at the plan before guessing. These are the usual reasons, and the first three were run in the lab.</td></tr><tr><td><a class="go" href="#sq2:5" data-go="sq2:5">Which index types exist beyond B-tree?</a></td><td>The default is right far more often than not.</td></tr><tr><td><a class="go" href="#sq2:6" data-go="sq2:6">What do indexes cost on writes, and how many is too many?</a></td><td>Every index is another structure to update on each insert, on each update of an indexed column, and on delete.</td></tr><tr><td><a class="go" href="#sq2:7" data-go="sq2:7">Rapid-fire: indexing</a></td><td></td></tr></table>`
+    },
+    {
+      q:"Cheat sheet: 3. Transactions and Isolation",
+      a:`<table class="cmp"><tr><th>Question</th><th>One-line answer</th></tr><tr><td><a class="go" href="#sq3:0" data-go="sq3:0">What does ACID mean in practice?</a></td><td>Atomicity and durability are what people mean by “it is safe once the commit returns”.</td></tr><tr><td><a class="go" href="#sq3:1" data-go="sq3:1">Which anomalies can happen between concurrent transactions?</a></td><td>Each row below was reproduced with two real connections on PostgreSQL 17.6.</td></tr><tr><td><a class="go" href="#sq3:3" data-go="sq3:3">What do READ COMMITTED, REPEATABLE READ and SERIALIZABLE give you in PostgreSQL?</a></td><td>A write that conflicts with a committed change, REPEATABLE READ (captured) The rule: if you use REPEATABLE READ or SERIALIZABLE , wrap the transaction in a retry loop for SQLSTATE 40001 (and 40P01 , the deadlock).</td></tr></table>`
+    },
+    {
+      q:"Cheat sheet: 4. Query Puzzles",
+      a:`<table class="cmp"><tr><th>Question</th><th>One-line answer</th></tr><tr><td><a class="go" href="#sq4:0" data-go="sq4:0">How do you approach a SQL question in an interview?</a></td><td>Restate it and ask about the edge cases: ties, NULLs, empty groups, duplicates.</td></tr><tr><td><a class="go" href="#sq4:1" data-go="sq4:1">Puzzle: Find the second-highest salary</a></td><td>Return the second-highest distinct salary.</td></tr><tr><td><a class="go" href="#sq4:2" data-go="sq4:2">Puzzle: List the two highest-paid people in each department</a></td><td>One row per person, at most two per department.</td></tr><tr><td><a class="go" href="#sq4:3" data-go="sq4:3">Puzzle: Show each of customer 42’s orders with their running spend</a></td><td>For customer 42, list orders in date order with the cumulative total so far.</td></tr><tr><td><a class="go" href="#sq4:4" data-go="sq4:4">Puzzle: Find duplicate emails, then delete all but the lowest id</a></td><td>In contacts some emails appear more than once.</td></tr><tr><td><a class="go" href="#sq4:5" data-go="sq4:5">Puzzle: List the customers who have never placed an order</a></td><td>Return how many customers have no orders.</td></tr><tr><td><a class="go" href="#sq4:6" data-go="sq4:6">Puzzle: Show, for each country, how many orders are paid, refunded and cancelled as columns</a></td><td>One row per country with three count columns.</td></tr><tr><td><a class="go" href="#sq4:7" data-go="sq4:7">Puzzle: Show monthly paid revenue and the change from the previous month</a></td><td>One row per month, with revenue and the difference from the month before.</td></tr><tr><td><a class="go" href="#sq4:8" data-go="sq4:8">Puzzle: Find each user’s longest run of consecutive login days</a></td><td>For every user, return the length of their longest streak and the day it started.</td></tr><tr><td><a class="go" href="#sq4:9" data-go="sq4:9">Puzzle: Return the most recent order for every customer</a></td><td>One row per customer with their latest order.</td></tr><tr><td><a class="go" href="#sq4:10" data-go="sq4:10">Puzzle: List everyone who reports to Ada, directly or indirectly, with their depth</a></td><td>Walk the management chain from Ada (id 1) down, showing how many levels below Ada each person is.</td></tr><tr><td><a class="go" href="#sq4:11" data-go="sq4:11">Puzzle: Find bookings that overlap in the same room</a></td><td>Return pairs of bookings in the same room whose times overlap.</td></tr></table>`
+    },
+    {
+      q:"Cheat sheet: 5. Schema Design and Migrations",
+      a:`<table class="cmp"><tr><th>Question</th><th>One-line answer</th></tr><tr><td><a class="go" href="#sq5:0" data-go="sq5:0">How do you model one-to-many and many-to-many relationships?</a></td><td>One-to-many: the “many” side holds a foreign key to the “one” side.</td></tr><tr><td><a class="go" href="#sq5:1" data-go="sq5:1">UUID or integer keys? Natural or surrogate?</a></td><td>200,000 rows in each of two tables Captured With 200,000 rows, the random UUID index was about twice the size of the bigint one, and random inserts touch pages across the whole index, which hurts write speed and cache use as…</td></tr><tr><td><a class="go" href="#sq5:2" data-go="sq5:2">When is a JSONB column the right choice?</a></td><td>For data whose shape varies or is owned by someone else : webhook payloads, user-defined fields, a document you only store and display.</td></tr><tr><td><a class="go" href="#sq5:5" data-go="sq5:5">Rapid-fire: schema design</a></td><td></td></tr></table>`
+    },
+    {
+      q:"Cheat sheet: 6. Performance and Scaling",
+      a:`<table class="cmp"><tr><th>Question</th><th>One-line answer</th></tr><tr><td><a class="go" href="#sq6:0" data-go="sq6:0">A query that took 50 ms now takes 5 s. What do you do?</a></td><td>Reproduce it with the real parameters, and run EXPLAIN (ANALYZE, BUFFERS) .</td></tr><tr><td><a class="go" href="#sq6:2" data-go="sq6:2">Why do you need connection pooling, especially from serverless or many Node.js instances?</a></td><td>A PostgreSQL connection is a process that costs memory and a handshake to open.</td></tr></table>`
+    },
+    {
+      q:"Cheat sheet: 7. PostgreSQL from Node.js",
+      a:`<table class="cmp"><tr><th>Question</th><th>One-line answer</th></tr><tr><td><a class="go" href="#sq7:0" data-go="sq7:0">How does SQL injection happen, and what actually prevents it?</a></td><td>It happens when user input is concatenated into the SQL text , so the input is parsed as SQL.</td></tr><tr><td><a class="go" href="#sq7:1" data-go="sq7:1">How do you run a transaction from Node.js?</a></td><td>A transaction belongs to one connection , so you must check one out of the pool, run begin , every statement and commit on that same client, and release it.</td></tr><tr><td><a class="go" href="#sq7:2" data-go="sq7:2">How do you handle serialization failures and deadlocks in application code?</a></td><td>They are expected, not bugs. The database aborts one transaction to keep the data correct, with SQLSTATE 40001 (serialization failure) or 40P01 (deadlock).</td></tr><tr><td><a class="go" href="#sq7:3" data-go="sq7:3">How do you make a write idempotent?</a></td><td>A request can arrive twice: a client retries after a timeout, a queue redelivers.</td></tr><tr><td><a class="go" href="#sq7:4" data-go="sq7:4">ORM, query builder or raw SQL?</a></td><td>A common answer: use the ORM or builder for ordinary create, read, update and delete, and raw SQL for reports and the hard queries .</td></tr><tr><td><a class="go" href="#sq7:5" data-go="sq7:5">Rapid-fire: PostgreSQL from Node.js</a></td><td></td></tr></table>`
+    },
+    {
+      q:"Cheat sheet: 8. Beyond Relational",
+      a:`<table class="cmp"><tr><th>Question</th><th>One-line answer</th></tr><tr><td><a class="go" href="#sq8:0" data-go="sq8:0">When is a relational database the wrong default?</a></td><td>PostgreSQL covers more of these than people expect ( jsonb , full-text search, LISTEN , extensions), so the honest first question is whether you have outgrown it or just want something newer.</td></tr><tr><td><a class="go" href="#sq8:1" data-go="sq8:1">How does data modelling change in a document database?</a></td><td>In SQL you model the entities and join at read time.</td></tr><tr><td><a class="go" href="#sq8:2" data-go="sq8:2">What do CAP and PACELC actually say?</a></td><td>CAP: when the network partitions , a distributed store must choose between consistency (every read sees the latest write) and availability (every request gets an answer).</td></tr><tr><td><a class="go" href="#sq8:3" data-go="sq8:3">What is Redis for, beyond a cache?</a></td><td>Redis keeps data in memory, so it is fast and the data set must fit.</td></tr></table>`
+    }
+  ]
+},
+{
+  id:"sq1", title:"1. Relational Basics",
+  questions:[
+    {
+      q:"What do primary keys, foreign keys and constraints guarantee, and why let the database enforce them?",
+      a:`<p>A <strong>constraint</strong> is a rule the database checks on every write, from every application, script and person that connects. The application can check too, but only the database cannot be bypassed.</p><table class="cmp"><tr><th>Constraint</th><th>Guarantees</th><th>Violation in the lab</th></tr><tr><td><code>PRIMARY KEY</code></td><td>Each row is unique and not null; gives a stable identity</td><td></td></tr><tr><td><code>FOREIGN KEY</code></td><td>A reference points at a row that exists, and a referenced row cannot vanish</td><td><code>Key (department_id)=(99) is not present in table "departments".</code></td></tr><tr><td><code>UNIQUE</code></td><td>No two rows share the value</td><td><code>Key (email)=(user1@example.com) already exists.</code></td></tr><tr><td><code>CHECK</code></td><td>A rule about the row, such as <code>balance_cents &gt;= 0</code></td><td><code>Failing row contains (1, Ada, -5).</code></td></tr><tr><td><code>NOT NULL</code></td><td>A value must be present</td><td><code>null value in column "name" of relation "departments" violates not-null constraint</code></td></tr></table><p class="codelabel">Two real errors</p><pre class="plain">insert into employees (name, department_id, salary, hired_on) values ('Zed', 99, 1, '2020-01-01');
+ERROR: insert or update on table "employees" violates foreign key constraint "employees_department_id_fkey"
+DETAIL: Key (department_id)=(99) is not present in table "departments".
+
+delete from departments where id = 1;
+ERROR: update or delete on table "departments" violates foreign key constraint "employees_department_id_fkey" on table "employees"
+DETAIL: Key (id)=(1) is still referenced from table "employees".</pre><ul><li><strong>Why enforce in the database:</strong> two services, a migration script and a late-night fix by hand will all write to the same tables. Application-only checks drift apart.</li><li><strong>Cost:</strong> a check on every write, and a foreign key needs an index on the referencing column or deletes from the parent get slow.</li><li>Application validation still matters for friendly error messages. The constraint is the backstop.</li></ul><p class="verified">Every output in this guide was captured on 15 Nov 2026 from PostgreSQL 17.6 in Docker, on a seeded database with 200,000 orders. Plans are trimmed and the timings vary from run to run, so read the plan shape and the row counts, not the milliseconds. Other databases and versions differ, and where it matters the card says so.</p>`
+    },
+    {
+      q:"What is normalisation, and when do you denormalise on purpose?",
+      a:`<p><strong>Normalising</strong> means storing each fact once, so that changing it is one update and cannot leave two copies disagreeing.</p><table class="cmp"><tr><th>Form</th><th>Rule</th><th>A violation</th></tr><tr><td><strong>1NF</strong></td><td>One value per column, no repeating groups</td><td>A <code>phones</code> column holding <code>"555-1, 555-2"</code></td></tr><tr><td><strong>2NF</strong></td><td>Every column depends on the whole key</td><td>In <code>order_items(order_id, product_id, product_name)</code>, the name depends on <code>product_id</code> only</td></tr><tr><td><strong>3NF</strong></td><td>Columns depend on the key, not on each other</td><td><code>employees</code> holding both <code>department_id</code> and <code>department_name</code></td></tr></table><p><strong>Denormalise on purpose</strong> when you have measured a read that is too slow and a join cannot fix it:</p><ul><li>A stored <code>order_total</code> copied from the line items, so a list page does not sum them.</li><li>A counter such as <code>comment_count</code>, updated in the same transaction.</li><li>A read model or cache built for one screen.</li></ul><p><strong>Trap:</strong> Every copy is a promise to keep it in sync. Say who updates it, in which transaction, and what repairs it when it drifts.</p><p class="deeper"><strong>Go deeper:</strong> <a href="/system-design" target="_top">System Design: data modelling</a></p>`
+    },
+    {
+      q:"Diagram: Inner, left, right and full joins",
+      a:`<div class="diagram"><svg viewBox="0 0 900 300" width="900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="How inner, left, right and full joins treat unmatched rows">
+<rect x="14" y="10" width="262" height="124" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/>
+<text x="26" y="30"  font-family="var(--sans)" font-size="12" fill="var(--accent)" font-weight="700">employees</text><text x="130" y="30"  font-family="var(--mono)" font-size="9.5" fill="var(--muted)">department_id</text>
+<text x="26" y="52"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Ada</text><text x="130" y="52"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Eng</text><text x="26" y="72"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Grace</text><text x="130" y="72"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Eng</text><text x="26" y="92"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Sam</text><text x="130" y="92"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Sales</text><text x="26" y="112"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Nora</text><text x="130" y="112"  font-family="var(--mono)" font-size="10.5" fill="var(--gold)">NULL</text>
+<rect x="300" y="10" width="220" height="124" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/>
+<text x="312" y="30"  font-family="var(--sans)" font-size="12" fill="var(--accent)" font-weight="700">departments</text><text x="430" y="30"  font-family="var(--mono)" font-size="9.5" fill="var(--muted)">id</text>
+<text x="312" y="52"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Eng</text><text x="430" y="52"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">1</text><text x="312" y="72"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Sales</text><text x="430" y="72"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">2</text><text x="312" y="92"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Finance</text><text x="430" y="92"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">3</text>
+<text x="312" y="120"  font-family="var(--mono)" font-size="9.5" fill="var(--gold)">Finance has no employees</text>
+<text x="560" y="52"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">ON employees.department_id = departments.id</text>
+<text x="560" y="76"  font-family="var(--mono)" font-size="10.5" fill="var(--gold)">Nora has no department.</text>
+<text x="560" y="96"  font-family="var(--mono)" font-size="10.5" fill="var(--gold)">Finance has no employees.</text>
+<text x="560" y="116"  font-family="var(--mono)" font-size="10.5" fill="var(--muted)">Gold rows are the ones padded with NULL.</text>
+<rect x="14" y="150" width="204" height="140" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="26" y="172"  font-family="var(--sans)" font-size="12" fill="var(--accent)" font-weight="700">INNER</text><text x="26" y="194"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Ada</text><text x="114" y="194"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Eng</text><text x="26" y="213"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Grace</text><text x="114" y="213"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Eng</text><text x="26" y="232"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Sam</text><text x="114" y="232"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Sales</text>
+<rect x="236" y="150" width="204" height="140" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="248" y="172"  font-family="var(--sans)" font-size="12" fill="var(--accent)" font-weight="700">LEFT</text><text x="248" y="194"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Ada</text><text x="336" y="194"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Eng</text><text x="248" y="213"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Grace</text><text x="336" y="213"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Eng</text><text x="248" y="232"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Sam</text><text x="336" y="232"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Sales</text><text x="248" y="251"  font-family="var(--mono)" font-size="10.5" fill="var(--gold)">Nora</text><text x="336" y="251"  font-family="var(--mono)" font-size="10.5" fill="var(--gold)">NULL</text>
+<rect x="458" y="150" width="204" height="140" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="470" y="172"  font-family="var(--sans)" font-size="12" fill="var(--accent)" font-weight="700">RIGHT</text><text x="470" y="194"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Ada</text><text x="558" y="194"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Eng</text><text x="470" y="213"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Grace</text><text x="558" y="213"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Eng</text><text x="470" y="232"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Sam</text><text x="558" y="232"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Sales</text><text x="470" y="251"  font-family="var(--mono)" font-size="10.5" fill="var(--gold)">NULL</text><text x="558" y="251"  font-family="var(--mono)" font-size="10.5" fill="var(--gold)">Finance</text>
+<rect x="680" y="150" width="204" height="140" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="692" y="172"  font-family="var(--sans)" font-size="12" fill="var(--accent)" font-weight="700">FULL</text><text x="692" y="194"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Ada</text><text x="780" y="194"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Eng</text><text x="692" y="213"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Grace</text><text x="780" y="213"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Eng</text><text x="692" y="232"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Sam</text><text x="780" y="232"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Sales</text><text x="692" y="251"  font-family="var(--mono)" font-size="10.5" fill="var(--gold)">Nora</text><text x="780" y="251"  font-family="var(--mono)" font-size="10.5" fill="var(--gold)">NULL</text><text x="692" y="270"  font-family="var(--mono)" font-size="10.5" fill="var(--gold)">NULL</text><text x="780" y="270"  font-family="var(--mono)" font-size="10.5" fill="var(--gold)">Finance</text>
+</svg></div><p>The tables are the lab’s <code>employees</code> and <code>departments</code>. One employee (Nora) has no department and one department (Finance) has no employees. Each join answers a different question about those two unmatched rows.</p><p class="codelabel">INNER: only matched rows</p><pre>select e.name, d.name as department
+from employees e
+inner join departments d on d.id = e.department_id
+where e.id in (1, 6, 12) order by e.id;</pre><p class="codelabel">Result</p><pre class="plain">name | department
+-----+------------
+Ada  | Engineering
+Sam  | Sales
+(2 rows)</pre><p class="codelabel">LEFT: keep the left side</p><pre>-- LEFT: every employee, department or not
+... from employees e left join departments d on d.id = e.department_id ...</pre><p class="codelabel">Result</p><pre class="plain">name | department
+-----+------------
+Ada  | Engineering
+Sam  | Sales
+Nora | NULL
+(3 rows)</pre><p class="codelabel">RIGHT: keep the right side</p><pre>-- RIGHT: every department, employee or not
+... from employees e right join departments d on d.id = e.department_id ...</pre><p class="codelabel">Result</p><pre class="plain">name | department
+-----+------------
+Ada  | Engineering
+Sam  | Sales
+NULL | Finance
+(3 rows)</pre><ul><li><strong>FULL</strong> keeps both unmatched rows: Nora with a NULL department and Finance with a NULL employee, alongside the matched rows. In the lab it returned Ada, Sam, Finance and Nora for the same three employees plus the Finance department.</li><li>In practice <code>LEFT</code> covers most needs. Rewrite a <code>RIGHT</code> join as a <code>LEFT</code> by swapping the tables, and keep one direction through a query so it reads one way.</li><li>A filter on the right table in the <code>WHERE</code> of a <code>LEFT JOIN</code> turns it back into an inner join. Put it in the <code>ON</code> clause to keep the unmatched rows.</li></ul>`
+    },
+    {
+      q:"Why does a comparison with NULL not behave like true or false?",
+      a:`<p><code>NULL</code> means <strong>unknown</strong>, not “empty”. Comparing anything with an unknown gives unknown, which <code>WHERE</code> treats as not true. SQL therefore has <strong>three-valued logic</strong>: true, false and unknown.</p><p class="codelabel">NULL = NULL is not true</p><pre>select null = null as eq,
+       null is null as is_null,
+       null is distinct from null as distinct_from,
+       1 is distinct from null as one_vs_null;</pre><p class="codelabel">Result</p><pre class="plain">eq   | is_null | distinct_from | one_vs_null
+-----+---------+---------------+------------
+NULL | true    | false         | true
+(1 row)</pre><p class="codelabel">The row that disappears</p><pre>select name from employees where department_id &lt;&gt; 1;            -- 5 rows, Nora missing
+select name from employees where department_id is distinct from 1;  -- 6 rows, Nora included</pre><p class="codelabel">Result of the first query</p><pre class="plain">name
+----
+Sam
+Sue
+Sid
+Cora
+Cal
+(5 rows)</pre><ul><li>Nora’s <code>department_id</code> is NULL, so <code>department_id &lt;&gt; 1</code> is unknown and her row is dropped. <code>IS DISTINCT FROM</code> treats NULL as an ordinary value and returns her.</li><li><code>count(*)</code> counts rows; <code>count(column)</code> counts non-null values; <code>NOT IN (subquery containing NULL)</code> returns nothing (see the puzzles).</li><li>Aggregates such as <code>sum</code> and <code>avg</code> skip NULLs. <code>sum</code> of no rows is NULL, not 0: use <code>coalesce(sum(x), 0)</code>.</li></ul>`
+    },
+    {
+      q:"Diagram: The order a SELECT is evaluated in",
+      a:`<div class="diagram"><svg viewBox="0 0 900 190" width="900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The logical order in which a SELECT is evaluated"><defs><marker id="so" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--muted)"/></marker><marker id="soa" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--accent)"/></marker><marker id="sod" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--danger)"/></marker></defs>
+<text x="70" y="30" text-anchor="middle" font-family="var(--mono)" font-size="10.5" fill="var(--accent)">1</text><rect x="14" y="42" width="112" height="56" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="70" y="67" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">FROM + JOIN</text><text x="70" y="81" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">build the rows</text><path d="M127 70 L137 70" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#so)"/><text x="195" y="30" text-anchor="middle" font-family="var(--mono)" font-size="10.5" fill="var(--accent)">2</text><rect x="139" y="42" width="112" height="56" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="195" y="67" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">WHERE</text><text x="195" y="81" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">filter rows</text><path d="M252 70 L262 70" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#so)"/><text x="320" y="30" text-anchor="middle" font-family="var(--mono)" font-size="10.5" fill="var(--accent)">3</text><rect x="264" y="42" width="112" height="56" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="320" y="67" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">GROUP BY</text><text x="320" y="81" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">make groups</text><path d="M377 70 L387 70" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#so)"/><text x="445" y="30" text-anchor="middle" font-family="var(--mono)" font-size="10.5" fill="var(--accent)">4</text><rect x="389" y="42" width="112" height="56" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="445" y="67" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">HAVING</text><text x="445" y="81" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">filter groups</text><path d="M502 70 L512 70" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#so)"/><text x="570" y="30" text-anchor="middle" font-family="var(--mono)" font-size="10.5" fill="var(--accent)">5</text><rect x="514" y="42" width="112" height="56" rx="8" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="1.4"/><text x="570" y="67" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">SELECT</text><text x="570" y="81" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">windows, aliases</text><path d="M627 70 L637 70" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#so)"/><text x="695" y="30" text-anchor="middle" font-family="var(--mono)" font-size="10.5" fill="var(--accent)">6</text><rect x="639" y="42" width="112" height="56" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="695" y="67" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">ORDER BY</text><text x="695" y="81" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">sort</text><path d="M752 70 L762 70" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#so)"/><text x="820" y="30" text-anchor="middle" font-family="var(--mono)" font-size="10.5" fill="var(--accent)">7</text><rect x="764" y="42" width="112" height="56" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="820" y="67" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">LIMIT</text><text x="820" y="81" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">cut</text>
+<text x="450" y="140" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--text)">This is why WHERE cannot use an alias or an aggregate, and HAVING can.</text>
+<text x="450" y="162" text-anchor="middle" font-family="var(--mono)" font-size="10.5" fill="var(--muted)">It is also why a window function result cannot be filtered in the same SELECT.</text>
+</svg></div><p>You write <code>SELECT</code> first, but the database evaluates it near the end. That explains most “why can’t I use this here” errors.</p><ol><li><strong>FROM and JOIN</strong> build the set of rows.</li><li><strong>WHERE</strong> filters rows, before any grouping.</li><li><strong>GROUP BY</strong> collapses rows into groups.</li><li><strong>HAVING</strong> filters groups, after aggregation.</li><li><strong>SELECT</strong> computes the output columns, including window functions and aliases.</li><li><strong>ORDER BY</strong> sorts, and can use output aliases.</li><li><strong>LIMIT</strong> cuts the result.</li></ol><p class="codelabel">An alias in WHERE</p><pre>select department_id as dept, count(*)
+from employees where dept = 1 group by department_id;</pre><p class="codelabel">Result</p><pre class="plain">ERROR: column "dept" does not exist</pre><p>The alias is created in step 5, after <code>WHERE</code> ran in step 2. <code>ORDER BY dept</code> works because sorting is step 6. PostgreSQL also lets <code>GROUP BY</code> use an alias, which is a convenience the standard does not promise.</p>`
+    },
+    {
+      q:"WHERE or HAVING: which filter goes where?",
+      a:`<p><code>WHERE</code> filters <strong>rows before</strong> they are grouped. <code>HAVING</code> filters <strong>groups after</strong> they are aggregated. A condition on a plain column belongs in <code>WHERE</code>, because it discards rows early and lets an index help.</p><p class="codelabel">Two different questions</p><pre>-- WHERE: only well-paid rows are counted
+select department_id, count(*) as n from employees
+where salary &gt; 80000 group by department_id order by department_id;
+
+-- HAVING: departments that have more than 2 people, whatever they earn
+select department_id, count(*) as n from employees
+group by department_id having count(*) &gt; 2 order by department_id;</pre><p class="codelabel">Result of the first query</p><pre class="plain">department_id | n
+--------------+--
+            1 | 5
+            2 | 3
+(2 rows)</pre><p class="codelabel">Result of the second query</p><pre class="plain">department_id | n
+--------------+--
+            1 | 6
+            2 | 3
+(2 rows)</pre><ul><li>Department 1 has 5 people earning over 80,000 but 6 people in total: Fiona earns 60,000. Same grouping, different question.</li><li>Rule: if the condition mentions an aggregate such as <code>count</code> or <code>sum</code>, it goes in <code>HAVING</code>. Otherwise it goes in <code>WHERE</code>.</li></ul>`
+    },
+    {
+      q:"Quiz: Eleven of twelve employees have a department_id; one has NULL. What does count(department_id) return? <span class=\"quizopts\">(A) 12 &nbsp;·&nbsp; (B) 11 &nbsp;·&nbsp; (C) 1 &nbsp;·&nbsp; (D) NULL</span>",
+      a:`<ol class="quiz" type="A"><li>12</li><li class="right">11</li><li>1</li><li>NULL</li></ol><p><strong>Answer: B.</strong> count(column) skips NULLs, so it returns 11. count(*) counts rows and returns 12. The lab printed all_rows 12 and with_department 11.</p>`
+    }
+  ]
+},
+{
+  id:"sq2", title:"2. Indexing",
+  questions:[
+    {
+      q:"Diagram: How a B-tree index makes a lookup fast",
+      a:`<div class="diagram"><svg viewBox="0 0 900 330" width="900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A B-tree index lookup in three steps: root node, leaf node, then the pointer to the table row"><defs><marker id="wt" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--muted)"/></marker><marker id="wta" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--accent)"/></marker><marker id="wtd" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--danger)"/></marker></defs>
+<rect x="396" y="24" width="96" height="36" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="422" y="47" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--text)" font-weight="600">50</text><text x="466" y="47" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--text)" font-weight="600">100</text><circle cx="388" cy="24" r="11" fill="var(--accent)"/><text x="388" y="28" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="700" fill="var(--accent-ink)">1</text>
+<rect x="110" y="110" width="140" height="36" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="136" y="133" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--text)" font-weight="600">10</text><text x="180" y="133" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--text)" font-weight="600">20</text><text x="224" y="133" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--text)" font-weight="600">30</text><rect x="374" y="110" width="140" height="36" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="400" y="133" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--text)" font-weight="600">60</text><text x="444" y="133" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--text)" font-weight="600">70</text><text x="488" y="133" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--text)" font-weight="600">80</text><rect x="660" y="110" width="96" height="36" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="686" y="133" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--text)" font-weight="600">110</text><text x="730" y="133" text-anchor="middle" font-family="var(--mono)" font-size="11.5" fill="var(--text)" font-weight="600">120</text><circle cx="366" cy="110" r="11" fill="var(--accent)"/><text x="366" y="114" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="700" fill="var(--accent-ink)">2</text>
+<path d="M410 62 L190 106" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#wt)"/><path d="M444 62 L444 106" fill="none" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#wta)"/><path d="M478 62 L700 106" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#wt)"/>
+<text x="280" y="84"  font-family="var(--mono)" font-size="10" fill="var(--muted)">&lt; 50</text><text x="452" y="88"  font-family="var(--mono)" font-size="10" fill="var(--accent)">50 to 100</text><text x="610" y="84"  font-family="var(--mono)" font-size="10" fill="var(--muted)">&gt; 100</text>
+<rect x="330" y="206" width="230" height="44" rx="8" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="1.4"/><text x="445" y="233" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--text)">row: id=70, name, email, …</text><circle cx="322" cy="206" r="11" fill="var(--accent)"/><text x="322" y="210" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="700" fill="var(--accent-ink)">3</text>
+<path d="M444 148 L444 202" fill="none" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#wta)"/><text x="456" y="180"  font-family="var(--mono)" font-size="10" fill="var(--accent)">pointer to the row</text>
+<path d="M246 128 L370 128" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#wt)"/><path d="M518 128 L656 128" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#wt)"/><text x="308" y="120" text-anchor="middle" font-family="var(--mono)" font-size="9.5" fill="var(--muted)">next</text><text x="588" y="120" text-anchor="middle" font-family="var(--mono)" font-size="9.5" fill="var(--muted)">next</text>
+<text x="14" y="284"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">WHERE id = 70:  1  root says "between 50 and 100"   2  that leaf page holds 70   3  follow the pointer to the row.</text>
+<text x="14" y="306"  font-family="var(--mono)" font-size="10.5" fill="var(--muted)">A few page reads instead of scanning every row; depth grows with log n. Leaves are linked, so ranges and ORDER BY are cheap.</text>
+</svg></div><p>A B-tree keeps the keys <strong>sorted</strong> in a shallow, wide tree. Finding one key takes a few page reads (usually three or four, even for millions of rows) instead of reading the table.</p><p>The lab’s <code>orders</code> table has 200,000 rows, and customer 42 has 102 of them.</p><p class="codelabel">Before the index</p><pre>explain (analyze, buffers) select * from orders where customer_id = 42;</pre><p class="codelabel">Plan (trimmed)</p><pre class="plain">Seq Scan on orders  (cost=0.00..3992.00 rows=101 width=29) (actual rows=102 loops=1)
+  Filter: (customer_id = 42)
+  Rows Removed by Filter: 199898
+  Buffers: shared hit=1492
+Execution Time: 55.181 ms</pre><p class="codelabel">After the index</p><pre>create index orders_customer_id_idx on orders (customer_id);
+analyze orders;
+explain (analyze, buffers) select * from orders where customer_id = 42;</pre><p class="codelabel">Plan (trimmed)</p><pre class="plain">Bitmap Heap Scan on orders  (cost=5.09..325.86 rows=102 width=29) (actual rows=102 loops=1)
+  Recheck Cond: (customer_id = 42)
+  Heap Blocks: exact=102
+  -&gt;  Bitmap Index Scan on orders_customer_id_idx  (actual rows=102 loops=1)
+        Index Cond: (customer_id = 42)
+Execution Time: 1.365 ms</pre><ul><li>Before: it read every row and threw away 199,898. After: it read the index, then 102 table blocks. About 55 ms became about 1.4 ms here (timings vary).</li><li>PostgreSQL chose a <strong>bitmap</strong> scan, not a plain index scan. It collects the matching row locations from the index, sorts them by page, then reads each page once. It is the usual choice when a lookup returns a hundred rows rather than one.</li><li><strong>Cost:</strong> the index takes space (the primary key index on this table is 4408 kB) and every insert, update of the column and delete must maintain it.</li></ul>`
+    },
+    {
+      q:"Diagram: A composite index and the leftmost-prefix rule",
+      a:`<div class="diagram"><svg viewBox="0 0 900 300" width="900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A composite index is sorted by its first column, then the second">
+<text x="14" y="20"  font-family="var(--mono)" font-size="10.5" fill="var(--accent)">(customer_id, created_at)</text><text x="250" y="20" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--accent)" font-weight="700">A</text><text x="280" y="20" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--accent)" font-weight="700">B</text><text x="310" y="20" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--accent)" font-weight="700">C</text>
+<rect x="14" y="30" width="210" height="20" rx="4" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="26" y="44"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">(6, Mar 02)</text><circle cx="310" cy="40" r="5" fill="var(--danger)"/><rect x="14" y="52" width="210" height="20" rx="4" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="26" y="66"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">(6, Apr 11)</text><circle cx="310" cy="62" r="5" fill="var(--danger)"/><rect x="14" y="74" width="210" height="20" rx="4" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="26" y="88"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">(7, Jan 05)</text><circle cx="250" cy="84" r="5" fill="var(--accent)"/><rect x="14" y="96" width="210" height="20" rx="4" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="26" y="110"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">(7, Feb 14)</text><circle cx="250" cy="106" r="5" fill="var(--accent)"/><rect x="14" y="118" width="210" height="20" rx="4" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="26" y="132"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">(7, Mar 21)</text><circle cx="250" cy="128" r="5" fill="var(--accent)"/><circle cx="280" cy="128" r="5" fill="var(--accent)"/><circle cx="310" cy="128" r="5" fill="var(--danger)"/><rect x="14" y="140" width="210" height="20" rx="4" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="26" y="154"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">(7, May 30)</text><circle cx="250" cy="150" r="5" fill="var(--accent)"/><circle cx="280" cy="150" r="5" fill="var(--accent)"/><circle cx="310" cy="150" r="5" fill="var(--danger)"/><rect x="14" y="162" width="210" height="20" rx="4" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="26" y="176"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">(8, Jan 09)</text><rect x="14" y="184" width="210" height="20" rx="4" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="26" y="198"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">(8, Mar 03)</text><circle cx="310" cy="194" r="5" fill="var(--danger)"/><rect x="14" y="206" width="210" height="20" rx="4" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="26" y="220"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">(9, Feb 20)</text><rect x="14" y="228" width="210" height="20" rx="4" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="26" y="242"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">(9, Jun 01)</text><circle cx="310" cy="238" r="5" fill="var(--danger)"/><rect x="14" y="250" width="210" height="20" rx="4" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="26" y="264"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">(10, Jan 30)</text>
+<text x="14" y="292"  font-family="var(--mono)" font-size="10" fill="var(--muted)">sorted by customer_id, then by created_at</text>
+<text x="370" y="44"  font-family="var(--mono)" font-size="11" fill="var(--text)" font-weight="700">A   WHERE customer_id = 7</text>
+<text x="370" y="62"  font-family="var(--sans)" font-size="11" fill="var(--muted)">The matches sit together: one seek, then read along the index.</text>
+<text x="370" y="108"  font-family="var(--mono)" font-size="11" fill="var(--text)" font-weight="700">B   WHERE customer_id = 7 AND created_at &gt; Mar 01</text>
+<text x="370" y="126"  font-family="var(--sans)" font-size="11" fill="var(--muted)">Still contiguous: seek to the block, then to the date inside it.</text>
+<text x="370" y="172"  font-family="var(--mono)" font-size="11" fill="var(--text)" font-weight="700">C   WHERE created_at &gt; Mar 01</text>
+<text x="370" y="190"  font-family="var(--sans)" font-size="11" fill="var(--muted)">The matches are scattered through the whole index.</text>
+<text x="370" y="208"  font-family="var(--sans)" font-size="11" fill="var(--muted)">It cannot seek on a second column alone, so the planner</text>
+<text x="370" y="226"  font-family="var(--sans)" font-size="11" fill="var(--muted)">reads the index end to end or the table instead.</text>
+<text x="370" y="258"  font-family="var(--mono)" font-size="10.5" fill="var(--accent)">Put the equality column first, the range column second.</text>
+</svg></div><p>A composite index on <code>(customer_id, created_at)</code> is sorted by <code>customer_id</code> first, and by <code>created_at</code> only <strong>within</strong> each customer. It can seek on the first column, or on both, but not on the second alone.</p><p class="codelabel">Both columns: the index is used</p><pre>create index orders_cust_created_idx on orders (customer_id, created_at);
+explain (analyze) select * from orders
+where customer_id = 42 and created_at &gt; '2025-01-01';</pre><p class="codelabel">Plan (trimmed)</p><pre class="plain">Bitmap Heap Scan on orders  (cost=4.54..49.49 rows=12 width=29) (actual rows=12 loops=1)
+  -&gt;  Bitmap Index Scan on orders_cust_created_idx  (actual rows=12 loops=1)
+        Index Cond: ((customer_id = 42) AND (created_at &gt; '2025-01-01 00:00:00+00'::timestamp with time zone))
+Execution Time: 0.121 ms</pre><p class="codelabel">The second column alone</p><pre>explain (analyze) select * from orders where created_at &gt; '2025-02-10';</pre><p class="codelabel">Plan (trimmed)</p><pre class="plain">Seq Scan on orders  (cost=0.00..3992.00 rows=4986 width=29) (actual rows=5120 loops=1)
+  Filter: (created_at &gt; '2025-02-10 00:00:00+00'::timestamp with time zone)
+  Rows Removed by Filter: 194880
+Execution Time: 43.036 ms</pre><ul><li><strong>Order the columns</strong> by equality first, then range, then sort: <code>(customer_id, created_at)</code> serves “this customer’s recent orders” and also <code>ORDER BY created_at</code> for one customer.</li><li>A query on <code>created_at</code> alone needs its own index. Do not assume one composite index covers both.</li></ul>`
+    },
+    {
+      q:"What are covering and partial indexes?",
+      a:`<p>A <strong>covering index</strong> holds every column a query needs, so PostgreSQL answers from the index without touching the table (an <strong>index-only scan</strong>). A <strong>partial index</strong> indexes only the rows that match a condition, so it is small and cheap.</p><p class="codelabel">Covering with INCLUDE</p><pre>create index orders_cust_cover_idx on orders (customer_id) include (total_cents);
+vacuum analyze orders;
+explain (analyze, buffers) select customer_id, total_cents from orders where customer_id = 42;</pre><p class="codelabel">Plan (trimmed)</p><pre class="plain">Index Only Scan using orders_cust_cover_idx on orders  (actual rows=102 loops=1)
+  Index Cond: (customer_id = 42)
+  Heap Fetches: 0
+Execution Time: 0.136 ms</pre><p>Ask for a column the index does not hold (<code>status</code>) and it goes back to the table:</p><p class="codelabel">Plan (trimmed)</p><pre class="plain">Bitmap Heap Scan on orders  (cost=5.20..323.12 rows=101 width=9) (actual rows=102 loops=1)
+  Heap Blocks: exact=102
+  -&gt;  Bitmap Index Scan on orders_cust_cover_idx ...</pre><p class="codelabel">Partial index</p><pre>create index orders_refunded_idx on orders (created_at) where status = 'refunded';
+explain (analyze) select id from orders
+where status = 'refunded' and created_at &gt; '2025-02-01';</pre><p class="codelabel">Plan (trimmed)</p><pre class="plain">Index Scan using orders_refunded_idx on orders  (cost=0.28..12.41 rows=179 width=8) (actual rows=189 loops=1)
+  Index Cond: (created_at &gt; '2025-02-01 00:00:00+00'::timestamp with time zone)
+Execution Time: 0.224 ms</pre><ul><li>The partial index is <strong>104 kB</strong>, against 4408 kB for the primary key index: only 4,000 of the 200,000 rows are refunded.</li><li>The query must repeat the index’s condition (<code>status = 'refunded'</code>) or the planner cannot use it.</li><li>An index-only scan needs the <strong>visibility map</strong> to be current, which <code>VACUUM</code> maintains. On a table with heavy writes, <code>Heap Fetches</code> rises and the benefit shrinks.</li><li>Partial indexes also enforce rules such as “one active subscription per user”: <code>create unique index ... where status = 'active'</code>.</li></ul>`
+    },
+    {
+      q:"Why is my query not using the index?",
+      a:`<p>Look at the plan before guessing. These are the usual reasons, and the first three were run in the lab.</p><table class="cmp"><tr><th>Reason</th><th>Fix</th></tr><tr><td>A <strong>function on the column</strong>: <code>lower(email) = ...</code></td><td>Index the expression, or store the value normalised</td></tr><tr><td>A <strong>type mismatch</strong>: <code>customer_id = 42.0</code></td><td>Compare like with like: <code>customer_id = 42</code></td></tr><tr><td>A <strong>leading wildcard</strong>: <code>like '%42@example.com'</code></td><td>Use a trigram (GIN) index, or search differently</td></tr><tr><td><strong>Low selectivity</strong>: most rows match</td><td>The planner is right: a full scan is cheaper</td></tr><tr><td><strong>Stale statistics</strong></td><td><code>ANALYZE</code>, and check autovacuum</td></tr></table><p class="codelabel">A function on the column</p><pre>explain (analyze) select id from customers where lower(email) = 'user42@example.com';</pre><p class="codelabel">Plan (trimmed)</p><pre class="plain">Seq Scan on customers  (cost=0.00..47.00 rows=10 width=4) (actual rows=1 loops=1)
+  Filter: (lower(email) = 'user42@example.com'::text)
+  Rows Removed by Filter: 1999</pre><p class="codelabel">After indexing the expression</p><pre>create index customers_lower_email_idx on customers (lower(email));
+explain (analyze) select id from customers where lower(email) = 'user42@example.com';</pre><p class="codelabel">Plan (trimmed)</p><pre class="plain">Index Scan using customers_lower_email_idx on customers  (cost=0.28..8.29 rows=1 width=4) (actual rows=1 loops=1)
+  Index Cond: (lower(email) = 'user42@example.com'::text)</pre><p class="codelabel">A type mismatch</p><pre>-- with an index on orders(customer_id) in place:
+explain select * from orders where customer_id = 42.0;</pre><p class="codelabel">Plan</p><pre class="plain">Gather  (cost=1000.00..4356.71 rows=1000 width=29)
+  Workers Planned: 1
+  -&gt;  Parallel Seq Scan on orders  (cost=0.00..3256.71 rows=588 width=29)
+        Filter: ((customer_id)::numeric = 42.0)</pre><p>The literal <code>42.0</code> is a <code>numeric</code>, so PostgreSQL cast the <strong>column</strong> to numeric for every row, which an index on the integer column cannot serve. The same happens with <code>customer_id::text = '42'</code>.</p><p class="codelabel">A leading wildcard</p><pre>explain (analyze) select id from customers where email like '%42@example.com';</pre><p class="codelabel">Plan (trimmed)</p><pre class="plain">Seq Scan on customers  (cost=0.00..42.00 rows=20 width=4) (actual rows=20 loops=1)
+  Filter: (email ~~ '%42@example.com'::text)
+  Rows Removed by Filter: 1980</pre><ul><li>A B-tree is sorted from the left, so it cannot find “ends with” or “contains”. For prefix matches such as <code>like 'user42%'</code>, the index needs <code>text_pattern_ops</code> in a database with a non-C collation: without it the lab used a Seq Scan, with it a <code>Bitmap Index Scan</code> with <code>Index Cond: ((email ~&gt;=~ 'user42') AND (email ~&lt;~ 'user43'))</code>.</li><li><strong>Low selectivity:</strong> on the lab’s <code>status</code> column, <code>status = 'paid'</code> (93% of rows) used a Seq Scan even with an index, while <code>status = 'refunded'</code> (2%) used the index. The planner compares costs; it is not being stubborn.</li></ul>`
+    },
+    {
+      q:"Diagram: Reading EXPLAIN ANALYZE",
+      a:`<div class="diagram"><svg viewBox="0 0 900 300" width="900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Reading an EXPLAIN plan as a tree from the leaves up"><defs><marker id="pt" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--muted)"/></marker><marker id="pta" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--accent)"/></marker><marker id="ptd" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--danger)"/></marker></defs>
+<rect x="130" y="10" width="240" height="44" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="250" y="29" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Limit</text><text x="250" y="43" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">rows: est vs actual</text>
+<rect x="130" y="72" width="240" height="44" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="250" y="91" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Sort</text><text x="250" y="105" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">rows: est vs actual</text>
+<rect x="130" y="134" width="240" height="44" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="250" y="153" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Hash Join</text><text x="250" y="167" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">rows: est vs actual</text>
+<rect x="14" y="220" width="230" height="52" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="129" y="243" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Seq Scan on customers</text><text x="129" y="257" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">rows: est vs actual</text>
+<rect x="262" y="220" width="230" height="52" rx="8" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="1.4"/><text x="377" y="243" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Index Scan on orders</text><text x="377" y="257" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">rows: est vs actual</text>
+<path d="M250 72 L250 58" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#pt)"/><path d="M250 134 L250 120" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#pt)"/><path d="M129 220 L200 182" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#pt)"/><path d="M377 220 L300 182" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#pt)"/>
+<text x="14" y="292"  font-family="var(--mono)" font-size="10" fill="var(--muted)">read from the leaves up: each node hands its rows to its parent</text>
+<rect x="540" y="10" width="346" height="168" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/>
+<text x="556" y="32"  font-family="var(--sans)" font-size="11.5" fill="var(--accent)" font-weight="700">Scan types, slowest to fastest for a few rows</text>
+<text x="556" y="62"  font-family="var(--mono)" font-size="10.5" fill="var(--text)" font-weight="700">Seq Scan</text><text x="556" y="77"  font-family="var(--mono)" font-size="9.5" fill="var(--muted)">reads every row of the table</text><text x="556" y="90"  font-family="var(--mono)" font-size="10.5" fill="var(--text)" font-weight="700">Bitmap Heap Scan</text><text x="556" y="105"  font-family="var(--mono)" font-size="9.5" fill="var(--muted)">index finds pages, then reads them</text><text x="556" y="118"  font-family="var(--mono)" font-size="10.5" fill="var(--text)" font-weight="700">Index Scan</text><text x="556" y="133"  font-family="var(--mono)" font-size="9.5" fill="var(--muted)">follows the index to each row</text><text x="556" y="146"  font-family="var(--mono)" font-size="10.5" fill="var(--text)" font-weight="700">Index Only Scan</text><text x="556" y="161"  font-family="var(--mono)" font-size="9.5" fill="var(--muted)">answers from the index alone</text>
+<text x="540" y="206"  font-family="var(--sans)" font-size="11" fill="var(--text)">If estimated and actual rows differ by</text>
+<text x="540" y="224"  font-family="var(--sans)" font-size="11" fill="var(--text)">a large factor, the statistics are stale</text>
+<text x="540" y="242"  font-family="var(--sans)" font-size="11" fill="var(--text)">and the planner chose on bad information.</text>
+</svg></div><p><code>EXPLAIN</code> shows the plan the database *would* use. <code>EXPLAIN (ANALYZE, BUFFERS)</code> <strong>runs</strong> the query and adds what actually happened. Read it as a tree from the leaves up: each node passes its rows to its parent.</p><p class="codelabel">The index-only scan from earlier, annotated</p><pre class="plain">Index Only Scan using orders_cust_cover_idx on orders       &lt;- scan type
+  (cost=0.42..6.19 rows=101 width=8)                            &lt;- estimate: 101 rows
+  (actual time=0.083..0.104 rows=102 loops=1)                   &lt;- reality: 102 rows
+  Index Cond: (customer_id = 42)                                &lt;- what the index used
+  Heap Fetches: 0                                               &lt;- table pages visited
+  Buffers: shared hit=1 read=3                                  &lt;- 1 page from cache, 3 from disk</pre><ul><li><strong>Estimated versus actual rows</strong> is the first thing to compare. 101 against 102 is healthy. A thousand-fold gap means stale or missing statistics, and the planner chose on bad information.</li><li><strong>Scan type:</strong> <code>Seq Scan</code> reads everything, <code>Bitmap Heap Scan</code> and <code>Index Scan</code> follow an index, <code>Index Only Scan</code> never visits the table.</li><li><strong><code>Rows Removed by Filter</code></strong> is wasted work: a large number on a small result says “you need an index”.</li><li><strong><code>Buffers</code></strong> counts pages. It is steadier than time, so use it to compare two plans.</li><li><strong><code>ANALYZE</code> executes the statement.</strong> Wrap an <code>UPDATE</code> or <code>DELETE</code> in <code>BEGIN</code> and <code>ROLLBACK</code>.</li></ul><p class="verified">Costs and times in the captured plans changed from run to run. Compare plan shapes and row counts.</p>`
+    },
+    {
+      q:"Which index types exist beyond B-tree?",
+      a:`<table class="cmp"><tr><th>Type</th><th>Good for</th><th>Example</th></tr><tr><td><strong>B-tree</strong> (default)</td><td>Equality, ranges, sorting, prefix <code>LIKE</code></td><td><code>created_at &gt; ...</code>, <code>ORDER BY</code></td></tr><tr><td><strong>Hash</strong></td><td>Equality only; rarely better than a B-tree</td><td><code>session_token = ...</code></td></tr><tr><td><strong>GIN</strong></td><td>Values that contain many keys: arrays, <code>jsonb</code>, full-text, trigrams</td><td><code>tags @&gt; '{sql}'</code></td></tr><tr><td><strong>GiST</strong></td><td>Ranges, geometry, nearest-neighbour</td><td>Overlapping time ranges, locations</td></tr><tr><td><strong>BRIN</strong></td><td>Huge tables whose values follow the physical order, at tiny size</td><td>An append-only log by timestamp</td></tr></table><p>The default is right far more often than not. Reach for another type when the data is not a scalar you compare: a <code>jsonb</code> document, an array, text you search, or a range.</p>`
+    },
+    {
+      q:"What do indexes cost on writes, and how many is too many?",
+      a:`<p>Every index is another structure to update on each insert, on each update of an indexed column, and on delete. Reads get faster and writes get slower.</p><p class="codelabel">Measuring the write cost</p><pre>-- 100,000-row insert into orders, rolled back afterwards
+explain (analyze, timing off) insert into orders (customer_id, status, total_cents, created_at)
+select 1 + i % 1960, 'paid', 1000, now() from generate_series(1, 100000) i;</pre><p class="codelabel">Execution time, same statement</p><pre class="plain">with only the primary key and the foreign keys:   4172 ms
+after adding three more indexes:                    5556 ms</pre><ul><li>Three extra indexes made this insert about a third slower in this run (timings vary, but the direction is stable).</li><li><strong>How many is too many:</strong> when writes slow measurably or the indexes together rival the table in size. Find the unused ones with <code>pg_stat_user_indexes</code> (<code>idx_scan = 0</code>) and drop them.</li><li><strong>Prefer fewer, wider composite indexes</strong> designed around your real queries over one index per column.</li><li><strong>Foreign keys:</strong> index the referencing column when you delete from the parent or join on it.</li></ul><p class="deeper"><strong>Go deeper:</strong> <a href="/performance-optimization" target="_top">Performance Optimisation</a></p>`
+    },
+    {
+      q:"Rapid-fire: indexing",
+      a:`<table class="cmp"><tr><th>Question</th><th>Answer</th></tr><tr><td>What data structure is a default index?</td><td>A B-tree: sorted keys in a shallow, wide tree.</td></tr><tr><td>Does an index always get used?</td><td>No. The planner chooses the cheapest plan; a full scan wins when most rows match.</td></tr><tr><td>Composite index (a, b): which queries can seek?</td><td><code>a</code>, and <code>a</code> with <code>b</code>. Not <code>b</code> alone.</td></tr><tr><td>What is an index-only scan?</td><td>The query is answered from the index; the table is not visited.</td></tr><tr><td>What is a partial index?</td><td>An index on only the rows matching a condition, which makes it small.</td></tr><tr><td>Why can <code>lower(col) = x</code> not use an index on <code>col</code>?</td><td>The index holds <code>col</code>, not <code>lower(col)</code>. Index the expression.</td></tr><tr><td>Which node in a plan shows wasted work?</td><td><code>Rows Removed by Filter</code>.</td></tr><tr><td>What do indexes cost?</td><td>Disk space and slower writes.</td></tr></table>`
+    }
+  ]
+},
+{
+  id:"sq3", title:"3. Transactions and Isolation",
+  questions:[
+    {
+      q:"What does ACID mean in practice?",
+      a:`<table class="cmp"><tr><th>Letter</th><th>Promise</th><th>What it looks like</th></tr><tr><td><strong>Atomicity</strong></td><td>All of a transaction happens or none of it</td><td>A transfer debits and credits, or does neither</td></tr><tr><td><strong>Consistency</strong></td><td>Constraints hold before and after</td><td>A <code>CHECK (balance_cents &gt;= 0)</code> rejects an overdraft</td></tr><tr><td><strong>Isolation</strong></td><td>Concurrent transactions do not see each other’s half-done work</td><td>Governed by the isolation level</td></tr><tr><td><strong>Durability</strong></td><td>Once committed, it survives a crash</td><td>Written to the write-ahead log (WAL) before <code>COMMIT</code> returns</td></tr></table><ul><li>Atomicity and durability are what people mean by “it is safe once the commit returns”.</li><li>Isolation is the subtle one: it is a <strong>dial</strong>, not a switch, and the next cards show what each setting allows.</li><li>Consistency here means the database’s own rules. Your business rules count only if you express them as constraints or enforce them in the transaction.</li></ul>`
+    },
+    {
+      q:"Which anomalies can happen between concurrent transactions?",
+      a:`<p>Each row below was reproduced with two real connections on PostgreSQL 17.6.</p><table class="cmp"><tr><th>Anomaly</th><th>READ COMMITTED (default)</th><th>REPEATABLE READ</th><th>SERIALIZABLE</th></tr><tr><td><strong>Dirty read</strong> (see uncommitted data)</td><td>Never</td><td>Never</td><td>Never</td></tr><tr><td><strong>Non-repeatable read</strong> (a row changes between two reads)</td><td>Happens</td><td>Prevented</td><td>Prevented</td></tr><tr><td><strong>Phantom</strong> (new rows appear between two reads)</td><td>Happens</td><td>Prevented in PostgreSQL</td><td>Prevented</td></tr><tr><td><strong>Lost update</strong> (read, then write a stale value)</td><td>Happens if you read then write</td><td>Prevented by an error</td><td>Prevented by an error</td></tr><tr><td><strong>Write skew</strong> (two writes break a shared rule)</td><td>Happens</td><td>Happens</td><td>Prevented by an error</td></tr></table><ul><li>PostgreSQL <strong>never allows a dirty read</strong>. Asking for <code>READ UNCOMMITTED</code> gives you <code>READ COMMITTED</code>: in the lab, a transaction set a balance to 0 without committing, and a second transaction at <code>READ UNCOMMITTED</code> still read 100.</li><li>The SQL standard allows phantoms at <code>REPEATABLE READ</code>; PostgreSQL’s snapshots do not. Do not assume another database matches.</li><li>“Prevented by an error” means the database aborts one transaction with SQLSTATE <code>40001</code> and <strong>you must retry it</strong>.</li></ul><p class="codelabel">Non-repeatable read and phantom, READ COMMITTED</p><pre class="plain">A read balance         100
+B update to 70 (committed)
+A read balance again   70            &lt;- the row changed inside A's transaction
+
+A count queued jobs    3
+B insert a queued job (committed)
+A count again          4             &lt;- a new row appeared</pre><p class="codelabel">The same two tests at REPEATABLE READ</p><pre class="plain">A read balance 100, B updates to 70, A read again 100, after A commits: 70
+A count 3, B inserts a job, A count again 3</pre>`
+    },
+    {
+      q:"Diagram: A lost update, and two ways to prevent it",
+      a:`<div class="diagram"><svg viewBox="0 0 900 280" width="900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A lost update between two transactions, and the fix"><defs><marker id="lu" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--muted)"/></marker><marker id="lua" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--accent)"/></marker><marker id="lud" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--danger)"/></marker></defs>
+<text x="110" y="28"  font-family="var(--mono)" font-size="10" fill="var(--accent)">time</text><path d="M140 24 L880 24" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#lu)"/>
+<text x="14" y="86"  font-family="var(--sans)" font-size="12" fill="var(--text)" font-weight="700">Tx A</text><text x="14" y="146"  font-family="var(--sans)" font-size="12" fill="var(--text)" font-weight="700">Tx B</text>
+<rect x="70" y="60" width="160" height="44" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="150" y="79" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">read balance</text><text x="150" y="93" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">sees 100</text><rect x="250" y="60" width="160" height="44" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="330" y="79" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">write 70</text><text x="330" y="93" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">100 - 30</text>
+<rect x="70" y="120" width="160" height="44" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="150" y="139" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">read balance</text><text x="150" y="153" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">sees 100</text><rect x="430" y="120" width="160" height="44" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="510" y="139" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">write 50</text><text x="510" y="153" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">100 - 50</text>
+<rect x="650" y="60" width="236" height="104" rx="8" fill="var(--panel)" stroke="var(--danger)" stroke-width="1.4"/><text x="768" y="109" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">final balance 50</text><text x="768" y="123" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">A’s change is lost</text>
+<path d="M412 82 L646 100" fill="none" stroke="var(--danger)" stroke-width="1.5" marker-end="url(#lud)"/><path d="M592 142 L646 126" fill="none" stroke="var(--danger)" stroke-width="1.5" marker-end="url(#lud)"/>
+<rect x="14" y="190" width="872" height="78" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/>
+<text x="28" y="212"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Fix 1  do the arithmetic in the database, in one statement:</text><text x="28" y="230"  font-family="var(--mono)" font-size="10.5" fill="var(--accent)">UPDATE accounts SET balance_cents = balance_cents - 30 WHERE id = 1</text>
+<text x="28" y="250"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Fix 2  lock the row before reading it: SELECT ... FOR UPDATE, then write.</text></svg></div><p>The classic bug: the application reads a balance, computes a new value, and writes it back. Two requests interleave and one overwrites the other.</p><p class="codelabel">Captured with two connections, READ COMMITTED</p><pre class="plain">A begin, B begin
+A read balance         100
+B read balance         100
+A write 70             UPDATE 1
+A commit
+B write 50             UPDATE 1          &lt;- B never saw A's change
+B commit
+final balance          50                &lt;- should be 20: A's 30 is lost</pre><p><strong>Fix 1: let the database do the arithmetic.</strong> The second <code>UPDATE</code> waits for the first to commit, then re-reads the row and applies its change to the new value.</p><p class="codelabel">Same scenario with set balance_cents = balance_cents - 30 and - 50</p><pre class="plain">A update                UPDATE 1
+B update                -- WAITING       &lt;- blocked on A's row lock
+A commit
+B update                UPDATE 1         &lt;- applied to 70, not to 100
+B commit
+final balance           20</pre><p><strong>Fix 2: lock the row when you read it</strong> with <code>SELECT ... FOR UPDATE</code>, when the new value needs logic in the application.</p><p class="codelabel">Captured</p><pre class="plain">A read for update        100
+B read for update        -- WAITING
+A write 70, A commit
+B read for update        70               &lt;- B now sees A's committed value
+B write 20, B commit
+final balance            20</pre><ul><li>A third fix is a version column and <code>UPDATE ... WHERE id = 1 AND version = 7</code>: <strong>optimistic locking</strong>, which retries when it updates zero rows.</li></ul>`
+    },
+    {
+      q:"What do READ COMMITTED, REPEATABLE READ and SERIALIZABLE give you in PostgreSQL?",
+      a:`<table class="cmp"><tr><th>Level</th><th>Each statement sees</th><th>Use it for</th><th>Cost</th></tr><tr><td><strong>READ COMMITTED</strong> (default)</td><td>Everything committed when that <strong>statement</strong> started</td><td>Most web requests</td><td>You must lock or write atomically to avoid lost updates</td></tr><tr><td><strong>REPEATABLE READ</strong></td><td>One snapshot, taken at the first statement</td><td>Reports and multi-query reads that must agree</td><td>Conflicting writes abort with a serialization error</td></tr><tr><td><strong>SERIALIZABLE</strong></td><td>A snapshot, plus conflict detection</td><td>Rules that span rows</td><td>More aborts; every transaction needs a retry</td></tr></table><p class="codelabel">A write that conflicts with a committed change, REPEATABLE READ (captured)</p><pre class="plain">A begin repeatable read
+A read balance             100
+B update balance to 70     (committed)
+A update balance - 30      ERROR: could not serialize access due to concurrent update (SQLSTATE 40001)</pre><ul><li><strong>The rule:</strong> if you use <code>REPEATABLE READ</code> or <code>SERIALIZABLE</code>, wrap the transaction in a <strong>retry loop</strong> for SQLSTATE <code>40001</code> (and <code>40P01</code>, the deadlock). The cards on Node.js show one.</li><li>Most applications stay on <code>READ COMMITTED</code> and use <code>FOR UPDATE</code>, atomic <code>UPDATE</code> statements and unique constraints for the few places that need more.</li><li>Other databases name the same levels differently. MySQL’s InnoDB defaults to <code>REPEATABLE READ</code> and behaves differently in places.</li></ul>`
+    },
+    {
+      q:"Diagram: Write skew",
+      a:`<div class="diagram"><svg viewBox="0 0 900 280" width="900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Write skew: two transactions each valid alone break a rule together"><defs><marker id="ws" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--muted)"/></marker><marker id="wsa" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--accent)"/></marker><marker id="wsd" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--danger)"/></marker></defs>
+<text x="110" y="28"  font-family="var(--mono)" font-size="10" fill="var(--accent)">time</text><path d="M140 24 L880 24" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#ws)"/>
+<text x="14" y="86"  font-family="var(--sans)" font-size="12" fill="var(--text)" font-weight="700">Tx A</text><text x="14" y="146"  font-family="var(--sans)" font-size="12" fill="var(--text)" font-weight="700">Tx B</text>
+<rect x="70" y="60" width="160" height="44" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="150" y="79" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">count on call</text><text x="150" y="93" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">sees 2</text><rect x="250" y="60" width="160" height="44" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="330" y="79" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Alice off call</text><text x="330" y="93" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">rule looks safe</text><rect x="430" y="60" width="160" height="44" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="510" y="86" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">COMMIT</text>
+<rect x="70" y="120" width="160" height="44" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="150" y="139" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">count on call</text><text x="150" y="153" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">sees 2</text><rect x="250" y="120" width="160" height="44" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="330" y="139" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Bob off call</text><text x="330" y="153" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">rule looks safe</text><rect x="430" y="120" width="160" height="44" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="510" y="146" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">COMMIT</text>
+<rect x="650" y="60" width="236" height="104" rx="8" fill="var(--panel)" stroke="var(--danger)" stroke-width="1.4"/><text x="768" y="109" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">nobody on call</text><text x="768" y="123" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">the rule is broken</text>
+<path d="M592 82 L646 100" fill="none" stroke="var(--danger)" stroke-width="1.5" marker-end="url(#wsd)"/><path d="M592 142 L646 126" fill="none" stroke="var(--danger)" stroke-width="1.5" marker-end="url(#wsd)"/>
+<rect x="14" y="190" width="872" height="78" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/>
+<text x="28" y="212"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Each transaction was correct on its own snapshot and wrote a different row, so there was no conflict.</text>
+<text x="28" y="232"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Allowed under snapshot isolation (REPEATABLE READ in PostgreSQL).</text>
+<text x="28" y="252"  font-family="var(--mono)" font-size="10.5" fill="var(--accent)">SERIALIZABLE detects the pattern and aborts one: retry it.</text></svg></div><p>The rule is “at least one doctor stays on call”. Each transaction checks the count (2), sees that it is safe to take one doctor off, and updates a <strong>different row</strong>. Neither write conflicts with the other, yet together they break the rule.</p><p class="codelabel">REPEATABLE READ, captured</p><pre class="plain">A begin, B begin (both repeatable read)
+A count on call   2
+B count on call   2
+A set Alice off   UPDATE 1
+B set Bob off     UPDATE 1
+A commit          COMMIT
+B commit          COMMIT              &lt;- both succeed
+on call now       0                   &lt;- the rule is broken</pre><p class="codelabel">SERIALIZABLE, same steps, captured</p><pre class="plain">A commit          COMMIT
+B commit          ERROR: could not serialize access due to read/write dependencies among transactions (SQLSTATE 40001)
+                  DETAIL: Reason code: Canceled on identification as a pivot, during commit attempt.
+on call now       1</pre><ul><li><code>SERIALIZABLE</code> detects that each transaction read what the other wrote, and aborts one. Retrying it then sees the changed count and refuses.</li><li>Alternatives that stay on a lower level: lock the rows that form the rule (<code>SELECT ... FOR UPDATE</code> on all on-call rows), or move the rule into a constraint or a single row (a counter row, an exclusion constraint).</li></ul>`
+    },
+    {
+      q:"Diagram: How MVCC lets readers and writers not block each other",
+      a:`<div class="diagram"><svg viewBox="0 0 900 260" width="900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="MVCC: writers create new row versions and readers see a snapshot"><defs><marker id="mv" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--muted)"/></marker><marker id="mva" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--accent)"/></marker><marker id="mvd" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--danger)"/></marker></defs>
+<text x="14" y="22"  font-family="var(--mono)" font-size="10.5" fill="var(--accent)">one logical row, three physical versions</text>
+<rect x="14" y="34" width="230" height="48" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="129" y="55" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">v1  balance 100</text><text x="129" y="69" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">xmin 100, xmax 120</text><rect x="14" y="96" width="230" height="48" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="129" y="117" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">v2  balance 70</text><text x="129" y="131" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">xmin 120, xmax 150</text><rect x="14" y="158" width="230" height="48" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="129" y="179" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">v3  balance 50</text><text x="129" y="193" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">xmin 150, xmax none</text>
+<rect x="340" y="34" width="220" height="48" rx="8" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="1.4"/><text x="450" y="55" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Snapshot at 110</text><text x="450" y="69" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">sees v1</text><path d="M338 58 L248 58" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#mv)"/><rect x="340" y="96" width="220" height="48" rx="8" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="1.4"/><text x="450" y="117" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Snapshot at 130</text><text x="450" y="131" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">sees v2</text><path d="M338 120 L248 120" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#mv)"/><rect x="340" y="158" width="220" height="48" rx="8" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="1.4"/><text x="450" y="179" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">New transaction</text><text x="450" y="193" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">sees v3</text><path d="M338 182 L248 182" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#mv)"/>
+<rect x="620" y="34" width="266" height="172" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/>
+<text x="634" y="56"  font-family="var(--sans)" font-size="12" fill="var(--accent)" font-weight="700">What this means</text>
+<text x="634" y="80"  font-family="var(--sans)" font-size="11" fill="var(--text)">An UPDATE writes a new version.</text><text x="634" y="100"  font-family="var(--sans)" font-size="11" fill="var(--text)">Readers keep their snapshot,</text><text x="634" y="120"  font-family="var(--sans)" font-size="11" fill="var(--text)">so they never wait for writers.</text><text x="634" y="140"  font-family="var(--sans)" font-size="11" fill="var(--text)">Writers do not wait for readers.</text><text x="634" y="160"  font-family="var(--sans)" font-size="11" fill="var(--text)">VACUUM removes v1 once no</text><text x="634" y="180"  font-family="var(--sans)" font-size="11" fill="var(--text)">snapshot can still see it.</text>
+<text x="14" y="240"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Two writers on the same row still queue: the second waits for the first to finish.</text>
+</svg></div><p>PostgreSQL uses <strong>multi-version concurrency control</strong>. An <code>UPDATE</code> does not change a row in place: it writes a <strong>new version</strong> and marks the old one as ended. Each transaction reads the versions visible to its snapshot.</p><ul><li><strong>Readers never block writers, and writers never block readers.</strong> A long report does not stop updates.</li><li><strong>Writers on the same row still queue.</strong> The second <code>UPDATE</code> waits for the first to commit or roll back (you saw this as <code>-- WAITING</code>).</li><li><strong>Old versions pile up</strong> as dead rows until <code>VACUUM</code> removes the ones no snapshot can see. A transaction left open for hours keeps old versions alive and the table bloats.</li><li>This is also why <code>count(*)</code> on a big table is slow: it must check which versions are visible.</li></ul><p class="deeper"><strong>Go deeper:</strong> <a href="/system-design" target="_top">System Design: databases</a></p>`
+    },
+    {
+      q:"Diagram: Row locks, SKIP LOCKED and a deadlock",
+      a:`<div class="diagram"><svg viewBox="0 0 900 230" width="900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A deadlock cycle between two transactions"><defs><marker id="dl" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--muted)"/></marker><marker id="dla" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--accent)"/></marker><marker id="dld" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--danger)"/></marker></defs>
+<rect x="30" y="80" width="150" height="60" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="105" y="114" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Transaction A</text><rect x="370" y="14" width="160" height="50" rx="8" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="1.4"/><text x="450" y="43" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Row 1</text><rect x="370" y="150" width="160" height="50" rx="8" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="1.4"/><text x="450" y="179" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Row 2</text><rect x="720" y="80" width="150" height="60" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="795" y="114" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Transaction B</text>
+<path d="M180 96 L366 54" fill="none" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#dl)"/><text x="250" y="60"  font-family="var(--mono)" font-size="10" fill="var(--accent)">A holds row 1</text>
+<path d="M180 126 L366 162" fill="none" stroke="var(--danger)" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#dl)"/><text x="190" y="170"  font-family="var(--mono)" font-size="10" fill="var(--danger)">A waits for row 2</text>
+<path d="M720 126 L534 162" fill="none" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#dl)"/><text x="580" y="188"  font-family="var(--mono)" font-size="10" fill="var(--accent)">B holds row 2</text>
+<path d="M720 96 L534 54" fill="none" stroke="var(--danger)" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#dl)"/><text x="578" y="60"  font-family="var(--mono)" font-size="10" fill="var(--danger)">B waits for row 1</text>
+<text x="450" y="224" text-anchor="middle" font-family="var(--mono)" font-size="10.5" fill="var(--text)">PostgreSQL detects the cycle and aborts one. Lock rows in a consistent order.</text>
+</svg></div><p><code>SELECT ... FOR UPDATE</code> locks the rows it returns, so other writers (and other <code>FOR UPDATE</code> readers) wait until you finish. <strong><code>SKIP LOCKED</code></strong> skips rows that are already locked, which is the standard way to build a job queue in a table.</p><p class="codelabel">Take the next free job</p><pre>select id from jobs where status = 'queued' order by id limit 1 for update skip locked;</pre><p class="codelabel">Two workers, captured</p><pre class="plain">A take a job   id 1
+B take a job   id 2          &lt;- B skipped the row A holds instead of waiting</pre><p>A <strong>deadlock</strong> happens when two transactions each hold a lock the other needs.</p><p class="codelabel">Captured</p><pre class="plain">A update row 1     UPDATE 1
+B update row 2     UPDATE 1
+A update row 2     -- WAITING
+B update row 1     -- WAITING
+A update row 2     ERROR: deadlock detected (SQLSTATE 40P01)
+                   DETAIL: Process 113 waits for ShareLock on transaction 880; blocked by process 114.
+                           Process 114 waits for ShareLock on transaction 879; blocked by process 113.
+B update row 1     UPDATE 1                &lt;- the survivor continues</pre><ul><li>PostgreSQL waits <code>deadlock_timeout</code> (1 second by default), finds the cycle and aborts one transaction. Which one is not something to rely on: in this run it was A.</li><li><strong>Prevent them</strong> by always locking rows in the same order (for example by id), keeping transactions short, and retrying on <code>40P01</code>.</li></ul>`
+    },
+    {
+      q:"Quiz: Which isolation level prevents write skew in PostgreSQL? <span class=\"quizopts\">(A) READ COMMITTED &nbsp;·&nbsp; (B) REPEATABLE READ &nbsp;·&nbsp; (C) SERIALIZABLE &nbsp;·&nbsp; (D) None: it needs application locks</span>",
+      a:`<ol class="quiz" type="A"><li>READ COMMITTED</li><li>REPEATABLE READ</li><li class="right">SERIALIZABLE</li><li>None: it needs application locks</li></ol><p><strong>Answer: C.</strong> Only SERIALIZABLE. At REPEATABLE READ the lab let both transactions commit and left nobody on call. At SERIALIZABLE the second commit failed with SQLSTATE 40001 and had to be retried. Locking the rows is another valid fix, but the level itself that prevents it is SERIALIZABLE.</p>`
+    }
+  ]
+},
+{
+  id:"sq4", title:"4. Query Puzzles",
+  questions:[
+    {
+      q:"How do you approach a SQL question in an interview?",
+      a:`<ol><li><strong>Restate it</strong> and ask about the edge cases: ties, NULLs, empty groups, duplicates.</li><li><strong>Name the grain</strong> of the result: one row per what? Per customer, per month, per department?</li><li><strong>Write the simplest correct query</strong> first, on a small example you can check by eye. Say the plan aloud: “join, group, then filter”.</li><li><strong>Check the traps:</strong> <code>NULL</code> in a <code>NOT IN</code>, a <code>LEFT JOIN</code> filtered in <code>WHERE</code>, <code>COUNT(*)</code> against <code>COUNT(col)</code>, integer division, time zones.</li><li><strong>Then talk about performance:</strong> which index would serve it, what the plan would do on a hundred million rows.</li></ol><p>Interviewers mostly watch for the first two steps. A correct query reached by clear steps beats a clever one-liner you cannot explain.</p><p><strong>Trap:</strong> Do not start typing at once. A candidate who asks “what if two people tie?” has already passed half the question.</p><p class="deeper"><strong>Go deeper:</strong> <a href="/coding-questions" target="_top">Coding Questions</a></p>`
+    },
+    {
+      q:"Puzzle: Find the second-highest salary",
+      a:`<p>Return the second-highest <strong>distinct</strong> salary. Two people tie for the top salary.</p><p class="codelabel">Tables</p><pre class="plain">employees(id, name, department_id, manager_id, salary, hired_on)  -- 12 rows
+Ada 150000, Grace 150000, Alan 120000, Linus 110000, Margaret 95000, Sam 90000,
+Sue 85000, Sid 85000, Nora 72000, Cora 70000, Cal 65000, Fiona 60000</pre><details class="reveal"><summary>Show a solution</summary><p class="codelabel">SQL</p><pre>select name, salary from (
+  select name, salary, dense_rank() over (order by salary desc) as r
+  from employees) x
+where r = 2;</pre><p class="codelabel">Result</p><pre class="plain">name | salary
+-----+-------
+Alan | 120000
+(1 row)</pre><p><code>dense_rank</code> gives tied rows the same rank and does not skip numbers, so rank 2 is the second distinct salary. <code>rank</code> would skip to 3 after a tie.</p><p>The subquery form also works: <code>select max(salary) from employees where salary &lt; (select max(salary) from employees)</code> returned <code>120000</code>.</p><p>The trap is <code>order by salary desc limit 1 offset 1</code>: with the tie at the top it returned <strong>Ada, 150000</strong>, the top salary again.</p></details>`
+    },
+    {
+      q:"Puzzle: List the two highest-paid people in each department",
+      a:`<p>One row per person, at most two per department. People with no department should be treated as their own group. If two people tie, any consistent choice is fine.</p><p class="codelabel">Tables</p><pre class="plain">employees(id, name, department_id, manager_id, salary, hired_on)  -- 12 rows
+Ada 150000, Grace 150000, Alan 120000, Linus 110000, Margaret 95000, Sam 90000,
+Sue 85000, Sid 85000, Nora 72000, Cora 70000, Cal 65000, Fiona 60000
+Nora has no department.</pre><details class="reveal"><summary>Show a solution</summary><p class="codelabel">SQL</p><pre>select department_id, name, salary, rn from (
+  select department_id, name, salary,
+         row_number() over (partition by department_id order by salary desc, id) as rn
+  from employees) x
+where rn &lt;= 2
+order by department_id nulls last, rn;</pre><p class="codelabel">Result</p><pre class="plain">department_id | name  | salary | rn
+--------------+-------+--------+---
+            1 | Ada   | 150000 |  1
+            1 | Grace | 150000 |  2
+            2 | Sam   |  90000 |  1
+            2 | Sue   |  85000 |  2
+            3 | Cora  |  70000 |  1
+            3 | Cal   |  65000 |  2
+         NULL | Nora  |  72000 |  1
+(7 rows)</pre><p><code>partition by</code> restarts the numbering for each department, and <code>NULL</code> values form a single partition, so Nora gets her own group.</p><p><code>row_number</code> always returns exactly two rows per department. With <code>rank</code> or <code>dense_rank</code> a tie at second place would return three. Choose by what the question means.</p><p>Without a tie-break in <code>order by</code> (here <code>id</code>), the choice between Ada and Grace is arbitrary and can change between runs.</p></details>`
+    },
+    {
+      q:"Puzzle: Show each of customer 42’s orders with their running spend",
+      a:`<p>For customer 42, list orders in date order with the cumulative total so far. Show the first five.</p><p class="codelabel">Tables</p><pre class="plain">orders(id, customer_id, status, total_cents, created_at)  -- 200,000 rows</pre><details class="reveal"><summary>Show a solution</summary><p class="codelabel">SQL</p><pre>select id, created_at::date as day, total_cents,
+       sum(total_cents) over (partition by customer_id order by created_at, id) as running_cents
+from orders
+where customer_id = 42
+order by created_at, id
+limit 5;</pre><p class="codelabel">Result</p><pre class="plain">  id | day        | total_cents | running_cents
+-----+------------+-------------+--------------
+ 199 | 2024-01-01 |        8363 |          8363
+2159 | 2024-01-05 |        8883 |         17246
+4119 | 2024-01-09 |        9403 |         26649
+6079 | 2024-01-13 |        9923 |         36572
+8039 | 2024-01-17 |        1443 |         38015
+(5 rows)</pre><p>A window <code>sum</code> with an <code>order by</code> accumulates from the first row to the current one. The default frame treats rows with equal <code>created_at</code> as peers, so add <code>id</code> to break ties and get a strict running total.</p><p>Without <code>partition by customer_id</code> the total would run across all customers. The <code>where</code> runs first, so for one customer the partition is a convenience, but it is the form that works for all customers at once.</p></details>`
+    },
+    {
+      q:"Puzzle: Find duplicate emails, then delete all but the lowest id",
+      a:`<p>In <code>contacts</code> some emails appear more than once. List them with how many copies there are, then delete every copy except the one with the lowest <code>id</code>.</p><p class="codelabel">Tables</p><pre class="plain">contacts(id, email)  -- 6 rows
+1 ada@example.com   2 grace@example.com   3 ada@example.com
+4 alan@example.com  5 grace@example.com   6 ada@example.com</pre><details class="reveal"><summary>Show a solution</summary><p class="codelabel">SQL</p><pre>select email, count(*) as copies, min(id) as keep_id
+from contacts group by email having count(*) &gt; 1 order by email;
+
+delete from contacts c
+using contacts d
+where c.email = d.email and c.id &gt; d.id;</pre><p class="codelabel">Result</p><pre class="plain">email             | copies | keep_id
+------------------+--------+--------
+ada@example.com   |      3 |       1
+grace@example.com |      2 |       2
+(2 rows)
+
+DELETE 3
+
+id | email
+---+------------------
+ 1 | ada@example.com
+ 2 | grace@example.com
+ 4 | alan@example.com
+(3 rows)</pre><p><code>group by ... having count(*) &gt; 1</code> finds the duplicates. The delete joins the table to itself and removes every row that has a <strong>smaller-id twin</strong>.</p><p>Run the delete inside a transaction first and check the row count (here <code>DELETE 3</code>) before committing.</p><p>Then prevent it: <code>create unique index on contacts (lower(email))</code>. A cleanup query fixes today; the constraint fixes tomorrow.</p></details>`
+    },
+    {
+      q:"Puzzle: List the customers who have never placed an order",
+      a:`<p>Return how many customers have no orders. Then explain why <code>NOT IN</code> can be dangerous here.</p><p class="codelabel">Tables</p><pre class="plain">customers(id, email, country, created_at)         -- 2,000 rows
+orders(id, customer_id, status, total_cents, ...)  -- 200,000 rows; customer_id is NOT NULL</pre><details class="reveal"><summary>Show a solution</summary><p class="codelabel">SQL</p><pre>select count(*) as no_orders
+from customers c
+where not exists (select 1 from orders o where o.customer_id = c.id);</pre><p class="codelabel">Result</p><pre class="plain">no_orders
+---------
+       40
+(1 row)</pre><p><code>left join orders o on o.customer_id = c.id where o.id is null</code> also returned 40, and so did <code>where id not in (select customer_id from orders)</code>.</p><p><strong>The <code>NOT IN</code> trap.</strong> <code>NOT IN</code> returns nothing at all if the subquery contains a single <code>NULL</code>, because <code>x &lt;&gt; NULL</code> is unknown. It worked above only because <code>orders.customer_id</code> is <code>NOT NULL</code>. The same pattern on a column that has a NULL, “employees who are nobody’s manager”, returned <strong>0 rows</strong>: <code>select name from employees where id not in (select manager_id from employees)</code> (Ada’s <code>manager_id</code> is NULL). The <code>not exists</code> version returned the seven people who manage nobody: Linus, Margaret, Sue, Sid, Cal, Fiona and Nora.</p><p>Default to <code>NOT EXISTS</code>. It is correct with NULLs and the planner turns it into an anti-join.</p></details>`
+    },
+    {
+      q:"Puzzle: Show, for each country, how many orders are paid, refunded and cancelled as columns",
+      a:`<p>One row per country with three count columns. (The lab’s data is synthetic, so the counts follow a pattern.)</p><p class="codelabel">Tables</p><pre class="plain">orders(id, customer_id, status, ...)   customers(id, country, ...)</pre><details class="reveal"><summary>Show a solution</summary><p class="codelabel">SQL</p><pre>select c.country,
+       count(*) filter (where o.status = 'paid')      as paid,
+       count(*) filter (where o.status = 'refunded')  as refunded,
+       count(*) filter (where o.status = 'cancelled') as cancelled
+from orders o
+join customers c on c.id = o.customer_id
+group by c.country
+order by c.country;</pre><p class="codelabel">Result</p><pre class="plain">country |  paid | refunded | cancelled
+--------+-------+----------+----------
+DE      | 40000 |        0 |         0
+FR      | 40000 |        0 |         0
+GB      | 30000 |        0 |     10000
+IN      | 40000 |        0 |         0
+US      | 36000 |     4000 |         0
+(5 rows)</pre><p>This is <strong>conditional aggregation</strong>: <code>count(*) filter (where ...)</code> counts only the matching rows in each group. <code>sum(case when status = 'paid' then 1 else 0 end)</code> does the same in any database.</p><p>It turns rows into columns in one pass over the data. The columns are fixed in the query: for a variable set of statuses, return rows and pivot in the application.</p></details>`
+    },
+    {
+      q:"Puzzle: Show monthly paid revenue and the change from the previous month",
+      a:`<p>One row per month, with revenue and the difference from the month before. Show the first six months.</p><p class="codelabel">Tables</p><pre class="plain">orders(id, customer_id, status, total_cents, created_at)  -- January 2024 to February 2025</pre><details class="reveal"><summary>Show a solution</summary><p class="codelabel">SQL</p><pre>with monthly as (
+  select date_trunc('month', created_at) as m, sum(total_cents) as revenue
+  from orders where status = 'paid' group by 1
+)
+select m::date as month, revenue,
+       revenue - lag(revenue) over (order by m) as change
+from monthly
+order by m
+limit 6;</pre><p class="codelabel">Result</p><pre class="plain">month      |  revenue |   change
+-----------+----------+---------
+2024-01-01 | 75952502 |     NULL
+2024-02-01 | 71099218 | -4853284
+2024-03-01 | 76107302 |  5008084
+2024-04-01 | 73712160 | -2395142
+2024-05-01 | 76239462 |  2527302
+2024-06-01 | 73568160 | -2671302
+(6 rows)</pre><p><code>lag(x) over (order by m)</code> reads the value from the previous row in that order. The first month has no previous row, so <code>change</code> is <code>NULL</code>: say so rather than hiding it, or pass a default as the third argument.</p><p>The <code>with</code> clause aggregates first, then the window runs over the monthly rows. A window function cannot see inside a <code>group by</code> in the same step.</p><p>For a percentage change, divide by <code>lag(revenue)</code> and guard against zero with <code>nullif(lag(revenue) over (order by m), 0)</code>.</p></details>`
+    },
+    {
+      q:"Puzzle: Find each user’s longest run of consecutive login days",
+      a:`<p>For every user, return the length of their longest streak and the day it started.</p><p class="codelabel">Tables</p><pre class="plain">logins(user_id, day)  -- 18 rows, March 2024
+user 1: 1, 2, 3, 5, 6, 8     user 2: 1, 2, 3, 4, 5, 10     user 3: 2, 4, 5, 6, 7, 9</pre><details class="reveal"><summary>Show a solution</summary><p class="codelabel">SQL</p><pre>with numbered as (
+  select user_id, day,
+         day - (row_number() over (partition by user_id order by day))::int as grp
+  from logins
+),
+streaks as (
+  select user_id, count(*) as days, min(day) as first_day
+  from numbered group by user_id, grp
+)
+select distinct on (user_id) user_id, days, first_day
+from streaks
+order by user_id, days desc, first_day;</pre><p class="codelabel">Result</p><pre class="plain">user_id | days | first_day
+--------+------+-----------
+      1 |    3 | 2024-03-01
+      2 |    5 | 2024-03-01
+      3 |    4 | 2024-03-04
+(3 rows)</pre><p>This is the <strong>gaps and islands</strong> pattern. Subtract each row’s position in the sequence from its date. Consecutive days produce the <strong>same</strong> result, so that result labels the streak. For user 3 the labels were <code>2024-03-01</code> for the 2nd, <code>2024-03-02</code> for the 4th to 7th, and <code>2024-03-03</code> for the 9th.</p><p>Group by user and label to count each streak, then keep the longest per user with <code>distinct on</code>.</p><p>If a user could log in twice on one day, deduplicate first (<code>select distinct user_id, day</code>), or the counts break.</p></details>`
+    },
+    {
+      q:"Puzzle: Return the most recent order for every customer",
+      a:`<p>One row per customer with their latest order. Show customers 1 to 3.</p><p class="codelabel">Tables</p><pre class="plain">orders(id, customer_id, status, total_cents, created_at)</pre><details class="reveal"><summary>Show a solution</summary><p class="codelabel">SQL</p><pre>select distinct on (customer_id) customer_id, id, created_at
+from orders
+where customer_id &lt;= 3
+order by customer_id, created_at desc, id desc;</pre><p class="codelabel">Result</p><pre class="plain">customer_id |     id | created_at
+------------+--------+-----------------------
+          1 | 199920 | 2025-02-20 12:00:00+00
+          2 | 199399 | 2025-02-19 09:57:00+00
+          3 | 198878 | 2025-02-18 07:54:00+00
+(3 rows)</pre><p><code>distinct on (customer_id)</code> keeps the <strong>first</strong> row for each customer in the <code>order by</code>, so the order by decides which row wins. It is PostgreSQL-specific.</p><p>The portable form uses <code>row_number() over (partition by customer_id order by created_at desc, id desc)</code> and keeps <code>rn = 1</code>. It returned the same three rows in the lab.</p><p>Both are served by an index on <code>(customer_id, created_at DESC)</code>. Add <code>id</code> as a tie-break so the choice is deterministic.</p></details>`
+    },
+    {
+      q:"Puzzle: List everyone who reports to Ada, directly or indirectly, with their depth",
+      a:`<p>Walk the management chain from Ada (id 1) down, showing how many levels below Ada each person is.</p><p class="codelabel">Tables</p><pre class="plain">employees(id, name, manager_id)
+Ada (no manager) -&gt; Grace, Alan, Sam, Cora -&gt; Linus, Margaret (Grace), Fiona (Alan), Sue, Sid, Nora (Sam), Cal (Cora)</pre><details class="reveal"><summary>Show a solution</summary><p class="codelabel">SQL</p><pre>with recursive tree as (
+  select id, name, manager_id, 0 as depth
+  from employees where id = 1
+  union all
+  select e.id, e.name, e.manager_id, t.depth + 1
+  from employees e
+  join tree t on e.manager_id = t.id
+)
+select id, name, depth from tree order by depth, id;</pre><p class="codelabel">Result</p><pre class="plain">id | name     | depth
+---+----------+------
+ 1 | Ada      |     0
+ 2 | Grace    |     1
+ 3 | Alan     |     1
+ 6 | Sam      |     1
+ 9 | Cora     |     1
+ 4 | Linus    |     2
+ 5 | Margaret |     2
+ 7 | Sue      |     2
+ 8 | Sid      |     2
+10 | Cal      |     2
+11 | Fiona    |     2
+12 | Nora     |     2
+(12 rows)</pre><p>A <strong>recursive CTE</strong> has a starting query (the anchor) and a second query that joins to the CTE itself. PostgreSQL repeats the second query on the newest rows until it returns nothing.</p><p>Cycles (a manager chain that loops) would recurse forever. Add a depth limit (<code>where t.depth &lt; 20</code>) or track visited ids in an array.</p><p>To start from someone else, change the anchor: <code>where id = 6</code> returns Sam’s team only.</p></details>`
+    },
+    {
+      q:"Puzzle: Find bookings that overlap in the same room",
+      a:`<p>Return pairs of bookings in the same room whose times overlap. A booking that ends at 10:00 and one that starts at 10:00 do not overlap.</p><p class="codelabel">Tables</p><pre class="plain">bookings(id, room, starts_at, ends_at)  -- 8 rows, 1 May 2024
+room 1: 09:00-10:00, 09:30-10:30, 11:00-12:00
+room 2: 09:00-10:00, 10:00-11:00, 13:00-14:00, 13:30-14:30
+room 3: 09:00-10:00</pre><details class="reveal"><summary>Show a solution</summary><p class="codelabel">SQL</p><pre>select a.room, a.id as first, b.id as second
+from bookings a
+join bookings b
+  on a.room = b.room
+ and a.id &lt; b.id
+ and a.starts_at &lt; b.ends_at
+ and b.starts_at &lt; a.ends_at
+order by a.room, a.id;</pre><p class="codelabel">Result</p><pre class="plain">room | first | second
+-----+-------+-------
+   1 |     1 |      2
+   2 |     6 |      7
+(2 rows)</pre><p>Two ranges overlap when <strong>each starts before the other ends</strong>. Using <code>&lt;</code> and not <code>&lt;=</code> keeps back-to-back bookings (ids 4 and 5) apart. <code>a.id &lt; b.id</code> lists each pair once and never pairs a booking with itself.</p><p>Better than finding overlaps afterwards is preventing them: an <strong>exclusion constraint</strong> (<code>exclude using gist (room with =, tstzrange(starts_at, ends_at) with &amp;&amp;)</code>, which needs the <code>btree_gist</code> extension) rejects the insert. In the lab, adding a 09:30-10:30 booking to a room already booked 09:00-10:00 failed with <code>conflicting key value violates exclusion constraint</code> (SQLSTATE <code>23P01</code>), while a booking from 10:00 to 11:00 was accepted.</p></details>`
+    },
+    {
+      q:"Quiz: You need only the top three rows by a window function’s rank. Where do you filter on that rank? <span class=\"quizopts\">(A) In the WHERE of the same SELECT &nbsp;·&nbsp; (B) In HAVING &nbsp;·&nbsp; (C) In an outer query or CTE that wraps the window function &nbsp;·&nbsp; (D) In GROUP BY</span>",
+      a:`<ol class="quiz" type="A"><li>In the WHERE of the same SELECT</li><li>In HAVING</li><li class="right">In an outer query or CTE that wraps the window function</li><li>In GROUP BY</li></ol><p><strong>Answer: C.</strong> WHERE runs before window functions are computed, so using one there fails. The lab printed: ERROR: window functions are not allowed in WHERE. Compute the rank in a subquery or CTE and filter in the outer query, as the earlier puzzles did.</p>`
+    }
+  ]
+},
+{
+  id:"sq5", title:"5. Schema Design and Migrations",
+  questions:[
+    {
+      q:"How do you model one-to-many and many-to-many relationships?",
+      a:`<p><strong>One-to-many:</strong> the “many” side holds a foreign key to the “one” side. <strong>Many-to-many:</strong> a <strong>join table</strong> holds a pair of foreign keys, with a composite primary key so a pair cannot repeat.</p><p class="codelabel">One author has many books; books and tags are many-to-many</p><pre>create table authors (id bigint generated always as identity primary key, name text not null);
+create table books (
+  id bigint generated always as identity primary key,
+  author_id bigint not null references authors(id),
+  title text not null
+);
+create index books_author_id_idx on books (author_id);   -- PostgreSQL does not index foreign keys for you
+
+create table tags (id bigint generated always as identity primary key, name text not null unique);
+create table book_tags (
+  book_id bigint not null references books(id) on delete cascade,
+  tag_id  bigint not null references tags(id),
+  primary key (book_id, tag_id)
+);</pre><p class="codelabel">Linking the same pair twice, captured</p><pre class="plain">insert into book_tags values (1, 1);   INSERT 1
+insert into book_tags values (1, 1);
+ERROR: duplicate key value violates unique constraint "book_tags_pkey"
+DETAIL: Key (book_id, tag_id)=(1, 1) already exists.</pre><ul><li>The composite key does two jobs: it forbids duplicates and indexes lookups by <code>book_id</code>. Add a second index on <code>(tag_id, book_id)</code> for the reverse direction.</li><li>Index every foreign key that you join on or delete through. PostgreSQL indexes the referenced column (the primary key) but <strong>not</strong> the referencing one.</li><li><code>on delete cascade</code> removes dependent rows automatically. Use it for owned data (a book’s tag links) and not for data that should block the delete.</li><li>One-to-one is a one-to-many with a <code>unique</code> foreign key.</li></ul>`
+    },
+    {
+      q:"UUID or integer keys? Natural or surrogate?",
+      a:`<table class="cmp"><tr><th></th><th>Integer / bigint identity</th><th>UUID</th></tr><tr><td><strong>Size</strong></td><td>8 bytes (<code>bigint</code>)</td><td>16 bytes</td></tr><tr><td><strong>Inserts</strong></td><td>Append at the end of the index</td><td>Random version-4 values land all over the index</td></tr><tr><td><strong>Guessable</strong></td><td>Yes: <code>/orders/1001</code> invites probing</td><td>No</td></tr><tr><td><strong>Generated by</strong></td><td>The database, one place</td><td>Anywhere: clients, services, offline</td></tr><tr><td><strong>Merging data</strong> from two systems</td><td>Collisions</td><td>No collisions</td></tr></table><p class="codelabel">200,000 rows in each of two tables</p><pre>select pg_column_size(1::bigint) as bigint_bytes, pg_column_size(gen_random_uuid()) as uuid_bytes;
+select pg_size_pretty(pg_relation_size('keys_bigint_pkey')) as bigint_pk_index,
+       pg_size_pretty(pg_relation_size('keys_uuid_pkey'))   as uuid_pk_index;</pre><p class="codelabel">Captured</p><pre class="plain">bigint_bytes | uuid_bytes
+-------------+-----------
+           8 |         16
+
+bigint_pk_index | uuid_pk_index
+----------------+--------------
+4408 kB         | 8608 kB</pre><ul><li>With 200,000 rows, the random UUID index was about <strong>twice the size</strong> of the bigint one, and random inserts touch pages across the whole index, which hurts write speed and cache use as it grows.</li><li>Time-ordered UUIDs (version 7) keep most of the benefit and avoid the scatter. Check whether your PostgreSQL version has a built-in generator: this lab’s 17.6 only has <code>gen_random_uuid()</code> (version 4).</li><li><strong>Surrogate keys</strong> (identity or UUID) never change and carry no meaning. <strong>Natural keys</strong> (an email, an ISO country code) are meaningful and can change. Default to a surrogate primary key and put a <code>unique</code> constraint on the natural key.</li></ul>`
+    },
+    {
+      q:"When is a JSONB column the right choice?",
+      a:`<p>For data whose shape <strong>varies or is owned by someone else</strong>: webhook payloads, user-defined fields, a document you only store and display. Not for data you filter, join and constrain every day: that wants real columns.</p><p class="codelabel">50,000 rows of jsonb, before and after a GIN index</p><pre>explain (analyze) select count(*) from events where payload @&gt; '{"user": 7, "type": "buy"}';
+create index events_payload_gin on events using gin (payload jsonb_path_ops);
+-- the same explain again</pre><p class="codelabel">Before, trimmed</p><pre class="plain">Seq Scan on events  (cost=0.00..1243.00 rows=503 width=0) (actual rows=33 loops=1)
+  Filter: (payload @&gt; '{"type": "buy", "user": 7}'::jsonb)
+  Rows Removed by Filter: 49967
+Execution Time: 41.051 ms</pre><p class="codelabel">After, trimmed</p><pre class="plain">Bitmap Heap Scan on events  (cost=24.12..644.97 rows=503 width=0) (actual rows=33 loops=1)
+  Recheck Cond: (payload @&gt; '{"type": "buy", "user": 7}'::jsonb)
+  -&gt;  Bitmap Index Scan on events_payload_gin  (actual rows=33 loops=1)
+Execution Time: 1.748 ms</pre><ul><li>A <strong>GIN</strong> index makes containment queries (<code>@&gt;</code>) on a document fast. It does not help <code>payload-&gt;&gt;'user' = '7'</code>: that needs an expression index.</li><li><strong>Costs of JSONB:</strong> no foreign keys into the document, no column types or <code>NOT NULL</code>, bigger rows, and the estimates for filters inside it are rough.</li><li><strong>A good compromise:</strong> real columns for what you query and constrain, and one <code>jsonb</code> column for the rest.</li></ul>`
+    },
+    {
+      q:"Diagram: How do you change a schema with no downtime?",
+      a:`<div class="diagram"><svg viewBox="0 0 900 170" width="900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Expand and contract migration: add, dual-write, backfill, switch reads, drop"><defs><marker id="ec" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--muted)"/></marker><marker id="eca" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--accent)"/></marker><marker id="ecd" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--danger)"/></marker></defs>
+<rect x="14" y="26" width="148" height="66" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="88" y="56" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">1 Expand</text><text x="88" y="70" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">add nullable column</text><path d="M164 59 L191 59" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#ec)"/><rect x="195" y="26" width="148" height="66" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="269" y="56" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">2 Dual-write</text><text x="269" y="70" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">write old + new</text><path d="M345 59 L372 59" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#ec)"/><rect x="376" y="26" width="148" height="66" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="450" y="56" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">3 Backfill</text><text x="450" y="70" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">old rows, in batches</text><path d="M526 59 L553 59" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#ec)"/><rect x="557" y="26" width="148" height="66" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="631" y="56" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">4 Switch reads</text><text x="631" y="70" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">read the new column</text><path d="M707 59 L734 59" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#ec)"/><rect x="738" y="26" width="148" height="66" rx="8" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="1.4"/><text x="812" y="56" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">5 Contract</text><text x="812" y="70" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">drop old, later</text>
+<text x="450" y="130" text-anchor="middle" font-family="var(--mono)" font-size="10.5" fill="var(--muted)">Every step is a separate deploy that is safe on its own, so any step can be rolled back.</text>
+</svg></div><p>Deploys overlap: for a while, old and new application versions run against the <strong>same</strong> database. Every migration must work for both. The pattern is <strong>expand, migrate, contract</strong>: add the new shape, move to it, then remove the old shape in a later release.</p><p>The lab adds a <code>NOT NULL</code> column to the 200,000-row <code>orders</code> table without a long lock:</p><ol><li><strong>Add the column as nullable.</strong> This changes only the catalogue, so it is instant.</li><li><strong>Backfill in batches</strong> so no single statement holds locks for long.</li><li><strong>Add a <code>CHECK (col IS NOT NULL)</code> constraint as <code>NOT VALID</code>.</strong> New writes are checked at once, and the existing rows are not scanned.</li><li><strong><code>VALIDATE CONSTRAINT</code></strong> scans the table with a lighter lock that does not block writes.</li><li><strong><code>SET NOT NULL</code></strong> then succeeds; from PostgreSQL 12 it can rely on the validated constraint instead of scanning the table again (stated in the PostgreSQL documentation, not measured here). Drop the check afterwards.</li></ol><p class="codelabel">Captured</p><pre class="plain">alter table orders add column channel text;                          ALTER
+update orders set channel = 'web' where id between 1 and 50000 ...;   UPDATE 50000   (four batches)
+alter table orders add constraint orders_channel_not_null
+      check (channel is not null) not valid;                           ALTER
+
+insert into orders (customer_id, status, total_cents, created_at) values (1, 'paid', 100, now());
+ERROR: new row for relation "orders" violates check constraint "orders_channel_not_null"
+                                                                       &lt;- a new write is checked immediately
+alter table orders validate constraint orders_channel_not_null;       ALTER
+alter table orders alter column channel set not null;                  ALTER
+alter table orders drop constraint orders_channel_not_null;            ALTER</pre><p class="codelabel">Building an index without blocking writes</p><pre class="plain">begin;
+create index concurrently orders_channel_idx on orders (channel);
+ERROR: CREATE INDEX CONCURRENTLY cannot run inside a transaction block (SQLSTATE 25001)
+
+create index concurrently orders_channel_idx on orders (channel);     CREATE</pre><ul><li><code>CREATE INDEX CONCURRENTLY</code> takes longer and cannot run in a transaction, but does not block writes. Many migration tools need it marked as non-transactional.</li><li>Renames and type changes are the dangerous ones: expand with a new column, copy, switch reads, then drop the old column in a later release.</li><li>Set a <code>lock_timeout</code> on migrations so one that cannot get its lock fails fast instead of queuing every other query behind it.</li></ul><p class="verified">The exact locking behaviour of each ALTER depends on the PostgreSQL version. These steps were run on 17.6.</p>`
+    },
+    {
+      q:"Diagram: Offset versus keyset pagination",
+      a:`<div class="diagram"><svg viewBox="0 0 900 250" width="900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Offset pagination scans and discards; keyset pagination seeks"><defs><marker id="ks" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--muted)"/></marker><marker id="ksa" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--accent)"/></marker><marker id="ksd" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--danger)"/></marker></defs>
+<text x="14" y="22"  font-family="var(--mono)" font-size="11" fill="var(--text)" font-weight="700">OFFSET 100000 LIMIT 20</text>
+<rect x="14" y="34" width="640" height="40" rx="8" fill="var(--panel-2)" stroke="var(--border)" stroke-width="1.4"/><text x="334" y="59" text-anchor="middle" font-family="var(--mono)" font-size="10.5" fill="var(--text)">scan and throw away 100,000 rows</text>
+<rect x="660" y="34" width="226" height="40" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="773" y="58" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">return 20</text>
+<text x="14" y="112"  font-family="var(--mono)" font-size="11" fill="var(--text)" font-weight="700">WHERE (created_at, id) &lt; (last seen) ORDER BY created_at DESC, id DESC LIMIT 20</text>
+<rect x="14" y="126" width="150" height="40" rx="8" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="1.4"/><text x="89" y="150" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">index seek</text><path d="M166 146 L190 146" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#ks)"/><rect x="194" y="126" width="226" height="40" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="307" y="150" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">read 20</text>
+<text x="440" y="150"  font-family="var(--mono)" font-size="10.5" fill="var(--muted)">the rows before the seek point are never read</text>
+<text x="14" y="206"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Offset gets slower the deeper the page, and rows can shift between pages.</text>
+<text x="14" y="226"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">Keyset stays fast and stable, but you can only go to the next or previous page.</text>
+</svg></div><p><code>OFFSET n</code> makes the database produce and discard <code>n</code> rows before it returns yours, so deep pages get slow. <strong>Keyset</strong> (also called seek) pagination remembers the last row you saw and asks for rows after it.</p><p class="codelabel">Offset, no useful index</p><pre>explain (analyze, buffers) select id, created_at from orders
+order by created_at, id offset 150000 limit 20;</pre><p class="codelabel">Plan, trimmed</p><pre class="plain">Limit  (actual rows=20 loops=1)
+  -&gt;  Sort  (actual rows=150020 loops=1)
+        Sort Key: created_at, id
+        Sort Method: external merge  Disk: 5104kB
+        -&gt;  Seq Scan on orders  (actual rows=200000 loops=1)
+Execution Time: 304.197 ms</pre><p class="codelabel">Offset with an index</p><pre>create index orders_created_id_idx on orders (created_at, id);
+-- the same offset query again</pre><p class="codelabel">Plan, trimmed</p><pre class="plain">Limit  (actual rows=20 loops=1)
+  -&gt;  Index Only Scan using orders_created_id_idx on orders  (actual rows=150020 loops=1)
+Execution Time: 131.270 ms</pre><p class="codelabel">Keyset</p><pre>select id, created_at from orders
+where (created_at, id) &gt; ('2024-11-08 12:00:00+00', 150000)   -- the last row of the previous page
+order by created_at, id
+limit 20;</pre><p class="codelabel">Plan, trimmed</p><pre class="plain">Limit  (actual rows=20 loops=1)
+  -&gt;  Index Only Scan using orders_created_id_idx on orders  (actual rows=20 loops=1)
+        Index Cond: (ROW(created_at, id) &gt; ROW('2024-11-08 12:00:00+00'::timestamp with time zone, 150000))
+Execution Time: 0.116 ms</pre><ul><li>Offset 150,000 read <strong>150,020</strong> rows even with an index (131 ms here). Keyset read <strong>20</strong> (0.1 ms). Timings vary, the row counts do not.</li><li>Keyset needs a <strong>unique, ordered</strong> sort key (add <code>id</code> as a tie-break) and an index on it. It cannot jump to “page 7”, only to the next or previous page. That suits infinite scroll and APIs with a cursor.</li><li>Offset is fine for small tables and for admin screens where “go to page 7” matters.</li></ul>`
+    },
+    {
+      q:"Rapid-fire: schema design",
+      a:`<table class="cmp"><tr><th>Question</th><th>Answer</th></tr><tr><td>Soft deletes?</td><td>A <code>deleted_at</code> column keeps history, but every query must filter it. Put it in a partial index and a view, or use an archive table.</td></tr><tr><td>Audit table?</td><td>A trigger or the application writes who, when and old and new values to a separate append-only table.</td></tr><tr><td>Enum or lookup table?</td><td>A lookup table with a foreign key is easier to change; a native enum is compact but changing it is a migration.</td></tr><tr><td>Which timestamp type?</td><td><code>timestamptz</code>: stored in UTC, shown in the session’s zone. A bare <code>timestamp</code> hides the zone and goes wrong when servers move.</td></tr><tr><td>How do you store money?</td><td>As integer cents (<code>1999 + 1</code> is <code>2000</code>) or <code>numeric</code>. Never <code>float</code>: the lab printed <code>0.1 + 0.2</code> as <code>0.30000000000000004</code> in floating point and <code>0.3</code> in <code>numeric</code>.</td></tr><tr><td>Multi-tenant data?</td><td>A <code>tenant_id</code> column on every table, in every unique constraint and index, and row-level security as the backstop.</td></tr><tr><td>Where do the rules live?</td><td>Rules the data must always obey go in constraints. Rules that change per request live in the application.</td></tr></table>`
+    }
+  ]
+},
+{
+  id:"sq6", title:"6. Performance and Scaling",
+  questions:[
+    {
+      q:"A query that took 50 ms now takes 5 s. What do you do?",
+      a:`<ol><li><strong>Reproduce it</strong> with the real parameters, and run <code>EXPLAIN (ANALYZE, BUFFERS)</code>. Read from the leaves up.</li><li><strong>Compare estimated and actual rows.</strong> A big gap points at stale statistics: run <code>ANALYZE</code>, check that autovacuum is running, and consider extended statistics for correlated columns.</li><li><strong>Look for what changed:</strong> data volume, a dropped or bloated index, a new plan after a deploy, a different parameter that makes the old plan wrong.</li><li><strong>Check whether it is slow or waiting:</strong> <code>pg_stat_activity</code> and <code>pg_locks</code> show whether it is blocked behind a long transaction.</li><li><strong>Find the worst offenders</strong> with <code>pg_stat_statements</code>: total time, calls and mean time per query, not just the one someone complained about.</li><li><strong>Fix the cause,</strong> not the symptom: an index, a rewrite, a smaller result set, or caching. Then re-run the plan to prove it.</li></ol><p><strong>Trap:</strong> Do not add indexes at random. Each one slows writes (an insert into the lab’s <code>orders</code> table was about a third slower with three extra indexes) and may not be used.</p><p class="deeper"><strong>Go deeper:</strong> <a href="/performance-optimization" target="_top">Performance Optimisation</a></p>`
+    },
+    {
+      q:"Diagram: What is the N+1 problem, and how do you find it?",
+      a:`<div class="diagram"><svg viewBox="0 0 900 270" width="900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="N+1 queries compared with one DataLoader batched query"><defs><marker id="n1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--muted)"/></marker><marker id="n1a" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--accent)"/></marker><marker id="n1d" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--danger)"/></marker></defs>
+<rect x="20" y="20" width="410" height="230" rx="8" fill="var(--panel-2)" stroke="var(--border)" stroke-width="1.4"/><text x="36" y="42"  font-family="var(--mono)" font-size="10.5" fill="var(--danger)" font-weight="700">WITHOUT batching: N+1</text>
+<rect x="50" y="70" width="120" height="44" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="110" y="96" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Resolver</text>
+<path d="M172 88 L260 82" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#n1)"/><rect x="262" y="66" width="150" height="30" rx="8" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="1.4"/><text x="337" y="85" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">SELECT … id = 1</text><path d="M172 92 L260 118" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#n1)"/><rect x="262" y="102" width="150" height="30" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="337" y="121" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">SELECT … id = 2</text><path d="M172 96 L260 154" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#n1)"/><rect x="262" y="138" width="150" height="30" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="337" y="157" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">SELECT … id = 3</text><path d="M172 100 L260 190" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#n1)"/><rect x="262" y="174" width="150" height="30" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="337" y="193" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">SELECT … id = 4</text>
+<text x="36" y="232"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">1 query for the list + 1 per item = slow</text>
+<rect x="470" y="20" width="410" height="230" rx="8" fill="var(--panel-2)" stroke="var(--border)" stroke-width="1.4"/><text x="486" y="42"  font-family="var(--mono)" font-size="10.5" fill="var(--accent)" font-weight="700">WITH DataLoader</text>
+<rect x="500" y="70" width="120" height="44" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="560" y="89" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Resolver</text><text x="560" y="103" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">.load(1..N)</text>
+<path d="M622 92 L668 92" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#n1)"/><rect x="670" y="66" width="190" height="52" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="765" y="89" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">One tick later</text><text x="765" y="103" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">WHERE id IN (1..N)</text>
+<text x="486" y="232"  font-family="var(--mono)" font-size="10.5" fill="var(--text)">1 batched query, results mapped back in key order</text>
+</svg></div><p>N+1 means one query to fetch a list, then one more query <strong>per row</strong> to fetch something related: 1 + N round trips instead of 1 or 2. Each query is fast, so nothing looks slow in the database. The total is.</p><ul><li><strong>Find it:</strong> log the queries for one request. If you see the same statement repeated with different ids, that is it. <code>pg_stat_statements</code> shows a cheap query with a huge <code>calls</code> count.</li><li><strong>Fix it</strong> by loading in bulk: a <code>join</code>, or <code>where id = any($1)</code> with the collected ids, or the ORM’s eager loading (<code>include</code> in Prisma, <code>with</code> in Drizzle’s relational queries).</li><li>GraphQL resolvers are a classic source: fetch per field. Batch with a loader.</li></ul><p class="codelabel">Replacing N+1 with one query</p><pre>// N+1: one query per author
+for (const book of books) book.author = await db.query('select * from authors where id = $1', [book.author_id]);
+
+// 1 + 1: collect the ids and ask once
+const ids = [...new Set(books.map((b) =&gt; b.author_id))];
+const { rows } = await db.query('select * from authors where id = any($1)', [ids]);</pre>`
+    },
+    {
+      q:"Why do you need connection pooling, especially from serverless or many Node.js instances?",
+      a:`<p>A PostgreSQL connection is a <strong>process</strong> that costs memory and a handshake to open. The server allows a fixed number of them.</p><p class="codelabel">Opening connections one after another, captured</p><pre class="plain">max_connections = 100
+connections opened before the error: 100 (including the probe)
+error: sorry, too many clients already (SQLSTATE 53300)</pre><ul><li>A <strong>pool</strong> keeps a small set of open connections and lends them out, so a thousand requests share ten connections.</li><li>The sum matters: <strong>instances × pool size</strong> must stay below <code>max_connections</code>. Ten instances with a pool of 20 is already 200.</li><li><strong>Serverless</strong> multiplies instances and each one may open its own pool. Put an external pooler (PgBouncer, or your provider’s pooler) in front of the database and connect to that.</li><li>A transaction-mode pooler hands your connection to someone else between transactions. Session state (<code>SET</code>, advisory locks, prepared statements in some setups) does not survive, so keep each unit of work inside one transaction.</li><li>Set a pool <code>max</code>, a connection timeout and an idle timeout, and always release connections (<code>finally { client.release() }</code>).</li></ul><p class="deeper"><strong>Go deeper:</strong> <a href="/nodejs" target="_top">Node.js guide</a> · <a href="/aws" target="_top">AWS: RDS and RDS Proxy</a></p>`
+    },
+    {
+      q:"Diagram: Read replicas and replication lag",
+      a:`<div class="diagram"><svg viewBox="0 0 900 250" width="900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A primary with read replicas and replication lag"><defs><marker id="rp" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--muted)"/></marker><marker id="rpa" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--accent)"/></marker><marker id="rpd" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--danger)"/></marker></defs>
+<rect x="14" y="80" width="170" height="60" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="99" y="107" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Client</text><text x="99" y="121" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">writes, then reads</text>
+<rect x="290" y="80" width="170" height="60" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="375" y="107" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Primary</text><text x="375" y="121" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">accepts writes</text>
+<rect x="660" y="14" width="226" height="60" rx="8" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="1.4"/><text x="773" y="41" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Replica 1</text><text x="773" y="55" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">serves reads</text><rect x="660" y="146" width="226" height="60" rx="8" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="1.4"/><text x="773" y="173" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">Replica 2</text><text x="773" y="187" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">serves reads</text>
+<path d="M186 110 L286 110" fill="none" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#rp)"/><text x="236" y="100" text-anchor="middle" font-family="var(--mono)" font-size="10" fill="var(--accent)">write</text>
+<path d="M462 96 L656 54" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#rp)"/><path d="M462 124 L656 166" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#rp)"/>
+<text x="468" y="62"  font-family="var(--mono)" font-size="10" fill="var(--text)">WAL stream</text><text x="468" y="176"  font-family="var(--mono)" font-size="10" fill="var(--gold)">lag: ms to seconds</text>
+<path d="M99 142 L99 238 L773 238 L773 210" fill="none" stroke="var(--danger)" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#rpd)"/>
+<text x="430" y="230" text-anchor="middle" font-family="var(--mono)" font-size="10" fill="var(--danger)">read straight after the write: the replica may not have it yet</text>
+</svg></div><p>A <strong>primary</strong> accepts writes and streams its write-ahead log (WAL) to <strong>replicas</strong> that serve reads. Reads scale out; writes do not. Replication is usually asynchronous, so a replica is a little behind.</p><ul><li><strong>Read-your-own-writes:</strong> a user saves a profile and the next page reads from a replica that has not caught up, so they see the old data. Fixes: read from the primary for a short time after a write, route a user’s session to the primary, or wait for the replica to reach the write’s log position.</li><li><strong>Lag is a monitoring number,</strong> not a constant: a big batch job or a long query on the replica can push it from milliseconds to minutes.</li><li>Replicas also give you <strong>failover</strong> and a place to run reports without hurting the primary.</li><li>Writes are still limited to one machine. Past that you partition or shard (next card).</li></ul><p class="deeper"><strong>Go deeper:</strong> <a href="/system-design-scale" target="_top">System Design at Scale</a></p>`
+    },
+    {
+      q:"Diagram: Partitioning and sharding: what is the difference, and when is each worth it?",
+      a:`<div class="diagram"><svg viewBox="0 0 900 170" width="900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Database scaling order: indexes, read replicas, connection pooling, caching and finally sharding"><defs><marker id="db" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--muted)"/></marker><marker id="dba" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--accent)"/></marker><marker id="dbd" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--danger)"/></marker></defs>
+<rect x="14" y="26" width="150" height="66" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/><text x="89" y="56" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">1 Indexes + queries</text><text x="89" y="70" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">fix the plan first</text><path d="M166 59 L190.5 59" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#db)"/><rect x="194.5" y="26" width="150" height="66" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="269.5" y="56" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">2 Read replicas</text><text x="269.5" y="70" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">offload reads</text><path d="M346.5 59 L371 59" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#db)"/><rect x="375" y="26" width="150" height="66" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="450" y="56" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">3 Connection pooling</text><text x="450" y="70" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">PgBouncer / RDS Proxy</text><path d="M527 59 L551.5 59" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#db)"/><rect x="555.5" y="26" width="150" height="66" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.4"/><text x="630.5" y="56" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">4 Cache in front</text><text x="630.5" y="70" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">Redis for hot reads</text><path d="M707.5 59 L732 59" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#db)"/><rect x="736" y="26" width="150" height="66" rx="8" fill="var(--panel)" stroke="var(--danger)" stroke-width="1.4"/><text x="811" y="56" text-anchor="middle" font-family="var(--sans)" font-size="12" font-weight="600" fill="var(--text)">5 Shard</text><text x="811" y="70" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--muted)">last resort</text>
+<text x="450" y="130" text-anchor="middle" font-family="var(--mono)" font-size="10.5" fill="var(--muted)">Reach for them in this order: each step is cheaper and simpler than the next.</text>
+</svg></div><table class="cmp"><tr><th></th><th>Partitioning</th><th>Sharding</th></tr><tr><td><strong>What</strong></td><td>One logical table split into pieces <strong>inside one database</strong></td><td>Data split across <strong>several databases or servers</strong></td></tr><tr><td><strong>Why</strong></td><td>Drop old data cheaply (drop a partition), prune scans, keep indexes small</td><td>Beyond what one machine can write or store</td></tr><tr><td><strong>Cost</strong></td><td>Low: the database handles routing</td><td>High: cross-shard queries and transactions, resharding, operations</td></tr><tr><td><strong>Key choice</strong></td><td>Often a date, so old partitions can be dropped</td><td>A tenant or user id that keeps related rows together</td></tr></table><ul><li><strong>Order of escalation:</strong> fix queries and indexes, add a cache, add read replicas, partition big tables, and only then consider sharding. Most systems never reach the last step.</li><li>A bad shard key is very hard to undo: choose one that spreads load evenly and keeps most queries on one shard.</li></ul><p class="deeper"><strong>Go deeper:</strong> <a href="/system-design-scale" target="_top">System Design at Scale</a></p>`
+    },
+    {
+      q:"Quiz: In an EXPLAIN ANALYZE plan the estimated rows are 100 and the actual rows are 100,000. What do you check first? <span class=\"quizopts\">(A) Whether the query has enough indexes &nbsp;·&nbsp; (B) The table’s statistics: run ANALYZE and check autovacuum &nbsp;·&nbsp; (C) The connection pool size &nbsp;·&nbsp; (D) The isolation level</span>",
+      a:`<ol class="quiz" type="A"><li>Whether the query has enough indexes</li><li class="right">The table’s statistics: run ANALYZE and check autovacuum</li><li>The connection pool size</li><li>The isolation level</li></ol><p><strong>Answer: B.</strong> A thousand-fold gap means the planner chose its plan from bad statistics. ANALYZE refreshes them. Adding indexes or changing the pool does not fix a plan chosen on wrong estimates.</p>`
+    }
+  ]
+},
+{
+  id:"sq7", title:"7. PostgreSQL from Node.js",
+  questions:[
+    {
+      q:"How does SQL injection happen, and what actually prevents it?",
+      a:`<p>It happens when user input is <strong>concatenated into the SQL text</strong>, so the input is parsed as SQL. It is prevented by <strong>parameters</strong>: the SQL text and the values travel separately, so a value can never become syntax.</p><p class="codelabel">Run against the 2,000-customer lab</p><pre>const input = "x' OR '1'='1";
+
+// Unsafe: the input becomes part of the statement
+await pool.query("select id, email from customers where email = '" + input + "'");
+
+// Safe: the value is sent separately
+await pool.query('select id, email from customers where email = $1', [input]);</pre><p class="codelabel">Captured</p><pre class="plain">concatenated query: 2000 rows returned
+sql sent: select id, email from customers where email = 'x' OR '1'='1'
+parameterised query: 0 rows returned</pre><ul><li>The concatenated version returned <strong>every customer</strong>: the input turned the filter into <code>... OR '1'='1'</code>, which is always true. The same trick can read other tables or change data.</li><li>Escaping strings by hand is not the answer. Use parameters for <strong>every</strong> value, including ids and numbers.</li><li>Parameters cannot be used for identifiers (table and column names) or keywords such as <code>ORDER BY</code> direction. For those, choose from a fixed allow-list in code. <code>pg-format</code> or the driver’s identifier escaping is the fallback.</li><li>ORMs and query builders parameterise for you, except where you drop to raw SQL with string interpolation. Use their tagged-template or bound-parameter forms there.</li><li>Least privilege helps: the application’s database user should not own the schema or read tables it does not need.</li></ul>`
+    },
+    {
+      q:"How do you run a transaction from Node.js?",
+      a:`<p>A transaction belongs to <strong>one connection</strong>, so you must check one out of the pool, run <code>begin</code>, every statement and <code>commit</code> on that same client, and release it. <code>pool.query</code> picks any connection each time, so it cannot be used for a transaction.</p><p class="codelabel">A helper that commits, or rolls back on any error (pg 8.23.1)</p><pre>export async function withTransaction(pool, fn) {
+  const client = await pool.connect();
+  try {
+    await client.query('begin');
+    const result = await fn(client);
+    await client.query('commit');
+    return result;
+  } catch (err) {
+    await client.query('rollback');
+    throw err;
+  } finally {
+    client.release();
+  }
+}
+
+await withTransaction(pool, async (tx) =&gt; {
+  await tx.query('update accounts set balance_cents = balance_cents - $1 where id = $2', [cents, from]);
+  await tx.query('update accounts set balance_cents = balance_cents + $1 where id = $2', [cents, to]);
+});</pre><p class="codelabel">Captured</p><pre class="plain">before:            1:100 2:100
+after transfer 30: 1:70 2:130
+transfer 500 failed: new row for relation "accounts" violates check constraint "accounts_balance_cents_check"
+after failed 500:  1:70 2:130</pre><ul><li>The second transfer broke the <code>CHECK (balance_cents &gt;= 0)</code> rule on the first update. The <code>catch</code> rolled back and both balances stayed as they were: atomicity in action.</li><li>The <code>finally</code> releases the connection whether the work succeeded or failed. A leaked connection slowly empties the pool until the application hangs.</li><li>Keep transactions <strong>short</strong> and do not call other services or wait for a user inside one. An open transaction holds locks and keeps old row versions alive.</li></ul>`
+    },
+    {
+      q:"How do you handle serialization failures and deadlocks in application code?",
+      a:`<p>They are expected, not bugs. The database aborts one transaction to keep the data correct, with SQLSTATE <code>40001</code> (serialization failure) or <code>40P01</code> (deadlock). The right response is to <strong>run the whole transaction again</strong>.</p><p class="codelabel">Retry only the retryable errors, a bounded number of times</p><pre>export async function withRetry(pool, fn, { attempts = 3 } = {}) {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await withTransaction(pool, async (tx) =&gt; {
+        await tx.query('set transaction isolation level serializable');
+        return fn(tx, attempt);
+      });
+    } catch (err) {
+      const retryable = err.code === '40001' || err.code === '40P01';
+      if (!retryable || attempt &gt;= attempts) throw err;
+    }
+  }
+}</pre><p>The lab ran the write-skew scenario with two workers, each trying to take a doctor off call while at least one must stay:</p><p class="codelabel">Captured</p><pre class="plain">  attempt 1 failed (40001), retrying
+Alice: went off call on attempt 1
+Bob: refused on attempt 2, only 1 on call
+on call now: 1</pre><ul><li>Both workers read “2 on call” at the same time. The database aborted Bob’s transaction. On the retry Bob read <strong>1</strong>, so the application’s own rule refused the change. Which worker lost is not fixed: expect either.</li><li>Retry the <strong>whole function</strong>, including the reads: the point is to look at fresh data. Do not retry a single statement.</li><li>Add a small random delay between attempts under heavy contention, and make the work <strong>idempotent</strong> because a transaction may be retried after the commit actually succeeded and the acknowledgement was lost.</li></ul>`
+    },
+    {
+      q:"How do you make a write idempotent?",
+      a:`<p>A request can arrive twice: a client retries after a timeout, a queue redelivers. An <strong>idempotent</strong> write has the same effect once or many times. The simplest tool is a <strong>unique key</strong> plus <code>ON CONFLICT</code>.</p><p class="codelabel">The client sends a key per logical request</p><pre>create table payments (idempotency_key text primary key, amount_cents int not null);
+
+async function pay(key, cents) {
+  const r = await pool.query(
+    'insert into payments (idempotency_key, amount_cents) values ($1, $2) on conflict (idempotency_key) do nothing',
+    [key, cents]);
+  return r.rowCount === 1 ? 'created' : 'already processed';
+}</pre><p class="codelabel">Captured</p><pre class="plain">first request:  created
+retry of it:    already processed
+rows in table:  1</pre><ul><li>The unique key makes the database the referee: two concurrent requests with the same key cannot both insert.</li><li><code>do nothing</code> returns zero rows affected, which tells you it was a duplicate. Return the <strong>original</strong> result so the client cannot tell the difference.</li><li>To write the row <strong>and</strong> publish an event atomically, use an <strong>outbox</strong>: insert the event into an <code>outbox</code> table in the same transaction, and have a separate process publish it.</li></ul><p class="deeper"><strong>Go deeper:</strong> <a href="/system-design" target="_top">System Design: idempotency</a></p>`
+    },
+    {
+      q:"ORM, query builder or raw SQL?",
+      a:`<table class="cmp"><tr><th></th><th>ORM (Prisma, TypeORM)</th><th>Query builder (Drizzle, Kysely)</th><th>Raw SQL (<code>pg</code>)</th></tr><tr><td><strong>Types</strong></td><td>Generated from a schema</td><td>Inferred from the schema in code</td><td>You write them</td></tr><tr><td><strong>Control of SQL</strong></td><td>Low: the ORM decides</td><td>High: close to the SQL</td><td>Total</td></tr><tr><td><strong>Complex queries</strong></td><td>Often drop to raw SQL</td><td>Good: windows, CTEs, joins</td><td>Best</td></tr><tr><td><strong>Migrations</strong></td><td>Built in</td><td>Companion tool</td><td>Your choice of tool</td></tr><tr><td><strong>Risk</strong></td><td>N+1 and surprising queries</td><td>Less abstraction to learn</td><td>Injection and repetition if careless</td></tr></table><p>A common answer: use the ORM or builder for ordinary create, read, update and delete, and <strong>raw SQL for reports and the hard queries</strong>. Whatever you pick, look at the SQL it actually sends.</p><p class="codelabel">Transactions in two ORMs, from their documentation (not run in the lab)</p><pre>// Prisma (v6 documentation): interactive transaction with options
+await prisma.$transaction(async (tx) =&gt; { /* use tx, not prisma */ },
+  { isolationLevel: Prisma.TransactionIsolationLevel.Serializable, maxWait: 5000, timeout: 10000 });
+
+// Drizzle: transaction with a PostgreSQL isolation level, and tx.rollback()
+await db.transaction(async (tx) =&gt; { /* use tx, not db */ }, { isolationLevel: 'serializable' });</pre><p class="verified">Checked against the Prisma and Drizzle documentation on 15 Nov 2026, not run. The Prisma documentation now describes two generations of its API: the v6 form above has <code>isolationLevel</code>, <code>maxWait</code> and <code>timeout</code>, while the newer <code>db.transaction(callback)</code> form documents no options at all. Read the page for your major version. Neither ORM retries a failed transaction for you: use a retry loop like the previous card.</p>`
+    },
+    {
+      q:"Rapid-fire: PostgreSQL from Node.js",
+      a:`<table class="cmp"><tr><th>Question</th><th>Answer</th></tr><tr><td>What prevents SQL injection?</td><td>Parameters: values travel separately from the SQL text.</td></tr><tr><td>Can you parameterise a table name?</td><td>No. Pick it from an allow-list in code.</td></tr><tr><td>Why does a transaction need one client?</td><td>A transaction belongs to one connection; <code>pool.query</code> may use a different one each time.</td></tr><tr><td>What must always run in <code>finally</code>?</td><td><code>client.release()</code>, or the pool leaks connections.</td></tr><tr><td>Which error codes do you retry?</td><td><code>40001</code> (serialization failure) and <code>40P01</code> (deadlock).</td></tr><tr><td>What do you retry?</td><td>The whole transaction function, including its reads.</td></tr><tr><td>How do you stop a duplicate write?</td><td>A unique key and <code>ON CONFLICT DO NOTHING</code>.</td></tr><tr><td>How big should the pool be?</td><td>Small. Instances × pool size must stay under <code>max_connections</code>.</td></tr></table>`
+    }
+  ]
+},
+{
+  id:"sq8", title:"8. Beyond Relational",
+  questions:[
+    {
+      q:"When is a relational database the wrong default?",
+      a:`<table class="cmp"><tr><th>Access pattern</th><th>Better fit</th><th>Example</th></tr><tr><td>Documents read and written whole, no joins</td><td><strong>Document store</strong> (MongoDB, DynamoDB used as documents)</td><td>A product catalogue, a user profile</td></tr><tr><td>Lookups by a single key at very high speed</td><td><strong>Key-value</strong> (Redis, DynamoDB)</td><td>Sessions, feature flags, counters</td></tr><tr><td>Huge write volume, time series, partitioned by key</td><td><strong>Wide-column</strong> (Cassandra, Bigtable)</td><td>Sensor readings, activity logs</td></tr><tr><td>Free-text relevance, facets, fuzzy matching</td><td><strong>Search engine</strong> (OpenSearch, Elasticsearch)</td><td>Product search</td></tr><tr><td>Queries that follow many hops of relationships</td><td><strong>Graph</strong> (Neo4j)</td><td>Recommendations, fraud rings</td></tr></table><p>PostgreSQL covers more of these than people expect (<code>jsonb</code>, full-text search, <code>LISTEN</code>, extensions), so the honest first question is whether you have <strong>outgrown</strong> it or just want something newer.</p><p class="deeper"><strong>Go deeper:</strong> <a href="/system-design" target="_top">System Design</a> · <a href="/aws" target="_top">AWS: DynamoDB</a></p>`
+    },
+    {
+      q:"How does data modelling change in a document database?",
+      a:`<p>In SQL you model the <strong>entities</strong> and join at read time. In a document store you model the <strong>queries</strong> and shape the data so one read returns what a screen needs.</p><table class="cmp"><tr><th></th><th>Embed</th><th>Reference</th></tr><tr><td><strong>Use when</strong></td><td>The child is read with the parent, is owned by it, and the list is bounded</td><td>The child is shared, grows without bound, or is read on its own</td></tr><tr><td><strong>Example</strong></td><td>An order and its line items</td><td>A product that appears in many orders</td></tr><tr><td><strong>Cost</strong></td><td>Duplicated data, and a large document if the list grows</td><td>A second read, and no join to help you</td></tr></table><ul><li>Embedding trades <strong>update cost for read speed</strong>: renaming a product means updating every order that embedded the name, or deciding that old orders should keep the name they were placed with (often the right business answer).</li><li>Without joins and cross-document transactions you carry consistency in the application, so list your access patterns before you design.</li></ul>`
+    },
+    {
+      q:"What do CAP and PACELC actually say?",
+      a:`<ul><li><strong>CAP:</strong> when the network <strong>partitions</strong>, a distributed store must choose between <strong>consistency</strong> (every read sees the latest write) and <strong>availability</strong> (every request gets an answer). It says nothing about the normal case, and “pick two of three” is a misleading summary: you do not get to opt out of partitions.</li><li><strong>PACELC</strong> adds the everyday trade-off: if there is a <strong>P</strong>artition, choose <strong>A</strong> or <strong>C</strong>; <strong>E</strong>lse (no partition), choose <strong>L</strong>atency or <strong>C</strong>onsistency. Waiting for replicas to agree costs time even when nothing is broken.</li></ul><table class="cmp"><tr><th>Typical choice</th><th>During a partition</th><th>Otherwise</th></tr><tr><td>A single PostgreSQL primary with replicas</td><td>Writes pause if the primary is cut off (consistent)</td><td>Replica reads may lag (latency over consistency)</td></tr><tr><td>A Dynamo-style store with tunable quorums</td><td>Stays available, may return stale data</td><td>You choose the read and write quorum per request</td></tr></table><div class="callout"><strong>Say it like this:</strong> I would not say “CAP means pick two”. I would say that during a partition we must pick between consistency and availability, and that the more useful everyday question is latency against consistency.</div><p class="deeper"><strong>Go deeper:</strong> <a href="/system-design-scale" target="_top">System Design at Scale</a></p>`
+    },
+    {
+      q:"What is Redis for, beyond a cache?",
+      a:`<table class="cmp"><tr><th>Structure</th><th>Use it for</th><th>Example</th></tr><tr><td><strong>String</strong> with <code>INCR</code></td><td>Counters and rate limits</td><td>Requests per minute per user</td></tr><tr><td><strong>Hash</strong></td><td>Small records you update by field</td><td>A session</td></tr><tr><td><strong>List</strong></td><td>Simple queues</td><td>A background job list</td></tr><tr><td><strong>Set</strong></td><td>Membership and de-duplication</td><td>Who has seen this notice</td></tr><tr><td><strong>Sorted set</strong></td><td>Leaderboards and time-ordered ranges</td><td>Top scores, delayed jobs</td></tr><tr><td><strong>Stream</strong></td><td>A durable log with consumer groups</td><td>An event pipeline</td></tr><tr><td><strong>Pub/sub</strong></td><td>Fan-out of transient messages</td><td>Live notifications</td></tr></table><ul><li>Redis keeps data in memory, so it is fast and the data set must fit. Persistence options exist but it is usually a <strong>secondary</strong> store whose contents can be rebuilt.</li><li><strong>Locks and rate limits</strong> are popular uses and need care: a simple lock with an expiry can be lost on a failover, so do not rely on it where correctness is at stake.</li><li>Reach for it when you need an atomic operation on a small structure at high speed, not as a general database.</li></ul><p class="deeper"><strong>Go deeper:</strong> <a href="/system-design" target="_top">System Design: caching</a></p>`
+    },
+    {
+      q:"Quiz: A new product has relational data and no extreme scale. What is the defensible default database? <span class=\"quizopts\">(A) A document database, because it is schemaless &nbsp;·&nbsp; (B) PostgreSQL &nbsp;·&nbsp; (C) A graph database &nbsp;·&nbsp; (D) A key-value store</span>",
+      a:`<ol class="quiz" type="A"><li>A document database, because it is schemaless</li><li class="right">PostgreSQL</li><li>A graph database</li><li>A key-value store</li></ol><p><strong>Answer: B.</strong> PostgreSQL: relational integrity, transactions, rich queries and jsonb for the flexible parts, with a huge ecosystem. Move to a specialised store when a measured access pattern or scale demands it.</p>`
+    }
+  ]
+}
+];
+
+window.__STUDY__ = {"key":"sql","core":"the 2-Hour Review"};
+</script>
+<script src="/study/engine.js"></script>
+</body>
+</html>

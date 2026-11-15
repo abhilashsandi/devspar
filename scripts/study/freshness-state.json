@@ -34,5 +34,13 @@
   "behavioural": {
     "reviewed": "2026-11-15",
     "scope": "full"
+  },
+  "sql": {
+    "reviewed": "2026-11-15",
+    "scope": "full"
+  },
+  "testing": {
+    "reviewed": "2026-11-15",
+    "scope": "full"
   }
 }

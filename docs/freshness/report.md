@@ -11,8 +11,13 @@ Generated 2026-11-15 by `npm run study:freshness`. This file is rebuilt on every
 | React | 19.3.1 | none |
 | Next.js | 16.4.6 | none |
 | Tailwind CSS | 4.3.5 | none |
+| Vitest | 5.1.0 | none |
+| Jest | 30.5.2 | none |
 | React Router | 8.5.1 | interview-prep (7), system-design-scale (7) |
+| MSW | 3.0.6 | none |
+| Testing Library | 16.3.3 | none |
 | Express | 5.3.0 | none |
+| Playwright | 1.65.1 | none |
 | ECMAScript | ES2026 | typescript (2023) |
 
 ## Guides
@@ -35,9 +40,11 @@ Generated 2026-11-15 by `npm run study:freshness`. This file is rebuilt on every
 | performance-optimization | 32 | none | 4 cards | never recorded | [prompt](prompts/performance-optimization.md) |
 | react-training | 86 | none | 7 cards | never recorded | [prompt](prompts/react-training.md) |
 | reactjs | 74 | none | 2 cards | never recorded | [prompt](prompts/reactjs.md) |
+| sql | 59 | none | 2 cards | 0 days ago (2026-11-15, full) | [prompt](prompts/sql.md) |
 | system-design | 71 | none | 11 cards | never recorded | [prompt](prompts/system-design.md) |
 | system-design-scale | 45 | React Router | 8 cards | never recorded | [prompt](prompts/system-design-scale.md) |
 | tailwind-css | 34 | none | 0 cards | never recorded | [prompt](prompts/tailwind-css.md) |
+| testing | 58 | none | 3 cards | 0 days ago (2026-11-15, full) | [prompt](prompts/testing.md) |
 | typescript | 61 | ECMAScript | 2 cards | 1 days ago (2026-11-14, versions) | [prompt](prompts/typescript.md) |
 | web-platform | 23 | none | 4 cards | never recorded | [prompt](prompts/web-platform.md) |
 | whiteboard | 25 | none | 2 cards | 1 days ago (2026-11-14, full) | [prompt](prompts/whiteboard.md) |

@@ -46,6 +46,8 @@ const TRACKED = [
   { name: 'MSW', npm: 'msw', re: /\bMSW\s+v?(\d)\b/g },
   { name: 'Cypress', npm: 'cypress', re: /\bCypress\s+v?(\d{1,2})\b/g },
   { name: 'Testing Library', npm: '@testing-library/react', re: /\bReact Testing Library\s+v?(\d{1,2})\b/g },
+  { name: 'Prisma', npm: 'prisma', re: /\bPrisma\s+v?(\d)\b/g },
+  { name: 'Drizzle', npm: 'drizzle-orm', re: /\bDrizzle\s+v?(\d)\b/g },
   { name: 'Express', npm: 'express', re: /\bExpress\s+v?(\d)\b/g },
   { name: 'Fastify', npm: 'fastify', re: /\bFastify\s+v?(\d)\b/g },
   { name: 'NestJS', npm: '@nestjs/core', re: /\bNestJS\s+v?(\d{1,2})\b/g },
