@@ -350,12 +350,101 @@ function predictCompare(predicted, actual){
   }
   return { rows: rows, right: right, total: actual.length };
 }
+// Runs a snippet in a worker made from a Blob. Resolves with the printed lines, or null when this browser will not
+// run code here. A run that is still going after 2 seconds is stopped.
+function predictRun(code){
+  return new Promise(function(resolve){
+    const lines = [];
+    let w = null, done = false, timer = 0, url = '';
+    const finish = function(extra){
+      if(done) return;
+      done = true; clearTimeout(timer);
+      try{ w.terminate(); }catch(e){}
+      try{ URL.revokeObjectURL(url); }catch(e){}
+      if(extra) lines.push(extra);
+      resolve(lines);
+    };
+    try{
+      url = URL.createObjectURL(new Blob([predictSource(code, 'postMessage')], { type: 'text/javascript' }));
+      w = new Worker(url);
+    }catch(e){ resolve(null); return; }
+    w.onmessage = function(ev){ const m = ev.data || {}; if(m.line !== undefined) lines.push(m.line); if(m.done) finish(); };
+    w.onerror = function(ev){ if(ev.preventDefault) ev.preventDefault(); const m = String(ev.message || 'error'); finish(/^Uncaught /.test(m) ? m : 'Uncaught ' + m); };
+    timer = setTimeout(function(){ finish('Stopped: still running after 2 seconds'); }, 2000);
+  });
+}
+function mountPredict(root){
+  root.querySelectorAll('.predict').forEach(function(box){
+    if(box.dataset.mounted) return;
+    box.dataset.mounted = '1';
+    const body = box.closest('.qbody') || root;
+    const reveal = body.querySelector('details.reveal');
+    const pre = Array.from(body.querySelectorAll('pre')).find(function(p){ return !p.classList.contains('plain') && !p.closest('details'); });
+    if(!pre) return;
+    const snippet = pre.textContent;
+    const area = document.createElement('textarea');
+    area.className = 'pred-said'; area.rows = 4; area.spellcheck = false;
+    area.setAttribute('aria-label', 'Your predicted output, one line per console.log');
+    area.placeholder = 'What will this print? One line for each console.log.';
+    const go = document.createElement('button'); go.type = 'button'; go.className = 'pred-go'; go.textContent = 'Lock in and run'; go.disabled = true;
+    const skip = document.createElement('button'); skip.type = 'button'; skip.className = 'pred-skip'; skip.textContent = 'I don’t know: run it';
+    const note = document.createElement('p'); note.className = 'pred-note'; note.textContent = 'Runs in strict mode in a Web Worker: no DOM, no network.';
+    const out = document.createElement('div'); out.className = 'pred-out'; out.setAttribute('aria-live', 'polite');
+    const actions = document.createElement('div'); actions.className = 'pred-actions'; actions.append(go, skip);
+    box.append(area, actions, note, out);
+    area.addEventListener('input', function(){ go.disabled = !area.value.trim(); });
+
+    let said = null;     // the locked-in prediction, or null after "I don't know"
+    function show(lines, codeText){
+      out.textContent = '';
+      const t = document.createElement('table'); t.className = 'cmp pred-table';
+      let verdict;
+      if(said === null){
+        t.innerHTML = '<tr><th>It printed</th></tr>';
+        lines.forEach(function(l){ const tr = document.createElement('tr'); const td = document.createElement('td'); td.textContent = l; tr.appendChild(td); t.appendChild(tr); });
+        verdict = 'It printed ' + lines.length + ' line' + (lines.length === 1 ? '' : 's') + '.';
+      } else {
+        const c = predictCompare(said, lines);
+        t.innerHTML = '<tr><th>You said</th><th>It printed</th></tr>';
+        c.rows.forEach(function(r){
+          const tr = document.createElement('tr'); tr.className = r.ok ? 'pred-ok' : 'pred-bad';
+          const a = document.createElement('td'); a.textContent = r.said; const b = document.createElement('td'); b.textContent = r.printed + (r.ok ? '  ✓' : '  ✗');
+          tr.append(a, b); t.appendChild(tr);
+        });
+        verdict = c.rows.every(function(r){ return r.ok; }) ? 'Exactly right.' : c.right + ' of ' + c.total + ' lines right.';
+      }
+      const v = document.createElement('p'); v.className = 'pred-verdict'; v.textContent = verdict;
+      const edit = document.createElement('button'); edit.type = 'button'; edit.className = 'pred-edit'; edit.textContent = 'Edit the code';
+      out.append(t, v, edit);
+      edit.addEventListener('click', function(){
+        edit.remove();
+        const ta = document.createElement('textarea'); ta.className = 'pred-code'; ta.rows = 8; ta.spellcheck = false; ta.value = codeText;
+        ta.setAttribute('aria-label', 'Code');
+        const again = document.createElement('button'); again.type = 'button'; again.className = 'pred-again'; again.textContent = 'Run again';
+        out.append(ta, again);
+        again.addEventListener('click', function(){ run(ta.value); });
+      });
+      if(reveal) reveal.open = true;
+    }
+    function run(codeText){
+      go.disabled = true; skip.disabled = true; area.readOnly = true;
+      out.textContent = 'Running…';
+      predictRun(codeText).then(function(lines){
+        if(lines === null){ out.textContent = 'This browser will not run code here. Open the answer below.'; if(reveal) reveal.open = true; return; }
+        show(lines, codeText);
+      });
+    }
+    go.addEventListener('click', function(){ said = area.value; run(snippet); });
+    skip.addEventListener('click', function(){ said = null; run(snippet); });
+  });
+}
 // ---- predict:end
 function enhance(root){
   drawDiagrams(root);
   mountDepths(root);
   mountLadders(root);
   mountSqlRun(root);
+  mountPredict(root);
   root.querySelectorAll('pre').forEach(colourCode);
   root.querySelectorAll('table.cmp').forEach(t=>{
     const p = t.parentElement;

@@ -541,6 +541,18 @@
   .plan-meta{font-size:13px; color:var(--muted);}
   .plan-bar{display:block; height:5px; background:var(--accent); border-radius:3px; margin-top:3px; min-width:2px;}
   .plan-flag{font-size:13px; color:var(--danger); margin:3px 0 0;}
+  /* predict the output: type the output, lock it in, then watch the code run */
+  .predict{margin:0 0 16px;}
+  .pred-said, .pred-code{width:100%; box-sizing:border-box; font-family:var(--mono); font-size:13.5px; line-height:1.5; color:var(--text); background:var(--panel-2); border:1px solid var(--border); border-radius:10px; padding:10px 12px; resize:vertical;}
+  .pred-actions{display:flex; flex-wrap:wrap; gap:8px; margin:8px 0;}
+  .pred-actions button, .pred-edit, .pred-again{font:inherit; font-size:14px; font-weight:700; color:var(--accent); background:var(--panel); border:1px solid var(--accent); border-radius:10px; padding:7px 14px; cursor:pointer; margin:6px 8px 0 0;}
+  .pred-actions .pred-go{background:var(--accent); color:var(--accent-ink);}
+  .pred-actions button:disabled{opacity:.55; cursor:default;}
+  .pred-note{font-size:12.5px; color:var(--muted); margin:4px 0 8px;}
+  .pred-table td{font-family:var(--mono); font-size:13px; white-space:pre-wrap;}
+  .pred-table tr.pred-ok td:last-child{color:var(--accent);}
+  .pred-table tr.pred-bad td:last-child{color:var(--danger);}
+  .pred-verdict{font-weight:700; margin:8px 0;}
   /* "say this" script blocks used by the whiteboard guide */
   .say{border-left:4px solid var(--gold); background:var(--gold-soft); border-radius:0 10px 10px 0; padding:10px 16px; margin:0 0 16px; max-width:var(--measure);}
   .say > :last-child{margin-bottom:0;}
@@ -1596,6 +1608,29 @@ Map.groupBy(orders, (o) =&gt; o.status);   // same, but a Map (any key type)</pr
     {
       q:"What causes memory leaks in browser JavaScript, and how do you find them?",
       a:`<table class="cmp"><tr><th>Cause</th><th>Example</th><th>Fix</th></tr><tr><td>Forgotten listeners</td><td><code>window.addEventListener("resize", fn)</code> in a component, never removed</td><td>remove in cleanup, or pass <code>{ signal }</code> and abort</td></tr><tr><td>Timers and intervals</td><td><code>setInterval</code> that outlives the view</td><td><code>clearInterval</code> on unmount</td></tr><tr><td>Detached DOM nodes</td><td>a removed element still referenced from a JS array or cache</td><td>drop the reference; use <code>WeakMap</code> / <code>WeakRef</code> for caches keyed by nodes</td></tr><tr><td>Unbounded caches</td><td>a module-level Map that only grows</td><td>size limit (LRU) or TTL</td></tr><tr><td>Closures holding big data</td><td>a handler that closes over a large array it no longer needs</td><td>keep only what the closure needs</td></tr><tr><td>Subscriptions</td><td>WebSocket, store or observer subscriptions not unsubscribed</td><td>unsubscribe or <code>disconnect()</code> in cleanup</td></tr></table><ol><li>Reproduce: repeat the suspect action (open and close a modal) many times.</li><li>Chrome DevTools, <strong>Memory</strong> tab: take a heap snapshot, repeat the action, take another, and use <strong>Comparison</strong> to see what grew.</li><li>Filter for <strong>Detached</strong> to find removed DOM nodes still in memory, and follow the <strong>Retainers</strong> path to the reference that keeps them alive.</li><li>The Performance monitor (JS heap size, DOM nodes, listeners) shows whether memory returns to baseline after garbage collection.</li></ol><p><strong>Interview tip:</strong> In React, almost every leak is an effect without a cleanup. Say that, then show the fix.</p>`
+    }
+  ]
+},
+{
+  id:"js-predict", title:"Predict the Output",
+  questions:[
+    {
+      q:"Predict the output: synchronous code, a timer and a promise",
+      a:`<p class="codelabel">JavaScript</p><pre>console.log('A');
+setTimeout(() =&gt; console.log('B'), 0);
+Promise.resolve().then(() =&gt; console.log('C'));
+console.log('D');</pre><div class="predict"></div><details class="reveal"><summary>Show the output and why</summary><p class="codelabel">Output</p><pre class="plain">A
+D
+C
+B</pre><p>The script itself is one macrotask, so <code>A</code> and <code>D</code> print first. Then the engine empties the microtask queue, which holds the promise callback, so <code>C</code> prints. Only then does the next macrotask, the zero-delay timer, run and print <code>B</code>.</p><div class="callout"><strong>Say it like this:</strong> Synchronous code first, then promise callbacks, then timers, however short the timer is.</div></details>`
+    },
+    {
+      q:"Predict the output: <code>var</code> in a loop with a timer",
+      a:`<p class="codelabel">JavaScript</p><pre>for (var i = 0; i &lt; 3; i++) {
+  setTimeout(() =&gt; console.log(i), 0);
+}</pre><div class="predict"></div><details class="reveal"><summary>Show the output and why</summary><p class="codelabel">Output</p><pre class="plain">3
+3
+3</pre><p><code>var</code> is function-scoped, so there is <strong>one</strong> <code>i</code> shared by all three callbacks. The loop has finished and <code>i</code> is 3 by the time the timers run. A closure captures the variable, not its value at that moment.</p><div class="callout"><strong>Say it like this:</strong> With var every callback shares one variable; with let each iteration gets its own.</div></details>`
     }
   ]
 }

@@ -37,3 +37,11 @@ export const NOTE = (s) => '<p class="verified">' + md(s) + '</p>';
 export const SAMPLE = (label, s) => '<p class="codelabel">' + escPlain(label) + '</p><pre class="plain">' + escPlain(s.replace(/^\n+|\n+$/g, '')) + '</pre>';
 // An answer the reader opens after trying. Text inside is kept out of the card summary and search summary.
 export const REVEAL = (summary, ...parts) => '<details class="reveal"><summary>' + md(summary) + '</summary>' + parts.join('') + '</details>';
+// A "predict the output" card: a snippet, a box where the reader types the output before running it (the engine
+// mounts it on <div class="predict">), and the output with the reason under a reveal. `expect` is what
+// check-predict.mjs captured by really running the snippet; the extra `predict` field is for that check only.
+export const PREDICT = (title, code, expect, ...why) => ({
+  q: 'Predict the output: ' + md(title),
+  a: C(code, 'JavaScript') + '<div class="predict"></div>' + REVEAL('Show the output and why', SAMPLE('Output', expect), ...why),
+  predict: { code, expect },
+});
