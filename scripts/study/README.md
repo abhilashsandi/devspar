@@ -327,3 +327,11 @@ when it is added to a role in `ROLES` there (and the role's crash-course section
 recomputed on every visit from the reader's reviewed and weak cards, so it corrects itself when they fall behind. Every
 block opens as a flashcard deck through the `#deck=` link (at most 40 cards; longer blocks are split into parts).
 Dates are plain `YYYY-MM-DD` strings handled with `Date.UTC` on the parts, never local getters.
+
+## Job match
+
+`/match` (`app/lib/match.mjs`, skills in `app/lib/skills.mjs`) finds the skills a posting asks for and the cards that cover
+them. To add a skill, add an entry to `SKILLS`: an `id`, a `label`, the `aliases` a posting uses (whole terms, longest first,
+no everyday words such as `rest`, `express`, `spring`, `swift`, `cursor` or `go`) and optionally `guides` (a slug, or
+`slug:section`) that cover it. Whether a skill is covered, thin or missing is computed from the card bank, never written by
+hand. `tests/unit/match.test.mjs` checks every guide pointer against the real index, so a renamed guide or section fails there.
