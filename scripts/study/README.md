@@ -300,3 +300,22 @@ practice database, **Run**, **Check against the solution**, **Explain** (the pla
   guide's printed results are never edited to match; report a difference to the owner.
 - **Tests.** `tests/checks/13-sqlrun.mjs` loads the engine, runs and checks a puzzle, stops a runaway query and
   reloads. The first load seeds the data, so it takes about 40 seconds.
+
+## Predict the output
+
+The JavaScript guide's "Predict the Output" section has 24 cards where the reader types what a snippet prints,
+locks the answer in, and only then watches it run.
+
+- **Authoring.** `predict-content.mjs` exports cards built with `PREDICT(title, code, expect, ...why)` from `cc-kit.mjs`.
+  `node scripts/study/add-predict-cards.mjs` rebuilds the section (it replaces it, so edit the content file and run it
+  again), then `npm run study:build`. To add a card to another guide, put `PREDICT(...)` in that guide's content module.
+- **Never type an output.** `npm run study:predict` (`check-predict.mjs`) runs every snippet five times in a real worker
+  with the same harness and formatter the browser uses (the `predict` block of `engine.js`) and fails if any run differs
+  from the card or from the others. `--print <n>` prints what card `n` prints, to paste into `expect`. All 24 were also run
+  in Chromium and are identical to Node.
+- **Rules for a snippet.** Strict mode, no DOM, no network. Logs only strings, numbers, booleans, null, undefined,
+  arrays and plain objects, with `console.log`. Timers are at most 300 ms. The harness collects output for 700 ms; a
+  snippet still running after 2 seconds is stopped. Avoid the top-level `this` and an engine's error message text; print
+  `e.name`. An uncaught error prints `Uncaught Name: message` and an unhandled rejection `Uncaught (in promise) ...`.
+- **Judging.** Lines are compared after removing whitespace and normalising quotes, so `[1,2]` is right for `[ 1, 2 ]`;
+  a string typed as a number is wrong.

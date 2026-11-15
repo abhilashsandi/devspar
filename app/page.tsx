@@ -76,7 +76,7 @@ const GROUPS: Group[] = [
     title: 'Frontend & web',
     blurb: 'Deep dives by topic, each with flashcards and a Quick Reference.',
     guides: [
-      { slug: 'javascript', title: 'JavaScript', desc: 'Closures, prototypes and this, promises and the event loop, generators, modules, DOM events, TypeScript and CSS basics.', icon: Braces },
+      { slug: 'javascript', title: 'JavaScript', desc: 'Closures, prototypes and this, promises and the event loop, generators, modules, DOM events, TypeScript and CSS basics, and 24 predict-the-output snippets you can run.', icon: Braces },
       { slug: 'typescript', title: 'TypeScript', desc: 'Structural typing, narrowing, generics, conditional and mapped types, branded types, runtime validation, tsconfig, migration and Node type stripping.', icon: FileType },
       { slug: 'react-training', title: 'React.js', desc: 'Hooks and effects, rendering performance, state, React 19 and Suspense, Router and forms, React Testing Library.', icon: Atom },
       { slug: 'reactjs', title: 'React + TypeScript', desc: 'The same territory with a typing focus: typed components and hooks, generics, HOCs, state libraries and a one-page Quick Reference.', icon: Component },

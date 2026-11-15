@@ -78,6 +78,8 @@ Everything a reader types stays in their browser.
   write a query, check it against the solution, read the plan as a tree. The engine is copied to
   `public/vendor/` at build time; see "Runnable SQL" in `scripts/study/README.md`.
 
+- The JavaScript guide's "Predict the Output" cards: type the output, lock it in, then run the snippet in a worker.
+
 ## SEO
 
 Set `NEXT_PUBLIC_SITE_URL` in the deploy environment (the production domain, e.g.

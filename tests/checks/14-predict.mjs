@@ -12,7 +12,7 @@ export async function run({ browser, base, ok }) {
   await cards.evaluateAll((els) => els.forEach((e) => e.classList.add('open')));
   const first = cards.nth(0), second = cards.nth(1);
 
-  ok('the section has its predict cards', (await cards.count()) >= 2, String(await cards.count()));
+  ok('the section has its 24 predict cards', (await cards.count()) === 24, String(await cards.count()));
   const lock = first.getByRole('button', { name: 'Lock in and run' });
   ok('Lock in and run is disabled until something is typed, and the answer is hidden', (await lock.isDisabled()) && !(await first.locator('details.reveal').evaluate((d) => d.open)));
 

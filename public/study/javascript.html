@@ -1625,12 +1625,298 @@ C
 B</pre><p>The script itself is one macrotask, so <code>A</code> and <code>D</code> print first. Then the engine empties the microtask queue, which holds the promise callback, so <code>C</code> prints. Only then does the next macrotask, the zero-delay timer, run and print <code>B</code>.</p><div class="callout"><strong>Say it like this:</strong> Synchronous code first, then promise callbacks, then timers, however short the timer is.</div></details>`
     },
     {
+      q:"Predict the output: a timer that queues a microtask, beside a second timer",
+      a:`<p class="codelabel">JavaScript</p><pre>setTimeout(() =&gt; {
+  console.log('timer 1');
+  Promise.resolve().then(() =&gt; console.log('microtask in timer 1'));
+}, 0);
+setTimeout(() =&gt; console.log('timer 2'), 0);</pre><div class="predict"></div><details class="reveal"><summary>Show the output and why</summary><p class="codelabel">Output</p><pre class="plain">timer 1
+microtask in timer 1
+timer 2</pre><p>Each timer callback is its own macrotask. After the first one finishes, the engine drains the microtask queue <strong>before</strong> it takes the next macrotask, so the promise callback created inside timer 1 runs before timer 2.</p><div class="callout"><strong>Say it like this:</strong> Microtasks are drained after every macrotask, not once at the end of the script.</div></details>`
+    },
+    {
+      q:"Predict the output: an <code>async</code> function before and after its first <code>await</code>",
+      a:`<p class="codelabel">JavaScript</p><pre>async function f() {
+  console.log('f start');
+  await null;
+  console.log('f after await');
+}
+console.log('before');
+f();
+console.log('after');</pre><div class="predict"></div><details class="reveal"><summary>Show the output and why</summary><p class="codelabel">Output</p><pre class="plain">before
+f start
+after
+f after await</pre><p>An <code>async</code> function runs synchronously until its first <code>await</code>, so <code>f start</code> prints during the call to <code>f()</code>. The <code>await</code> hands the rest of the function to the microtask queue and returns control to the caller, which prints <code>after</code>. Then the continuation runs.</p><div class="callout"><strong>Say it like this:</strong> Everything before the first await is synchronous; everything after it is a microtask.</div></details>`
+    },
+    {
+      q:"Predict the output: a promise executor and its <code>then</code>",
+      a:`<p class="codelabel">JavaScript</p><pre>const p = new Promise((resolve) =&gt; {
+  console.log('executor');
+  resolve('done');
+  console.log('after resolve');
+});
+p.then((v) =&gt; console.log(v));
+console.log('end');</pre><div class="predict"></div><details class="reveal"><summary>Show the output and why</summary><p class="codelabel">Output</p><pre class="plain">executor
+after resolve
+end
+done</pre><p>The function you pass to <code>new Promise</code> runs immediately and synchronously, and <code>resolve</code> does not stop it, so <code>after resolve</code> still prints. The <code>then</code> callback is always asynchronous, even on an already-resolved promise, so <code>done</code> comes after <code>end</code>.</p><div class="callout"><strong>Say it like this:</strong> The executor is synchronous; the then callback never is.</div></details>`
+    },
+    {
+      q:"Predict the output: two timers with a promise chain between them",
+      a:`<p class="codelabel">JavaScript</p><pre>setTimeout(() =&gt; console.log('timeout 10'), 10);
+setTimeout(() =&gt; console.log('timeout 0'), 0);
+Promise.resolve()
+  .then(() =&gt; console.log('then 1'))
+  .then(() =&gt; console.log('then 2'));
+console.log('sync');</pre><div class="predict"></div><details class="reveal"><summary>Show the output and why</summary><p class="codelabel">Output</p><pre class="plain">sync
+then 1
+then 2
+timeout 0
+timeout 10</pre><p><code>sync</code> is part of the script. Both <code>then</code> callbacks are microtasks, and the second is queued as soon as the first finishes, so both run before any timer. The timers then fire in order of their delays.</p><div class="callout"><strong>Say it like this:</strong> A whole promise chain finishes before the next timer gets a turn.</div></details>`
+    },
+    {
+      q:"Predict the output: <code>queueMicrotask</code> against a two-step <code>then</code> chain",
+      a:`<p class="codelabel">JavaScript</p><pre>queueMicrotask(() =&gt; console.log('microtask A'));
+Promise.resolve()
+  .then(() =&gt; console.log('then 1'))
+  .then(() =&gt; console.log('then 2'));
+queueMicrotask(() =&gt; console.log('microtask B'));</pre><div class="predict"></div><details class="reveal"><summary>Show the output and why</summary><p class="codelabel">Output</p><pre class="plain">microtask A
+then 1
+microtask B
+then 2</pre><p>The microtask queue is first in, first out. <code>A</code>, <code>then 1</code> and <code>B</code> are queued while the script runs. <code>then 2</code> is only queued once <code>then 1</code> has finished, so it goes to the back of the queue, behind <code>B</code>.</p><div class="callout"><strong>Say it like this:</strong> Each link of a promise chain is queued only when the one before it is done.</div></details>`
+    },
+    {
       q:"Predict the output: <code>var</code> in a loop with a timer",
       a:`<p class="codelabel">JavaScript</p><pre>for (var i = 0; i &lt; 3; i++) {
   setTimeout(() =&gt; console.log(i), 0);
 }</pre><div class="predict"></div><details class="reveal"><summary>Show the output and why</summary><p class="codelabel">Output</p><pre class="plain">3
 3
 3</pre><p><code>var</code> is function-scoped, so there is <strong>one</strong> <code>i</code> shared by all three callbacks. The loop has finished and <code>i</code> is 3 by the time the timers run. A closure captures the variable, not its value at that moment.</p><div class="callout"><strong>Say it like this:</strong> With var every callback shares one variable; with let each iteration gets its own.</div></details>`
+    },
+    {
+      q:"Predict the output: <code>let</code> in a loop with a timer",
+      a:`<p class="codelabel">JavaScript</p><pre>for (let i = 0; i &lt; 3; i++) {
+  setTimeout(() =&gt; console.log(i), 0);
+}</pre><div class="predict"></div><details class="reveal"><summary>Show the output and why</summary><p class="codelabel">Output</p><pre class="plain">0
+1
+2</pre><p><code>let</code> creates a fresh binding for <strong>each iteration</strong> of the loop, so each callback closes over its own <code>i</code>. The timers fire in the order they were created, and each prints the value its iteration had.</p><div class="callout"><strong>Say it like this:</strong> let in a for loop gives every iteration its own copy of the variable.</div></details>`
+    },
+    {
+      q:"Predict the output: reading a <code>var</code> and a <code>let</code> before their lines",
+      a:`<p class="codelabel">JavaScript</p><pre>console.log(typeof a);
+var a = 1;
+try {
+  console.log(b);
+} catch (e) {
+  console.log(e.name);
+}
+let b = 2;</pre><div class="predict"></div><details class="reveal"><summary>Show the output and why</summary><p class="codelabel">Output</p><pre class="plain">undefined
+ReferenceError</pre><p>Both declarations are hoisted, but differently. A <code>var</code> exists from the top of its scope and starts as <code>undefined</code>. A <code>let</code> exists too, but is in the temporal dead zone until its line runs, so reading it throws a <code>ReferenceError</code>.</p><div class="callout"><strong>Say it like this:</strong> var is hoisted and undefined; let is hoisted but unusable until its declaration.</div></details>`
+    },
+    {
+      q:"Predict the output: calling a function declaration and a function expression early",
+      a:`<p class="codelabel">JavaScript</p><pre>console.log(typeof declared);
+console.log(typeof expressed);
+function declared() {}
+var expressed = function () {};</pre><div class="predict"></div><details class="reveal"><summary>Show the output and why</summary><p class="codelabel">Output</p><pre class="plain">function
+undefined</pre><p>A function <strong>declaration</strong> is hoisted with its body, so it can be used before its line. A function <strong>expression</strong> assigned to a <code>var</code> only hoists the variable, which is <code>undefined</code> until the assignment runs, so calling it early would throw.</p><div class="callout"><strong>Say it like this:</strong> Declarations are hoisted whole; expressions are only as early as their assignment.</div></details>`
+    },
+    {
+      q:"Predict the output: two counters made by one factory",
+      a:`<p class="codelabel">JavaScript</p><pre>function makeCounter() {
+  let n = 0;
+  return () =&gt; ++n;
+}
+const a = makeCounter();
+const b = makeCounter();
+console.log(a(), a(), b(), a());</pre><div class="predict"></div><details class="reveal"><summary>Show the output and why</summary><p class="codelabel">Output</p><pre class="plain">1 2 1 3</pre><p>Every call to <code>makeCounter</code> creates a new <code>n</code>, and the returned function closes over that one. So <code>a</code> and <code>b</code> count independently: <code>a</code> gives 1, 2, then 3, while <code>b</code> has its own 1. <code>console.log</code> with several arguments prints them separated by spaces.</p><div class="callout"><strong>Say it like this:</strong> A closure keeps its own copy of the variables from the call that created it.</div></details>`
+    },
+    {
+      q:"Predict the output: a method copied into a variable",
+      a:`<p class="codelabel">JavaScript</p><pre>const user = {
+  name: 'Ada',
+  hello() {
+    return this.name;
+  },
+};
+const hello = user.hello;
+try {
+  console.log(hello());
+} catch (e) {
+  console.log(e.name);
+}
+console.log(user.hello());</pre><div class="predict"></div><details class="reveal"><summary>Show the output and why</summary><p class="codelabel">Output</p><pre class="plain">TypeError
+Ada</pre><p><code>this</code> is decided by <strong>how a function is called</strong>, not where it was written. <code>user.hello()</code> has <code>user</code> before the dot, so <code>this</code> is <code>user</code>. Calling the copied <code>hello()</code> has no object, so in strict mode <code>this</code> is <code>undefined</code>, and reading <code>.name</code> from it throws a <code>TypeError</code>.</p><div class="callout"><strong>Say it like this:</strong> this comes from the call site: the object before the dot, or nothing at all.</div></details>`
+    },
+    {
+      q:"Predict the output: an arrow function and a regular function inside a method",
+      a:`<p class="codelabel">JavaScript</p><pre>const obj = {
+  name: 'obj',
+  arrow() {
+    return [1].map(() =&gt; this.name)[0];
+  },
+  regular() {
+    try {
+      return [1].map(function () { return this.name; })[0];
+    } catch (e) {
+      return e.name;
+    }
+  },
+};
+console.log(obj.arrow());
+console.log(obj.regular());</pre><div class="predict"></div><details class="reveal"><summary>Show the output and why</summary><p class="codelabel">Output</p><pre class="plain">obj
+TypeError</pre><p>An arrow function has no <code>this</code> of its own: it uses the <code>this</code> of the code around it, here the method, so it sees <code>obj</code>. The regular function passed to <code>map</code> is called with no object, so in strict mode its <code>this</code> is <code>undefined</code> and <code>this.name</code> throws.</p><div class="callout"><strong>Say it like this:</strong> Arrow functions inherit this; regular functions get it from the call.</div></details>`
+    },
+    {
+      q:"Predict the output: <code>bind</code>, then <code>call</code> with another object",
+      a:`<p class="codelabel">JavaScript</p><pre>function who() {
+  return this.name;
+}
+const a = { name: 'a' };
+const b = { name: 'b' };
+const bound = who.bind(a);
+console.log(bound());
+console.log(bound.call(b));
+console.log(who.call(b));</pre><div class="predict"></div><details class="reveal"><summary>Show the output and why</summary><p class="codelabel">Output</p><pre class="plain">a
+a
+b</pre><p><code>bind</code> returns a new function with <code>this</code> fixed to <code>a</code> for good. Calling that function with <code>call(b)</code> cannot change it, so it still returns <code>a</code>. The original <code>who</code> has no fixed <code>this</code>, so <code>who.call(b)</code> uses <code>b</code>.</p><div class="callout"><strong>Say it like this:</strong> bind fixes this permanently; call and apply only set it for that one call.</div></details>`
+    },
+    {
+      q:"Predict the output: a class method passed as a callback",
+      a:`<p class="codelabel">JavaScript</p><pre>class Button {
+  label = 'ok';
+  plain() {
+    return this.label;
+  }
+  arrow = () =&gt; this.label;
+}
+const b = new Button();
+const run = (fn) =&gt; {
+  try {
+    return fn();
+  } catch (e) {
+    return e.name;
+  }
+};
+console.log(run(b.plain));
+console.log(run(b.arrow));</pre><div class="predict"></div><details class="reveal"><summary>Show the output and why</summary><p class="codelabel">Output</p><pre class="plain">TypeError
+ok</pre><p>Passing <code>b.plain</code> hands over the bare function, so <code>this</code> is lost when <code>run</code> calls it, and class code is always strict, giving <code>undefined</code> and a <code>TypeError</code>. The arrow function stored as a class field was created inside the constructor, so it keeps <code>this</code> pointing at the instance.</p><div class="callout"><strong>Say it like this:</strong> To pass a method as a callback, bind it or use an arrow-function field.</div></details>`
+    },
+    {
+      q:"Predict the output: plus and minus with strings",
+      a:`<p class="codelabel">JavaScript</p><pre>console.log('5' + 2);
+console.log('5' - 2);
+console.log([] + {});
+console.log([1, 2] + [3]);</pre><div class="predict"></div><details class="reveal"><summary>Show the output and why</summary><p class="codelabel">Output</p><pre class="plain">52
+3
+[object Object]
+1,23</pre><p><code>+</code> joins as soon as either side is a string, so <code>52</code>. <code>-</code> has no string meaning, so both sides become numbers and give <code>3</code>. Objects and arrays are turned into strings before <code>+</code>: <code>[]</code> becomes an empty string and <code>{}</code> becomes <code>[object Object]</code>, and <code>[1, 2]</code> becomes <code>1,2</code>.</p><div class="callout"><strong>Say it like this:</strong> Plus prefers strings; minus always means numbers.</div></details>`
+    },
+    {
+      q:"Predict the output: loose equality, <code>NaN</code> and <code>Object.is</code>",
+      a:`<p class="codelabel">JavaScript</p><pre>console.log(null == undefined);
+console.log(null == 0);
+console.log('' == 0);
+console.log(NaN === NaN);
+console.log(Object.is(NaN, NaN));</pre><div class="predict"></div><details class="reveal"><summary>Show the output and why</summary><p class="codelabel">Output</p><pre class="plain">true
+false
+true
+false
+true</pre><p><code>null</code> and <code>undefined</code> are loosely equal only to each other, so <code>null == 0</code> is false. An empty string converts to <code>0</code>, so <code>'' == 0</code> is true. <code>NaN</code> is not equal to anything, itself included, even with <code>===</code>; <code>Object.is</code> treats <code>NaN</code> as the same value.</p><div class="callout"><strong>Say it like this:</strong> Prefer <code>===</code>; use <code>Number.isNaN</code> or <code>Object.is</code> to test for <code>NaN</code>.</div></details>`
+    },
+    {
+      q:"Predict the output: <code>typeof</code> on awkward values",
+      a:`<p class="codelabel">JavaScript</p><pre>console.log(typeof null);
+console.log(typeof []);
+console.log(typeof function () {});
+console.log(typeof undefined);
+console.log(typeof NaN);</pre><div class="predict"></div><details class="reveal"><summary>Show the output and why</summary><p class="codelabel">Output</p><pre class="plain">object
+object
+function
+undefined
+number</pre><p><code>typeof null</code> is <code>object</code>, a mistake from the first version of the language that can never be fixed. Arrays are objects, so use <code>Array.isArray</code> to tell them apart. Functions report <code>function</code>, and <code>NaN</code> is a number, the value you get from a failed numeric operation.</p><div class="callout"><strong>Say it like this:</strong> typeof null is object; check arrays with Array.isArray.</div></details>`
+    },
+    {
+      q:"Predict the output: the default <code>sort</code> order",
+      a:`<p class="codelabel">JavaScript</p><pre>console.log([10, 9, 1].sort());
+console.log([10, 9, 1].sort((a, b) =&gt; a - b));</pre><div class="predict"></div><details class="reveal"><summary>Show the output and why</summary><p class="codelabel">Output</p><pre class="plain">[ 1, 10, 9 ]
+[ 1, 9, 10 ]</pre><p>Without a comparison function, <code>sort</code> turns the items into <strong>strings</strong> and compares them as text, so <code>10</code> comes before <code>9</code> because <code>"1"</code> sorts before <code>"9"</code>. A comparison function returning <code>a - b</code> sorts the numbers by value.</p><div class="callout"><strong>Say it like this:</strong> sort is alphabetical by default; pass a comparator for numbers.</div></details>`
+    },
+    {
+      q:"Predict the output: a <code>then</code> that throws, and a <code>catch</code> that returns",
+      a:`<p class="codelabel">JavaScript</p><pre>Promise.resolve(1)
+  .then((v) =&gt; {
+    console.log('a', v);
+    throw new Error('boom');
+  })
+  .then(() =&gt; console.log('skipped'))
+  .catch((e) =&gt; {
+    console.log('caught', e.message);
+    return 'recovered';
+  })
+  .then((v) =&gt; console.log('after', v));</pre><div class="predict"></div><details class="reveal"><summary>Show the output and why</summary><p class="codelabel">Output</p><pre class="plain">a 1
+caught boom
+after recovered</pre><p>A throw inside a <code>then</code> rejects the promise it returns, and rejections skip every <code>then</code> until a <code>catch</code>. The <code>catch</code> handles it, and because it returns a value, the chain is fulfilled again with that value, so the last <code>then</code> runs with <code>recovered</code>.</p><div class="callout"><strong>Say it like this:</strong> A catch that returns a value turns the chain back into a success.</div></details>`
+    },
+    {
+      q:"Predict the output: <code>Promise.all</code> against <code>Promise.allSettled</code>",
+      a:`<p class="codelabel">JavaScript</p><pre>const ok = (v) =&gt; new Promise((r) =&gt; setTimeout(() =&gt; r(v), 10));
+const bad = () =&gt; new Promise((_, rej) =&gt; setTimeout(() =&gt; rej(new Error('no')), 20));
+Promise.all([ok('a'), bad(), ok('c')]).then(
+  (v) =&gt; console.log('all', v),
+  (e) =&gt; console.log('all rejected', e.message),
+);
+Promise.allSettled([ok('a'), bad(), ok('c')]).then((r) =&gt;
+  console.log('settled', r.map((x) =&gt; x.status)),
+);</pre><div class="predict"></div><details class="reveal"><summary>Show the output and why</summary><p class="codelabel">Output</p><pre class="plain">all rejected no
+settled [ 'fulfilled', 'rejected', 'fulfilled' ]</pre><p><code>Promise.all</code> rejects as soon as one input rejects and throws the other results away, so only the error is reported. <code>Promise.allSettled</code> waits for every input and reports a status for each, so the two good results are not lost.</p><div class="callout"><strong>Say it like this:</strong> all fails fast; allSettled always tells you what happened to every promise.</div></details>`
+    },
+    {
+      q:"Predict the output: <code>try</code> and <code>catch</code> around an async call",
+      a:`<p class="codelabel">JavaScript</p><pre>async function fail() {
+  throw new Error('x');
+}
+async function main() {
+  try {
+    fail();
+    console.log('no await, no catch');
+  } catch (e) {
+    console.log('caught 1');
+  }
+  try {
+    await fail();
+  } catch (e) {
+    console.log('caught 2');
+  }
+}
+main();</pre><div class="predict"></div><details class="reveal"><summary>Show the output and why</summary><p class="codelabel">Output</p><pre class="plain">no await, no catch
+caught 2
+Uncaught (in promise) Error: x</pre><p><code>fail()</code> returns a rejected promise instead of throwing, so without <code>await</code> the <code>try</code> block finishes normally and <code>catch</code> never runs. With <code>await</code>, the rejection is turned back into a throw at that line and the <code>catch</code> sees it. The first rejection was never handled, which a browser reports as an unhandled rejection. This page prints it as an <code>Uncaught (in promise)</code> line.</p><div class="callout"><strong>Say it like this:</strong> A try/catch only catches an async failure if you await the call.</div></details>`
+    },
+    {
+      q:"Predict the output: what <code>finally</code> passes through",
+      a:`<p class="codelabel">JavaScript</p><pre>Promise.resolve('value')
+  .finally(() =&gt; {
+    console.log('finally runs');
+    return 'ignored';
+  })
+  .then((v) =&gt; console.log('then gets', v));
+Promise.reject(new Error('bad'))
+  .finally(() =&gt; console.log('finally on reject'))
+  .catch((e) =&gt; console.log('catch gets', e.message));</pre><div class="predict"></div><details class="reveal"><summary>Show the output and why</summary><p class="codelabel">Output</p><pre class="plain">finally runs
+finally on reject
+then gets value
+catch gets bad</pre><p><code>finally</code> runs whether the promise was fulfilled or rejected, but it does not change the outcome. Whatever it returns is ignored, so the original value <code>value</code> still reaches the <code>then</code>, and the original error still reaches the <code>catch</code>. Both <code>finally</code> callbacks run first because they were queued first.</p><div class="callout"><strong>Say it like this:</strong> finally is for cleanup: it passes the value or the error straight through.</div></details>`
+    },
+    {
+      q:"Predict the output: a spread copy is shallow",
+      a:`<p class="codelabel">JavaScript</p><pre>const a = { n: 1, inner: { m: 1 } };
+const b = { ...a };
+b.n = 2;
+b.inner.m = 2;
+console.log(a);
+console.log(b);</pre><div class="predict"></div><details class="reveal"><summary>Show the output and why</summary><p class="codelabel">Output</p><pre class="plain">{ n: 1, inner: { m: 2 } }
+{ n: 2, inner: { m: 2 } }</pre><p>Spread copies the top-level properties. <code>n</code> is a number, so <code>b</code> got its own copy and changing it leaves <code>a</code> alone. <code>inner</code> is an object, so both <code>a</code> and <code>b</code> hold a reference to the <strong>same</strong> object, and changing <code>b.inner.m</code> shows up in <code>a</code> too.</p><div class="callout"><strong>Say it like this:</strong> Spread and Object.assign copy one level; nested objects are still shared.</div></details>`
     }
   ]
 }
