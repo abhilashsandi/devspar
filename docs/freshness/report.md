@@ -1,6 +1,6 @@
 # Study guide freshness report
 
-Generated 2026-11-14 by `npm run study:freshness`. This file is rebuilt on every run.
+Generated 2026-11-15 by `npm run study:freshness`. This file is rebuilt on every run.
 
 ## Current versions
 
@@ -9,7 +9,7 @@ Generated 2026-11-14 by `npm run study:freshness`. This file is rebuilt on every
 | Node.js | 26.13.1 LTS (Lithium), current 26.13.1 | crash-course (10), genai (22), interview-cheatsheet (15) |
 | TypeScript | 7.0.2 | none |
 | React | 19.3.1 | none |
-| Next.js | 16.4.6 | system-design-scale (15) |
+| Next.js | 16.4.6 | none |
 | Tailwind CSS | 4.3.5 | none |
 | React Router | 8.5.1 | interview-prep (7), system-design-scale (7) |
 | Express | 5.3.0 | none |
@@ -19,27 +19,28 @@ Generated 2026-11-14 by `npm run study:freshness`. This file is rebuilt on every
 
 | Guide | Cards | Versions behind | Time-sensitive wording | Last reviewed | Prompt |
 | --- | --- | --- | --- | --- | --- |
-| ai-dev | 80 | none | 4 cards | 0 days ago (2026-11-14, full) | [prompt](prompts/ai-dev.md) |
-| architecture | 30 | none | 0 cards | 0 days ago (2026-11-14, full) | [prompt](prompts/architecture.md) |
+| ai-dev | 80 | none | 4 cards | 1 days ago (2026-11-14, full) | [prompt](prompts/ai-dev.md) |
+| architecture | 30 | none | 0 cards | 1 days ago (2026-11-14, full) | [prompt](prompts/architecture.md) |
 | aws | 68 | none | 2 cards | never recorded | [prompt](prompts/aws.md) |
-| bug-clinic | 51 | none | 5 cards | 0 days ago (2026-11-14, full) | [prompt](prompts/bug-clinic.md) |
+| behavioural | 53 | none | 1 cards | 0 days ago (2026-11-15, full) | [prompt](prompts/behavioural.md) |
+| bug-clinic | 51 | none | 5 cards | 1 days ago (2026-11-14, full) | [prompt](prompts/bug-clinic.md) |
 | coding-questions | 37 | none | 3 cards | never recorded | [prompt](prompts/coding-questions.md) |
 | crash-course | 105 | Node.js | 6 cards | never recorded | [prompt](prompts/crash-course.md) |
 | genai | 140 | Node.js | 11 cards | never recorded | [prompt](prompts/genai.md) |
-| interview-cheatsheet | 150 | Node.js | 5 cards | 0 days ago (2026-11-14, versions) | [prompt](prompts/interview-cheatsheet.md) |
-| interview-prep | 403 | React Router | 38 cards | 0 days ago (2026-11-14, versions) | [prompt](prompts/interview-prep.md) |
+| interview-cheatsheet | 150 | Node.js | 5 cards | 1 days ago (2026-11-14, versions) | [prompt](prompts/interview-cheatsheet.md) |
+| interview-prep | 403 | React Router | 38 cards | 1 days ago (2026-11-14, versions) | [prompt](prompts/interview-prep.md) |
 | javascript | 51 | none | 3 cards | never recorded | [prompt](prompts/javascript.md) |
 | nextjs | 37 | none | 5 cards | never recorded | [prompt](prompts/nextjs.md) |
-| nodejs | 62 | none | 5 cards | 0 days ago (2026-11-14, versions) | [prompt](prompts/nodejs.md) |
+| nodejs | 62 | none | 5 cards | 1 days ago (2026-11-14, versions) | [prompt](prompts/nodejs.md) |
 | performance-optimization | 32 | none | 4 cards | never recorded | [prompt](prompts/performance-optimization.md) |
 | react-training | 86 | none | 7 cards | never recorded | [prompt](prompts/react-training.md) |
 | reactjs | 74 | none | 2 cards | never recorded | [prompt](prompts/reactjs.md) |
 | system-design | 71 | none | 11 cards | never recorded | [prompt](prompts/system-design.md) |
-| system-design-scale | 45 | Next.js, React Router | 8 cards | never recorded | [prompt](prompts/system-design-scale.md) |
+| system-design-scale | 45 | React Router | 8 cards | never recorded | [prompt](prompts/system-design-scale.md) |
 | tailwind-css | 34 | none | 0 cards | never recorded | [prompt](prompts/tailwind-css.md) |
-| typescript | 61 | ECMAScript | 2 cards | 0 days ago (2026-11-14, versions) | [prompt](prompts/typescript.md) |
+| typescript | 61 | ECMAScript | 2 cards | 1 days ago (2026-11-14, versions) | [prompt](prompts/typescript.md) |
 | web-platform | 23 | none | 4 cards | never recorded | [prompt](prompts/web-platform.md) |
-| whiteboard | 25 | none | 2 cards | 0 days ago (2026-11-14, full) | [prompt](prompts/whiteboard.md) |
+| whiteboard | 25 | none | 2 cards | 1 days ago (2026-11-14, full) | [prompt](prompts/whiteboard.md) |
 
 ## Details
 
@@ -69,10 +70,6 @@ Generated 2026-11-14 by `npm run study:freshness`. This file is rebuilt on every
 - `sdscale:2` Which web framework would you choose, and why?
 
 ### system-design-scale
-
-**Next.js**: newest version mentioned is 15, current is 16.4.6.
-
-- `client:0` Which web framework would you choose, and why?
 
 **React Router**: newest version mentioned is 7, current is 8.5.1.
 

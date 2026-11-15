@@ -7,6 +7,7 @@ import {
   BookOpen,
   Bot,
   Braces,
+  MessagesSquare,
   Bug,
   Brain,
   Cloud,
@@ -102,8 +103,9 @@ const GROUPS: Group[] = [
   {
     id: 'practice',
     title: 'Practice',
-    blurb: 'Write code, not just read answers.',
+    blurb: 'Say it and write it, not just read it.',
     guides: [
+      { slug: 'behavioural', title: 'Behavioural Interviews', desc: 'A STAR question bank by competency: what each question checks, the shape of a strong answer, a worked example and the follow-ups to expect.', icon: MessagesSquare },
       { slug: 'bug-clinic', title: 'Bug Clinic', desc: 'Fifty find-the-bug exercises: JavaScript, React, Node.js, TypeScript, Next.js and CSS. Read the broken code, explain the cause, then check the fix.', icon: Bug },
       { slug: 'coding-questions', title: 'Coding Practice', desc: 'Algorithm, data-structure and React coding exercises with approach, code and trade-offs.', icon: TerminalSquare },
     ],

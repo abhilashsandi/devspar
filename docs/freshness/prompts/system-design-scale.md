@@ -1,6 +1,6 @@
 # Refresh prompt: system-design-scale
 
-Generated 2026-11-14 by `npm run study:freshness`. Paste this into a coding agent opened at the repository root.
+Generated 2026-11-15 by `npm run study:freshness`. Paste this into a coding agent opened at the repository root.
 
 ## Task
 
@@ -19,13 +19,10 @@ Bring the **system-design-scale** study guide (`app/system-design-scale/content.
 ## What the scan found
 
 Versions mentioned in this guide:
-- Next.js: guide mentions major version(s) 15; current is 16.4.6  ← BEHIND
+- Next.js: guide mentions major version(s) 15, 16; current is 16.4.6
 - React Router: guide mentions major version(s) 7; current is 8.5.1  ← BEHIND
 
 ## Cards that mention the newest-known version of something that has since moved on
-
-### Next.js (guide: 15, current: 16.4.6)
-- `client:0` Which web framework would you choose, and why?
 
 ### React Router (guide: 7, current: 8.5.1)
 - `client:0` Which web framework would you choose, and why?

@@ -1,6 +1,6 @@
 # Refresh prompt: javascript
 
-Generated 2026-11-14 by `npm run study:freshness`. Paste this into a coding agent opened at the repository root.
+Generated 2026-11-15 by `npm run study:freshness`. Paste this into a coding agent opened at the repository root.
 
 ## Task
 
