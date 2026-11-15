@@ -319,3 +319,11 @@ locks the answer in, and only then watches it run.
   `e.name`. An uncaught error prints `Uncaught Name: message` and an unhandled rejection `Uncaught (in promise) ...`.
 - **Judging.** Lines are compared after removing whitespace and normalising quotes, so `[1,2]` is right for `[ 1, 2 ]`;
   a string typed as a number is wrong.
+
+## Interview plan
+
+`/plan` (`app/lib/plan.mjs`) builds a plan from today, the date, a role and the minutes a day. A guide joins a plan only
+when it is added to a role in `ROLES` there (and the role's crash-course section ids are listed beside it). The plan is
+recomputed on every visit from the reader's reviewed and weak cards, so it corrects itself when they fall behind. Every
+block opens as a flashcard deck through the `#deck=` link (at most 40 cards; longer blocks are split into parts).
+Dates are plain `YYYY-MM-DD` strings handled with `Date.UTC` on the parts, never local getters.

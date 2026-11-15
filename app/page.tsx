@@ -42,6 +42,8 @@ import WhiteboardSketch from './components/WhiteboardSketch';
 import studyMeta from './lib/studyMeta.json';
 import { fnv } from './lib/studyKeys.mjs';
 import { TOOLS } from './lib/tools.mjs';
+import { dayDiff, readSettings } from './lib/plan.mjs';
+import { localToday } from './lib/today';
 
 type Guide = { slug: string; title: string; desc: string; icon: LucideIcon };
 type Group = { id: string; title: string; blurb: string; cols?: 4; guides: Guide[] };
@@ -180,6 +182,21 @@ function useWeak(): Record<string, number> {
   return useMemo(() => JSON.parse(raw) as Record<string, number>, [raw]);
 }
 
+// The interview-date countdown (set on /plan): days left, or -1 when there is no date or it has passed.
+function readPlanDays(): string {
+  try {
+    const s = readSettings(localStorage);
+    if (!s) return '-1';
+    const d = dayDiff(localToday(), s.date);
+    return String(d >= 0 ? d : -1);
+  } catch {
+    return '-1';
+  }
+}
+function usePlanDays(): number {
+  return Number(useSyncExternalStore(subscribeProgress, readPlanDays, () => '-1'));
+}
+
 const cardClass =
   'group flex h-full flex-col rounded-2xl border border-line bg-surface p-5 transition-colors hover:border-marker focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marker';
 
@@ -215,6 +232,7 @@ function GuideCard({ guide, done }: { guide: Guide; done: number }) {
 export default function LandingPage() {
   const progress = useProgress();
   const weak = useWeak();
+  const planDays = usePlanDays();
   const uniqueQuestions = meta._all?.questions ?? 0;
   const reviewedTotal = progress._total ?? 0;
 
@@ -262,7 +280,7 @@ export default function LandingPage() {
                 Practise explaining
               </Link>
             </div>
-            {(reviewedTotal > 0 || (weakTotal > 0 && weakGuide)) && (
+            {(reviewedTotal > 0 || (weakTotal > 0 && weakGuide) || planDays >= 0) && (
               <div className="mt-6 flex flex-wrap items-center gap-3 text-[15px]">
                 {reviewedTotal > 0 && (
                   <span className="rounded-full bg-done-soft px-3.5 py-1.5 font-medium text-done">
@@ -272,6 +290,11 @@ export default function LandingPage() {
                 {weakTotal > 0 && weakGuide && (
                   <Link href={`/${weakGuide}#weak`} className="rounded-full bg-hl px-3.5 py-1.5 font-medium text-hl-ink underline-offset-2 hover:underline">
                     Review {weakTotal} card{weakTotal === 1 ? '' : 's'} you marked “Again”
+                  </Link>
+                )}
+                {planDays >= 0 && (
+                  <Link href="/plan" className="rounded-full bg-marker-soft px-3.5 py-1.5 font-medium text-marker underline-offset-2 hover:underline">
+                    {planDays === 0 ? 'Interview today · open your warm-up' : `Interview in ${planDays} day${planDays === 1 ? '' : 's'} · open today’s plan`}
                   </Link>
                 )}
               </div>
