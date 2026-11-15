@@ -534,6 +534,12 @@
     .toolbar .tmeta{width:100%;}
     .fc{padding:0;} .fc-dialog{height:100%; border-radius:0;} .fc-keys{display:none;} .fc-q{font-size:21px;}
   }
+  /* ---------- Solo: one card embedded in another page (?card=sec:idx) ---------- */
+  html.solo .sidebar, html.solo .hero, html.solo .toolbar, html.solo .section-head, html.solo .pager, html.solo .back-btn{display:none !important;}
+  html.solo .app{display:block; min-height:0;}
+  html.solo .main{padding:0; max-width:none;}
+  html.solo .qcard{margin:0;}
+  html.solo .qchevron{display:none;}
   @media (prefers-reduced-motion: reduce){
     *{transition:none !important; scroll-behavior:auto !important;}
   }

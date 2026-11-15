@@ -26,9 +26,12 @@ export default function StaticPrepClient({
       if (!hash) return;
       // "#weak" opens the weak-cards flashcard deck; otherwise the format is "<sectionId>" or
       // "<sectionId>:<questionIndex>" for a direct link to one card.
+      // "#deck=sec:i,sec:j" opens exactly those cards as a flashcard deck (links from the practice tools).
       const message =
         hash === 'weak'
           ? { type: 'start-weak-deck' }
+          : hash.startsWith('deck=')
+          ? { type: 'start-deck', keys: hash.slice(5).split(',').filter(Boolean) }
           : (() => {
               const [id, qIdxRaw] = hash.split(':');
               return { type: 'goto-section', id, qIdx: qIdxRaw !== undefined ? Number(qIdxRaw) : undefined };

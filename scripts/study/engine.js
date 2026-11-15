@@ -509,6 +509,7 @@ window.addEventListener('message', (e)=>{
   if(!e.data) return;
   if(e.data.type==='goto-section') gotoQuestion(e.data.id, e.data.qIdx, false);
   else if(e.data.type==='start-weak-deck') startWeakDeck();
+  else if(e.data.type==='start-deck') startKeyDeck(e.data.keys, e.data.title);
 });
 content.addEventListener('click', (e)=>{
   const a = e.target.closest('a[data-go]');
@@ -699,6 +700,13 @@ function startWeakDeck(){
   if(list.length) startDeck(list, 'Weak cards');
 }
 if(fcWeakBtn) fcWeakBtn.addEventListener('click', startWeakDeck);
+// A deck named by card keys ("sec:idx"), opened from a link such as /sql#deck=sq1:0,sq1:1. The link's
+// message is posted repeatedly for a few seconds, so ignore it once a deck is open; unknown keys are dropped.
+function startKeyDeck(keys, title){
+  if(fc.open || !Array.isArray(keys)) return;
+  const list = keys.map(k=>{ const p = String(k).split(':'); return entry(p[0], Number(p[1])); }).filter(Boolean);
+  if(list.length) startDeck(list, title || 'Your deck');
+}
 refreshWeakButton();
 window.addEventListener('storage', (e)=>{ if(e.key === WEAK_KEY){ weak = readJSON(WEAK_KEY, {}); refreshWeakButton(); } });
 
@@ -711,6 +719,22 @@ document.getElementById('resetBtn').addEventListener('click', ()=>{
 
 document.getElementById('heroMeta').textContent = DATA.length + ' sections · ' + totalQuestions() + ' questions' + (CORE.size ? ' · ' + CORE.size + ' marked ★ core (linked from ' + window.__STUDY__.core + ')' : '');
 document.getElementById('fcCore').textContent = CORE.size ? '▶ Flashcards: all ★ core questions' : '▶ Flashcards: all ' + INDEX.filter(e=>e.section.id!=='quickref').length + ' questions';
-renderNav();
-renderContent();
-updateProgress();
+// ---- solo:start
+// /study/<guide>.html?card=sec:idx shows just that one card, so a page elsewhere on the site (a mock
+// round, a plan) can embed a card in an iframe. The frame is told how tall the card is.
+function soloKey(search){ const m = /[?&]card=([^&#]+)/.exec(search || ''); return m ? decodeURIComponent(m[1]) : null; }
+function soloRender(key){
+  document.documentElement.classList.add('solo');
+  content.innerHTML = '';
+  const p = key.split(':');
+  const e = entry(p[0], Number(p[1]));
+  if(!e){ const m = document.createElement('p'); m.className = 'empty'; m.textContent = 'This card has moved.'; content.appendChild(m); }
+  else content.appendChild(buildCard(e, { open: true }));
+  const post = ()=>{ try{ parent.postMessage({ type:'solo-height', card:key, height: Math.ceil(content.getBoundingClientRect().height) }, '*'); }catch(_){} };
+  if(window.ResizeObserver) new ResizeObserver(post).observe(content);
+  post();
+}
+// ---- solo:end
+const SOLO = soloKey(location.search);
+if(SOLO){ soloRender(SOLO); updateProgress(); }
+else { renderNav(); renderContent(); updateProgress(); }
