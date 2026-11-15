@@ -10,5 +10,5 @@ export const TOOLS = [
   { id: 'plan', href: '/plan', title: 'Interview plan', icon: 'calendar', ready: true, desc: 'Enter your interview date and role to get a daily plan built from core, weak and unreviewed cards.' },
   { id: 'match', href: '/match', title: 'Job match', icon: 'target', ready: true, desc: 'Paste a job posting to get a deck for it and a list of gaps. The posting stays in your browser.' },
   { id: 'drills', href: '/drills', title: 'Estimation drills', icon: 'calculator', ready: true, desc: 'Capacity and latency sums with new numbers every time, so you practise the arithmetic.' },
-  { id: 'stories', href: '/stories', title: 'Story bank', icon: 'notebook', ready: false, desc: 'Write your STAR stories, check their shape and see which competencies they cover. Stays in your browser.' },
+  { id: 'stories', href: '/stories', title: 'Story bank', icon: 'notebook', ready: true, desc: 'Write your STAR stories, check their shape and see which competencies they cover. Stays in your browser.' },
 ];

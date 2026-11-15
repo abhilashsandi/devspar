@@ -1,6 +1,6 @@
 // Behavioural guide, part A: method, introducing yourself, ownership, collaboration.
 // All worked examples are fictional and generic. Nothing here comes from a real person's history.
-import { P, L, N, T, TRAP, K, RAPID, QUIZ, DIAGRAM } from './cc-kit.mjs';
+import { P, L, N, T, TRAP, K, RAPID, QUIZ, DIAGRAM, GO } from './cc-kit.mjs';
 import { BH } from './dg-bh.mjs';
 
 // One behavioural question: what it checks, the shape of a strong answer, a fictional STAR example, what to avoid.
@@ -33,6 +33,7 @@ export const method = [
   DIAGRAM('Build a story bank, not a script per question', BH.storyBank,
     P('You cannot rehearse an answer for every question, and you should not try. Prepare **six to eight stories** and learn to tell each one from several angles.'),
     N('List projects, incidents, disagreements and changes you led from the last three or four years.', 'Pick the ones where you had a real part and a clear outcome.', 'For each, note which competencies it can evidence (the matrix above).', 'Practise each story at **90 seconds**, with the action as the longest part.', 'In the interview, choose the story that fits the question; do not recite the same one three times.'),
+    GO(['/stories', 'Story bank: write your stories here and check their shape']),
   ),
   K('How long should an answer be, and how do you handle follow-ups?',
     P('Aim for **90 seconds to two minutes**. Shorter feels thin; longer loses the interviewer. Stop when the result is told and let them ask.'),
