@@ -138,3 +138,55 @@ flashcard dialog's keyboard focus handling (Tab trap, focus restored on close) c
 `tests/checks/05-private-page.mjs` additionally checks `/my-prep` when `PRIVATE_PASSWORD` is set
 in the environment (it never is in CI, since the real password lives outside the repo); it skips
 itself otherwise.
+
+## Design: one theme for every guide
+
+`scripts/study/theme.css` is the only stylesheet the guides use (whiteboard in light mode,
+chalkboard in dark). `lib.upgrade()` swaps each guide's `<style>` for it, along with the font
+link and the engine, so a design change is one file:
+
+```bash
+npm run study:upgrade     # re-apply theme.css, fonts and engine.js to every guide's content.json
+npm run study:build
+```
+
+Token names (`--panel`, `--accent`, `--gold`, …) are also used inside the SVG diagrams, so change
+their values, not their names. The site's own pages use the same palette through the tokens in
+`app/globals.css` (`bg-board`, `text-ink`, `bg-marker`, …).
+
+The private `/my-prep` page is encrypted, so `study:upgrade` cannot reach it; run
+`PRIVATE_PASSWORD='…' node scripts/update-my-prep.mjs` to merge the private sections and restyle it.
+
+## Checking diagrams
+
+```bash
+node scripts/study/preview-diagrams.mjs dg-arch            # every diagram in dg-arch.mjs
+node scripts/study/preview-diagrams.mjs dg eventLoop,keys  # only the named ones
+```
+
+It writes `.diagram-preview.html` (git-ignored) with a light/dark switch. Check that text stays
+inside its box in both themes before a diagram ships.
+
+## Keeping content fresh
+
+```bash
+npm run study:freshness                    # look up current versions, scan every guide
+npm run study:freshness -- --guide nodejs  # one guide
+npm run study:freshness -- --offline       # no network: wording scan only
+npm run study:freshness -- --mark nodejs   # record that you reviewed it today
+```
+
+It writes `docs/freshness/report.md` (what is behind, where, and how long since each guide was
+reviewed) and one ready-to-run prompt per guide in `docs/freshness/prompts/`. Give a prompt to a
+coding agent in this repository, or run `/refresh-guides [guide]` in Claude Code
+(`.claude/commands/refresh-guides.md`). The tool only reports: version numbers are a hint that
+something may be stale, and the prompts tell the agent to verify against official docs first.
+Add a technology to track by adding a line to `TRACKED` in `freshness.mjs`.
+
+## Card building blocks added for the newer guides
+
+- `<pre class="plain">` for prompts and sample files: never syntax-coloured.
+- `<details class="reveal"><summary>…</summary>…</details>`: an answer the reader opens after
+  trying (Bug Clinic). Text inside it is left out of the card summary and the search index summary.
+- `<ol class="draw">` numbered drawing steps and `<div class="say">` a script to say out loud
+  (Whiteboard guide).

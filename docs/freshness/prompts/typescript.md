@@ -4,7 +4,7 @@ Generated 2026-11-14 by `npm run study:freshness`. Paste this into a coding agen
 
 ## Task
 
-Bring the **typescript** study guide (`app/typescript/content.json`, 60 cards) up to date. It is interview-prep content for full-stack developers, so a wrong or outdated answer is worse than a missing one. No review has been recorded for it yet.
+Bring the **typescript** study guide (`app/typescript/content.json`, 61 cards) up to date. It is interview-prep content for full-stack developers, so a wrong or outdated answer is worse than a missing one. It was last reviewed on 2026-11-14 (versions).
 
 ## Rules
 
@@ -21,19 +21,16 @@ Bring the **typescript** study guide (`app/typescript/content.json`, 60 cards) u
 Versions mentioned in this guide:
 - ECMAScript: guide mentions major version(s) 2023; current is ES2026  ← BEHIND
 - TypeScript: guide mentions major version(s) 4, 5, 7; current is 7.0.2
-- Node.js: guide mentions major version(s) 24; current is 26.13.1 LTS (Lithium), current 26.13.1  ← BEHIND
 
 ## Cards that mention the newest-known version of something that has since moved on
 
 ### ECMAScript (guide: 2023, current: ES2026)
 - `ts1:3` Which tsconfig options should every new project turn on, and why?
 
-### Node.js (guide: 24, current: 26.13.1 LTS (Lithium), current 26.13.1)
-- `ts7:9` Running TypeScript on Node 24 without a build step: what is type stripping?
-
 ## Cards with time-sensitive wording (check each still holds)
 
-- `ts7:8` Why can compilation be slow, and how do you find the cause?  (check the current)
+- `ts7:10` Which TypeScript releases changed how you write code (4.9 to 7.0)?  (deprecated)
+- `ts7:11` TypeScript 7: what changed with the native compiler, and what breaks when you upgrade?  (deprecated)
 
 ## Sections
 
@@ -43,7 +40,7 @@ Versions mentioned in this guide:
 - `ts4` 4. Generics (5)
 - `ts5` 5. Type-Level Programming (9)
 - `ts6` 6. Patterns for Real Code (6)
-- `ts7` 7. TypeScript in the Real World (11)
+- `ts7` 7. TypeScript in the Real World (12)
 - `ts8` 8. Practice & Rapid-Fire (4)
 
 ## Beyond the scan

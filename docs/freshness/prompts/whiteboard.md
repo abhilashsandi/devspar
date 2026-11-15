@@ -4,7 +4,7 @@ Generated 2026-11-14 by `npm run study:freshness`. Paste this into a coding agen
 
 ## Task
 
-Bring the **whiteboard** study guide (`app/whiteboard/content.json`, 25 cards) up to date. It is interview-prep content for full-stack developers, so a wrong or outdated answer is worse than a missing one. No review has been recorded for it yet.
+Bring the **whiteboard** study guide (`app/whiteboard/content.json`, 25 cards) up to date. It is interview-prep content for full-stack developers, so a wrong or outdated answer is worse than a missing one. It was last reviewed on 2026-11-14 (full).
 
 ## Rules
 

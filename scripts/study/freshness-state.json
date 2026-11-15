@@ -1,0 +1,34 @@
+{
+  "ai-dev": {
+    "reviewed": "2026-11-14",
+    "scope": "full"
+  },
+  "whiteboard": {
+    "reviewed": "2026-11-14",
+    "scope": "full"
+  },
+  "architecture": {
+    "reviewed": "2026-11-14",
+    "scope": "full"
+  },
+  "bug-clinic": {
+    "reviewed": "2026-11-14",
+    "scope": "full"
+  },
+  "typescript": {
+    "reviewed": "2026-11-14",
+    "scope": "versions"
+  },
+  "interview-prep": {
+    "reviewed": "2026-11-14",
+    "scope": "versions"
+  },
+  "interview-cheatsheet": {
+    "reviewed": "2026-11-14",
+    "scope": "versions"
+  },
+  "nodejs": {
+    "reviewed": "2026-11-14",
+    "scope": "versions"
+  }
+}

@@ -4,7 +4,7 @@ Generated 2026-11-14 by `npm run study:freshness`. Paste this into a coding agen
 
 ## Task
 
-Bring the **ai-dev** study guide (`app/ai-dev/content.json`, 80 cards) up to date. It is interview-prep content for full-stack developers, so a wrong or outdated answer is worse than a missing one. No review has been recorded for it yet.
+Bring the **ai-dev** study guide (`app/ai-dev/content.json`, 80 cards) up to date. It is interview-prep content for full-stack developers, so a wrong or outdated answer is worse than a missing one. It was last reviewed on 2026-11-14 (full).
 
 ## Rules
 
@@ -19,12 +19,9 @@ Bring the **ai-dev** study guide (`app/ai-dev/content.json`, 80 cards) up to dat
 ## What the scan found
 
 Versions mentioned in this guide:
-- Node.js: guide mentions major version(s) 24; current is 26.13.1 LTS (Lithium), current 26.13.1  ← BEHIND
+- Node.js: guide mentions major version(s) 26; current is 26.13.1 LTS (Lithium), current 26.13.1
+- TypeScript: guide mentions major version(s) 7; current is 7.0.2
 
-## Cards that mention the newest-known version of something that has since moved on
-
-### Node.js (guide: 24, current: 26.13.1 LTS (Lithium), current 26.13.1)
-- `ai6:6` What is project-context.md, and how does BMad stop agents contradicting each other?
 
 ## Cards with time-sensitive wording (check each still holds)
 

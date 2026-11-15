@@ -13,6 +13,14 @@ const EDITS = [
   ['nodejs', 'deep-prod', 'Can Node.js run TypeScript directly now',
     'In the Node 24 documentation this works by default',
     'In current Node releases (the 24 and 26 lines) this works by default'],
+  // React Router 8 (checked against its changelog): same framework model; react-router-dom is gone.
+  ...['interview-prep|sdscale', 'system-design-scale|client'].map((x) => [x.split('|')[0], x.split('|')[1], 'Which web framework would you choose',
+    'strong fit for heavily form/mutation-driven apps.',
+    'strong fit for heavily form/mutation-driven apps. React Router is now on v8, which keeps this model; the visible change when upgrading is that the <code>react-router-dom</code> package is gone and everything is imported from <code>react-router</code>.']),
+  // Next.js 16 (checked against its upgrade guide): caching is explicit.
+  ...['interview-prep|sdscale', 'system-design-scale|client'].map((x) => [x.split('|')[0], x.split('|')[1], 'Which web framework would you choose',
+    'caching is opt-in.',
+    'caching is opt-in. Next.js 16 goes further with Cache Components: you mark what to cache with <code>"use cache"</code>, and <code>revalidateTag</code> now takes a cache profile as its second argument.']),
 ];
 
 const pages = new Map();

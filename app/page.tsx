@@ -7,6 +7,7 @@ import {
   BookOpen,
   Bot,
   Braces,
+  Bug,
   Brain,
   Cloud,
   Component,
@@ -17,6 +18,7 @@ import {
   Gauge,
   Globe,
   Hexagon,
+  Layers,
   ListChecks,
   Network,
   Palette,
@@ -90,6 +92,7 @@ const GROUPS: Group[] = [
     blurb: 'Server-side depth and the senior-level design conversation.',
     guides: [
       { slug: 'nodejs', title: 'Node.js', desc: 'Event loop, streams, workers, security, scaling, database patterns, testing with node:test and modules.', icon: Hexagon },
+      { slug: 'architecture', title: 'Architecture Patterns', desc: 'Monolith to microservices, BFF, micro-frontends, event-driven, hexagonal and CQRS for the frontend and Node.js, plus design answers for a banking app, a heavy-data dashboard and a ticket system.', icon: Layers },
       { slug: 'system-design', title: 'System Design', desc: 'Architectural styles, microservices, messaging, sagas, real outages and AWS building blocks.', icon: Network },
       { slug: 'system-design-scale', title: 'System Design at Scale', desc: 'A senior-level answer to “design a full-stack app for millions of users”, end to end.', icon: Server },
       { slug: 'performance-optimization', title: 'Optimize at Every Layer', desc: 'Client, edge, API, server, cache and database: the full performance playbook and the numbers to know.', icon: Gauge },
@@ -101,6 +104,7 @@ const GROUPS: Group[] = [
     title: 'Practice',
     blurb: 'Write code, not just read answers.',
     guides: [
+      { slug: 'bug-clinic', title: 'Bug Clinic', desc: 'Fifty find-the-bug exercises: JavaScript, React, Node.js, TypeScript, Next.js and CSS. Read the broken code, explain the cause, then check the fix.', icon: Bug },
       { slug: 'coding-questions', title: 'Coding Practice', desc: 'Algorithm, data-structure and React coding exercises with approach, code and trade-offs.', icon: TerminalSquare },
     ],
   },

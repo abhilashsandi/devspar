@@ -21,3 +21,19 @@ export const RAPID = (title, pairs) => K(title, T(['Question', 'Answer'], pairs)
 export const GO = (...links) => '<p class="deeper"><strong>Go deeper:</strong> ' +
   links.map(([href, label]) => '<a href="' + href + '" target="_top">' + label + '</a>').join(' · ') + '</p>';
 export const S = (id, title, minutes, questions) => ({ id, title: title + ' · ' + minutes + ' min', questions });
+
+// ---- shared card shapes for the newer guides
+const escPlain = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+// A multiple-choice card. `right` is the index of the correct option.
+export const QUIZ = (question, options, right, why) => ({
+  q: 'Quiz: ' + md(question) + ' <span class="quizopts">' + options.map((o, i) => '(' + 'ABCD'[i] + ') ' + md(o)).join(' &nbsp;·&nbsp; ') + '</span>',
+  a: '<ol class="quiz" type="A">' + options.map((o, i) => '<li' + (i === right ? ' class="right"' : '') + '>' + md(o) + '</li>').join('') + '</ol><p><strong>Answer: ' + 'ABCD'[right] + '.</strong> ' + md(why) + '</p>',
+});
+// A card whose answer is a diagram, followed by any explanation.
+export const DIAGRAM = (title, svg, ...after) => ({ q: 'Diagram: ' + title, a: svg + after.join('') });
+// A dated "checked against the docs" footnote.
+export const NOTE = (s) => '<p class="verified">' + md(s) + '</p>';
+// A prompt, sample file or program output: shown as written, never syntax-coloured.
+export const SAMPLE = (label, s) => '<p class="codelabel">' + escPlain(label) + '</p><pre class="plain">' + escPlain(s.replace(/^\n+|\n+$/g, '')) + '</pre>';
+// An answer the reader opens after trying. Text inside is kept out of the card summary and search summary.
+export const REVEAL = (summary, ...parts) => '<details class="reveal"><summary>' + md(summary) + '</summary>' + parts.join('') + '</details>';

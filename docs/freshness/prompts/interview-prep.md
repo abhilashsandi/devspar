@@ -4,7 +4,7 @@ Generated 2026-11-14 by `npm run study:freshness`. Paste this into a coding agen
 
 ## Task
 
-Bring the **interview-prep** study guide (`app/interview-prep/content.json`, 402 cards) up to date. It is interview-prep content for full-stack developers, so a wrong or outdated answer is worse than a missing one. No review has been recorded for it yet.
+Bring the **interview-prep** study guide (`app/interview-prep/content.json`, 403 cards) up to date. It is interview-prep content for full-stack developers, so a wrong or outdated answer is worse than a missing one. It was last reviewed on 2026-11-14 (versions).
 
 ## Rules
 
@@ -21,15 +21,13 @@ Bring the **interview-prep** study guide (`app/interview-prep/content.json`, 402
 Versions mentioned in this guide:
 - React: guide mentions major version(s) 16, 18, 19; current is 19.3.1
 - Next.js: guide mentions major version(s) 13, 14, 15, 16; current is 16.4.6
-- Node.js: guide mentions major version(s) 15, 20, 22, 24; current is 26.13.1 LTS (Lithium), current 26.13.1  ← BEHIND
+- Node.js: guide mentions major version(s) 15, 20, 22, 24, 26; current is 26.13.1 LTS (Lithium), current 26.13.1
 - Express: guide mentions major version(s) 4, 5; current is 5.3.0
 - Tailwind CSS: guide mentions major version(s) 3, 4; current is 4.3.5
+- TypeScript: guide mentions major version(s) 7; current is 7.0.2
 - React Router: guide mentions major version(s) 7; current is 8.5.1  ← BEHIND
 
 ## Cards that mention the newest-known version of something that has since moved on
-
-### Node.js (guide: 24, current: 26.13.1 LTS (Lithium), current 26.13.1)
-- `review:5` 5. Node.js runtime and API design (10 min)
 
 ### React Router (guide: 7, current: 8.5.1)
 - `sdscale:2` Which web framework would you choose, and why?
@@ -40,6 +38,7 @@ Versions mentioned in this guide:
 - `review:9` 9. Cloud, CI/CD and observability (8 min)  (canary)
 - `js:11` Map vs. WeakMap — why would you choose a WeakMap?  (recently, currently)
 - `js:17` How do you cancel a fetch or add a timeout with AbortController?  (latest)
+- `ts:14` TypeScript 7: what changed with the native compiler, and what breaks when you upgrade?  (deprecated)
 - `react:7` What is Zustand, and how does it decide when a component re-renders?  (newly)
 - `react:9` What are useTransition and useDeferredValue, and when would you reach for them?  (latest)
 - `react:23` Tailwind CSS vs CSS Modules vs CSS-in-JS — how do you choose a styling approach?  (deprecated)
@@ -79,7 +78,7 @@ Versions mentioned in this guide:
 - `review` 2-Hour Review (14)
 - `behavioral` Engineering Practice & Questions to Ask (4)
 - `js` JavaScript (26)
-- `ts` TypeScript (14)
+- `ts` TypeScript (15)
 - `react` React (65)
 - `nextjs` Next.js (27)
 - `node` Node.js (38)

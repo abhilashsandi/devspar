@@ -4,7 +4,7 @@ Generated 2026-11-14 by `npm run study:freshness`. Paste this into a coding agen
 
 ## Task
 
-Bring the **interview-cheatsheet** study guide (`app/interview-cheatsheet/content.json`, 149 cards) up to date. It is interview-prep content for full-stack developers, so a wrong or outdated answer is worse than a missing one. No review has been recorded for it yet.
+Bring the **interview-cheatsheet** study guide (`app/interview-cheatsheet/content.json`, 150 cards) up to date. It is interview-prep content for full-stack developers, so a wrong or outdated answer is worse than a missing one. It was last reviewed on 2026-11-14 (versions).
 
 ## Rules
 
@@ -20,24 +20,22 @@ Bring the **interview-cheatsheet** study guide (`app/interview-cheatsheet/conten
 
 Versions mentioned in this guide:
 - React: guide mentions major version(s) 19; current is 19.3.1
-- TypeScript: guide mentions major version(s) 4, 5; current is 7.0.2  ← BEHIND
-- Node.js: guide mentions major version(s) 15, 24; current is 26.13.1 LTS (Lithium), current 26.13.1  ← BEHIND
+- TypeScript: guide mentions major version(s) 4, 5, 7; current is 7.0.2
+- Node.js: guide mentions major version(s) 15; current is 26.13.1 LTS (Lithium), current 26.13.1  ← BEHIND
 - Tailwind CSS: guide mentions major version(s) 4; current is 4.3.5
 - Next.js: guide mentions major version(s) 16; current is 16.4.6
 
 ## Cards that mention the newest-known version of something that has since moved on
 
-### TypeScript (guide: 5, current: 7.0.2)
-- `typescript:10` Type guards
-
-### Node.js (guide: 24, current: 26.13.1 LTS (Lithium), current 26.13.1)
-- `typescript:20` Running .ts on Node
+### Node.js (guide: 15, current: 26.13.1 LTS (Lithium), current 26.13.1)
+- `node-js:5` Unhandled rejections
 
 ## Cards with time-sensitive wording (check each still holds)
 
 - `review:1` The must-know 30-minute pass  (canary)
 - `javascript:2` Promise.all vs. allSettled  (soon)
 - `typescript:9` Exhaustive switch  (newly)
+- `typescript:22` TypeScript 7  (deprecated)
 - `cloud:2` Blue-green vs. canary vs. rolling  (canary)
 
 ## Sections
@@ -45,7 +43,7 @@ Versions mentioned in this guide:
 - `review` Start Here: Last 2 Hours (2)
 - `behavioral` Engineering Practice (2)
 - `javascript` JavaScript (7)
-- `typescript` TypeScript (22)
+- `typescript` TypeScript (23)
 - `react` React (15)
 - `node-js` Node.js (9)
 - `databases` Databases (6)

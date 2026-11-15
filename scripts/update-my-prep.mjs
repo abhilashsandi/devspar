@@ -31,7 +31,8 @@ for (const [file, name] of SOURCES) {
   if (!mod[name]) { console.error(file + ' does not export ' + name); process.exit(1); }
   sections.push(mod[name]);
 }
-const left = sections.flatMap((s) => s.questions.filter((q) => /\[fill in/.test(q.a)).map((q) => q.q.replace(/<[^>]+>/g, '')));
+// ✎ marks a hypothetical drafted answer that has not been confirmed yet.
+const left = sections.flatMap((s) => s.questions.filter((q) => /\[fill in|✎/.test(q.a)).map((q) => q.q.replace(/<[^>]+>/g, '')));
 
 if (process.argv.includes('--preview')) {
   const html = await H.newPage({
@@ -41,7 +42,7 @@ if (process.argv.includes('--preview')) {
   const out = path.join(ROOT, 'private', 'my-prep-preview.html');
   writeFileSync(out, await lib.upgrade(html));
   console.log('preview written -> ' + out + '  (' + sections.map((s) => s.title + ': ' + s.questions.length).join(', ') + ')');
-  console.log(left.length + ' card(s) still contain [fill in] placeholders');
+  console.log(left.length + ' card(s) contain ✎ drafts (or placeholders) to confirm');
   process.exit(0);
 }
 
@@ -77,4 +78,4 @@ const c = createCipheriv('aes-256-gcm', k2, iv);
 const ct = Buffer.concat([c.update(updated, 'utf8'), c.final(), c.getAuthTag()]);
 writeFileSync(ENC, JSON.stringify({ v: 1, iter: payload.iter, salt: salt.toString('base64'), iv: iv.toString('base64'), ct: ct.toString('base64') }));
 console.log('my-prep updated: ' + sections.map((s) => s.title + ' (' + s.questions.length + ')').join(', ') + '; ' + rest.length + ' other section(s) kept');
-console.log(left.length + ' card(s) still contain [fill in] placeholders');
+console.log(left.length + ' card(s) contain ✎ drafts (or placeholders) to confirm');

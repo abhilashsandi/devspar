@@ -437,6 +437,16 @@
   ol.quiz{padding-left:26px;} ol.quiz li{margin-bottom:6px;}
   ol.quiz li.right{color:var(--ok); font-weight:700;}
   hr{border:0; border-top:1px dashed var(--border); margin:16px 0;}
+  /* an answer the reader opens after trying (Bug Clinic) */
+  details.reveal{border:1px solid var(--border); border-radius:12px; background:var(--panel-2); margin:0 0 16px;}
+  details.reveal > summary{cursor:pointer; padding:12px 16px; font-weight:700; color:var(--accent); list-style:none; display:flex; align-items:center; gap:8px;}
+  details.reveal > summary::-webkit-details-marker{display:none;}
+  details.reveal > summary::before{content:"▸"; transition:transform .15s ease;}
+  details.reveal[open] > summary::before{transform:rotate(90deg);}
+  details.reveal[open] > summary{border-bottom:1px solid var(--border);}
+  details.reveal > :not(summary){margin-left:16px; margin-right:16px;}
+  details.reveal > summary + *{margin-top:14px;}
+  details.reveal > p{max-width:var(--measure);}
   /* "say this" script blocks used by the whiteboard guide */
   .say{border-left:4px solid var(--gold); background:var(--gold-soft); border-radius:0 10px 10px 0; padding:10px 16px; margin:0 0 16px; max-width:var(--measure);}
   .say > :last-child{margin-bottom:0;}
@@ -790,11 +800,11 @@ Total storage &asymp; 10,000,000 &times; 50KB &asymp; 500GB
       a:`<p>Next.js is the default-strong answer for a consumer-facing full-stack app today, and the reason to give isn't "it's popular" — it's that it lets each page pick its own rendering strategy instead of forcing the whole app into one model. A marketing page can be statically generated at build time; a product page that changes daily can use ISR to stay fast while staying fresh; a logged-in dashboard that must be current on every load uses SSR; and a page with one slow, non-critical section can stream that section in via Suspense while the rest of the page is already interactive.</p>
       <ul>
         <li><strong>Next.js (App Router)</strong> — the right default: per-route rendering strategies, React Server Components to ship less client JS, built-in image/font optimization, and a mature deployment story on Vercel or self-hosted via Node. <strong>Partial Prerendering (PPR)</strong> is the newer capability worth naming: a single route serves a static shell instantly from the edge and streams the dynamic, per-user holes into it — previously you had to pick one mode for the whole page.</li>
-        <li><strong>React Router v7</strong> — worth being precise here, because this is a common stale answer: Remix v2's framework features were folded into React Router v7, so "Remix vs. Next.js" as a framing is outdated. React Router v7 in framework mode is the loader/action model, and it's a strong fit for heavily form/mutation-driven apps. (Remix v3 is a separate, ground-up project — not the thing most teams mean when they say "Remix.")</li>
+        <li><strong>React Router v7</strong> — worth being precise here, because this is a common stale answer: Remix v2's framework features were folded into React Router v7, so "Remix vs. Next.js" as a framing is outdated. React Router v7 in framework mode is the loader/action model, and it's a strong fit for heavily form/mutation-driven apps. React Router is now on v8, which keeps this model; the visible change when upgrading is that the <code>react-router-dom</code> package is gone and everything is imported from <code>react-router</code>. (Remix v3 is a separate, ground-up project — not the thing most teams mean when they say "Remix.")</li>
         <li><strong>A plain SPA (Vite + React Router in library mode)</strong> — reasonable for an internal tool or admin dashboard where SEO doesn't matter and everything is behind auth anyway; wrong choice for a public-facing product where first-load performance and SEO both matter.</li>
         <li><strong>Mobile clients</strong> — React Native (code/logic sharing with the web team) for most product teams, or fully native when a feature needs the top tier of platform integration or performance.</li>
       </ul>
-      <p><strong>One correctness detail worth knowing cold:</strong> as of Next.js 15, <code>fetch</code> requests and route handlers are <em>no longer cached by default</em> — caching is opt-in. Teams upgrading from 13/14 often carry a mental model where data was implicitly cached, which is exactly the kind of assumption that produces either stale data or a surprise origin-load spike after an upgrade.</p>`
+      <p><strong>One correctness detail worth knowing cold:</strong> as of Next.js 15, <code>fetch</code> requests and route handlers are <em>no longer cached by default</em> — caching is opt-in. Next.js 16 goes further with Cache Components: you mark what to cache with <code>"use cache"</code>, and <code>revalidateTag</code> now takes a cache profile as its second argument. Teams upgrading from 13/14 often carry a mental model where data was implicitly cached, which is exactly the kind of assumption that produces either stale data or a surprise origin-load spike after an upgrade.</p>`
     },
     {
       q:"REST, GraphQL, or tRPC for the API contract?",

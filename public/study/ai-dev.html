@@ -437,6 +437,16 @@
   ol.quiz{padding-left:26px;} ol.quiz li{margin-bottom:6px;}
   ol.quiz li.right{color:var(--ok); font-weight:700;}
   hr{border:0; border-top:1px dashed var(--border); margin:16px 0;}
+  /* an answer the reader opens after trying (Bug Clinic) */
+  details.reveal{border:1px solid var(--border); border-radius:12px; background:var(--panel-2); margin:0 0 16px;}
+  details.reveal > summary{cursor:pointer; padding:12px 16px; font-weight:700; color:var(--accent); list-style:none; display:flex; align-items:center; gap:8px;}
+  details.reveal > summary::-webkit-details-marker{display:none;}
+  details.reveal > summary::before{content:"▸"; transition:transform .15s ease;}
+  details.reveal[open] > summary::before{transform:rotate(90deg);}
+  details.reveal[open] > summary{border-bottom:1px solid var(--border);}
+  details.reveal > :not(summary){margin-left:16px; margin-right:16px;}
+  details.reveal > summary + *{margin-top:14px;}
+  details.reveal > p{max-width:var(--measure);}
   /* "say this" script blocks used by the whiteboard guide */
   .say{border-left:4px solid var(--gold); background:var(--gold-soft); border-radius:0 10px 10px 0; padding:10px 16px; margin:0 0 16px; max-width:var(--measure);}
   .say > :last-child{margin-bottom:0;}
@@ -836,7 +846,7 @@ so repeat buyers stop rebuilding the same filters.
     },
     {
       q:"Which tools support spec-driven development?",
-      a:`<table class="cmp"><tr><th>Tool</th><th>What it is</th><th>Shape of the workflow</th></tr><tr><td><strong>GitHub Spec Kit</strong></td><td>Open-source toolkit that adds spec commands to many agents</td><td>Project principles, then specify → plan → tasks → implement</td></tr><tr><td><strong>Kiro</strong></td><td>An AI IDE from AWS built around specs</td><td><code>requirements.md</code> (EARS) → <code>design.md</code> → <code>tasks.md</code></td></tr><tr><td><strong>BMad Method</strong></td><td>A framework of agent personas and workflows</td><td>Brief → PRD → architecture → epics and stories → build (next section)</td></tr><tr><td><strong>OpenSpec</strong></td><td>Lightweight change proposals, aimed at existing codebases</td><td>Propose a change as a spec delta, implement, archive</td></tr><tr><td><strong>Plan mode + markdown</strong></td><td>No framework: the agent's planning mode and files in <code>docs/</code></td><td>Write <code>spec.md</code>, approve a plan, implement</td></tr></table><p>They differ in ceremony, not in the idea. A framework helps a team be consistent; a single developer can get most of the benefit from a spec file and plan mode.</p><p class="verified"><strong>Check before you quote:</strong> command names and file layouts in these tools change between versions. Read the current README of whichever one you use.</p>`
+      a:`<table class="cmp"><tr><th>Tool</th><th>What it is</th><th>Shape of the workflow</th></tr><tr><td><strong>GitHub Spec Kit</strong></td><td>Open-source toolkit that adds spec commands to many agents</td><td>Project principles (a constitution), then <code>speckit-specify</code> → <code>speckit-plan</code> → <code>speckit-tasks</code> → <code>speckit-implement</code>; the command prefix depends on the agent</td></tr><tr><td><strong>Kiro</strong></td><td>An AI IDE and CLI from AWS built around specs</td><td>Per feature under <code>.kiro/specs/</code>: <code>requirements.md</code> (EARS) → <code>design.md</code> → <code>tasks.md</code>, each task traced back to a requirement</td></tr><tr><td><strong>BMad Method</strong></td><td>A framework of agent personas and workflows</td><td>Brief → PRD → architecture → epics and stories → build (next section)</td></tr><tr><td><strong>OpenSpec</strong></td><td>Lightweight change proposals, aimed at existing codebases</td><td>Propose a change as a spec delta, implement, archive</td></tr><tr><td><strong>Plan mode + markdown</strong></td><td>No framework: the agent's planning mode and files in <code>docs/</code></td><td>Write <code>spec.md</code>, approve a plan, implement</td></tr></table><p>They differ in ceremony, not in the idea. A framework helps a team be consistent; a single developer can get most of the benefit from a spec file and plan mode.</p><p class="verified">Spec Kit and Kiro details checked against their repositories on 14 Nov 2026. Command names and file layouts change between versions, so read the current README of whichever one you use.</p>`
     },
     {
       q:"When is a spec overkill, and how do you keep one from going stale?",

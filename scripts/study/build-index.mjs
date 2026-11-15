@@ -12,7 +12,7 @@ const APP = path.join(ROOT, 'app');
 const PAGES = {
   'interview-prep': 'Interview Prep', 'interview-cheatsheet': 'Cheatsheet', genai: 'GenAI', javascript: 'JavaScript', typescript: 'TypeScript', 'react-training': 'React',
   reactjs: 'React + TypeScript', nextjs: 'Next.js', nodejs: 'Node.js', 'tailwind-css': 'CSS & Tailwind', 'coding-questions': 'Coding Practice',
-  'system-design': 'System Design', 'system-design-scale': 'System Design at Scale', 'performance-optimization': 'Performance', 'web-platform': 'Web Platform', 'ai-dev': 'AI-Assisted Development', whiteboard: 'Whiteboard',
+  'system-design': 'System Design', 'system-design-scale': 'System Design at Scale', 'performance-optimization': 'Performance', 'web-platform': 'Web Platform', 'ai-dev': 'AI-Assisted Development', whiteboard: 'Whiteboard', architecture: 'Architecture Patterns', 'bug-clinic': 'Bug Clinic',
   'crash-course': 'Crash Course', aws: 'AWS',
 };
 
@@ -23,7 +23,7 @@ const titleKey = (t) => String(t).replace(/<[^>]+>/g, ' ').replace(/&[a-z#0-9]+;
 const fnv = (s) => { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return h.toString(36); };
 
 function summary(a) {
-  const prose = strip(a.replace(/<span class="tbadge">[\s\S]*?<\/span>/, '').replace(/<table[\s\S]*?<\/table>/g, ' ').replace(/<div class="diagram[^"]*">[\s\S]*?<\/div>/g, ' '));
+  const prose = strip(a.replace(/<details[\s\S]*?<\/details>/g, ' ').replace(/<span class="tbadge">[\s\S]*?<\/span>/, '').replace(/<table[\s\S]*?<\/table>/g, ' ').replace(/<div class="diagram[^"]*">[\s\S]*?<\/div>/g, ' '));
   let s = '';
   for (const x of prose.split(/(?<=[.!?])\s+(?=[A-Z0-9"'(])/)) { if (s.length >= 90) break; s = (s ? s + ' ' : '') + x; }
   s = s.replace(/^(Common follow-ups|Model answer:|Answer:)\s*/i, '');

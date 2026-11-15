@@ -4,7 +4,7 @@ Generated 2026-11-14 by `npm run study:freshness`. Paste this into a coding agen
 
 ## Task
 
-Bring the **nodejs** study guide (`app/nodejs/content.json`, 62 cards) up to date. It is interview-prep content for full-stack developers, so a wrong or outdated answer is worse than a missing one. No review has been recorded for it yet.
+Bring the **nodejs** study guide (`app/nodejs/content.json`, 62 cards) up to date. It is interview-prep content for full-stack developers, so a wrong or outdated answer is worse than a missing one. It was last reviewed on 2026-11-14 (versions).
 
 ## Rules
 
@@ -20,12 +20,7 @@ Bring the **nodejs** study guide (`app/nodejs/content.json`, 62 cards) up to dat
 
 Versions mentioned in this guide:
 - Express: guide mentions major version(s) 4, 5; current is 5.3.0
-- Node.js: guide mentions major version(s) 24; current is 26.13.1 LTS (Lithium), current 26.13.1  ← BEHIND
 
-## Cards that mention the newest-known version of something that has since moved on
-
-### Node.js (guide: 24, current: 26.13.1 LTS (Lithium), current 26.13.1)
-- `deep-prod:3` Can Node.js run TypeScript directly now, and what are the limits?
 
 ## Cards with time-sensitive wording (check each still holds)
 

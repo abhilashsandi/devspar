@@ -427,6 +427,16 @@
   ol.quiz{padding-left:26px;} ol.quiz li{margin-bottom:6px;}
   ol.quiz li.right{color:var(--ok); font-weight:700;}
   hr{border:0; border-top:1px dashed var(--border); margin:16px 0;}
+  /* an answer the reader opens after trying (Bug Clinic) */
+  details.reveal{border:1px solid var(--border); border-radius:12px; background:var(--panel-2); margin:0 0 16px;}
+  details.reveal > summary{cursor:pointer; padding:12px 16px; font-weight:700; color:var(--accent); list-style:none; display:flex; align-items:center; gap:8px;}
+  details.reveal > summary::-webkit-details-marker{display:none;}
+  details.reveal > summary::before{content:"▸"; transition:transform .15s ease;}
+  details.reveal[open] > summary::before{transform:rotate(90deg);}
+  details.reveal[open] > summary{border-bottom:1px solid var(--border);}
+  details.reveal > :not(summary){margin-left:16px; margin-right:16px;}
+  details.reveal > summary + *{margin-top:14px;}
+  details.reveal > p{max-width:var(--measure);}
   /* "say this" script blocks used by the whiteboard guide */
   .say{border-left:4px solid var(--gold); background:var(--gold-soft); border-radius:0 10px 10px 0; padding:10px 16px; margin:0 0 16px; max-width:var(--measure);}
   .say > :last-child{margin-bottom:0;}
