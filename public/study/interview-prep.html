@@ -553,6 +553,18 @@
   .pred-table tr.pred-ok td:last-child{color:var(--accent);}
   .pred-table tr.pred-bad td:last-child{color:var(--danger);}
   .pred-verdict{font-weight:700; margin:8px 0;}
+  /* Listen mode: the player bar, and the card being read */
+  .listen-bar{position:fixed; left:0; right:0; bottom:0; z-index:40; background:var(--panel); border-top:1px solid var(--border); box-shadow:0 -6px 24px rgba(0,0,0,.18); padding:10px 16px calc(10px + env(safe-area-inset-bottom)); font-size:14px; color:var(--text);}
+  .ls-row{display:flex; flex-wrap:wrap; align-items:center; gap:8px 14px;}
+  .listen-bar button{font:inherit; font-weight:700; color:var(--accent); background:var(--panel); border:1px solid var(--accent); border-radius:10px; padding:6px 12px; cursor:pointer;}
+  .listen-bar button:hover{background:var(--accent-soft);}
+  .listen-bar .ls-play{background:var(--accent); color:var(--accent-ink); min-width:4.5em;}
+  .listen-bar select{font:inherit; color:var(--text); background:var(--panel-2); border:1px solid var(--border); border-radius:8px; padding:4px 6px;}
+  .ls-f{display:flex; align-items:center; gap:6px; color:var(--muted);}
+  .ls-label{margin-top:6px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .ls-note{margin:0 0 6px; font-size:13px; color:var(--muted);}
+  .qcard.listening{outline:2px solid var(--accent); outline-offset:3px;}
+  body:has(.listen-bar){padding-bottom:120px;}
   /* "say this" script blocks used by the whiteboard guide */
   .say{border-left:4px solid var(--gold); background:var(--gold-soft); border-radius:0 10px 10px 0; padding:10px 16px; margin:0 0 16px; max-width:var(--measure);}
   .say > :last-child{margin-bottom:0;}
@@ -606,7 +618,7 @@
     *{transition:none !important; scroll-behavior:auto !important;}
   }
   @media print{
-    .sidebar,.toolbar,.pager,.back-btn,.hero-actions,.source-note{display:none !important;}
+    .sidebar,.toolbar,.pager,.back-btn,.hero-actions,.source-note,.listen-bar{display:none !important;}
     .main{max-width:none; padding:0;}
     .qcard{break-inside:avoid; box-shadow:none;}
     .qbody{display:block !important;}

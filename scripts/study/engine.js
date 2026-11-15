@@ -490,6 +490,131 @@ function speakable(q, a, full){
   const body = (!full && m) ? speakText(m[1]) : speakText(a);
   return ['Question. ' + speakText(q)].concat(speakChunks(body));
 }
+// The player. It reads the cards now shown in #content, one after another, in short chunks.
+const LISTEN_KEY = 'study-listen-v1';
+const LISTEN_RATES = [0.8, 1, 1.2, 1.4, 1.6];
+let ls = null;   // the player's state while it is open
+function listenOk(){ return typeof window !== 'undefined' && !!window.speechSynthesis && typeof window.SpeechSynthesisUtterance === 'function'; }
+function listenSettings(){ return Object.assign({ rate: 1, voiceURI: '', full: false, seen: false }, readJSON(LISTEN_KEY, {})); }
+function listenSave(){ if(!ls) return; ls.set = { rate: ls.rate, voiceURI: ls.voiceURI, full: ls.full, seen: true }; writeJSON(LISTEN_KEY, ls.set); }
+function listenVoices(){ try{ return window.speechSynthesis.getVoices().filter(function(v){ return /^en/i.test(v.lang || ''); }); }catch(e){ return []; } }
+async function listenLock(on){
+  try{
+    if(on && navigator.wakeLock && !ls.lock){ ls.lock = await navigator.wakeLock.request('screen'); ls.lock.addEventListener && ls.lock.addEventListener('release', function(){ if(ls) ls.lock = null; }); }
+    else if(!on && ls && ls.lock){ const l = ls.lock; ls.lock = null; await l.release(); }
+  }catch(e){ /* a wake lock is a nicety */ }
+}
+function listenCard(i){
+  if(!ls) return null;
+  const e = ls.entries[i];
+  return content.querySelector('.qcard[data-sec="' + e.section.id + '"][data-q="' + e.qIdx + '"]');
+}
+function listenMark(i){
+  content.querySelectorAll('.qcard.listening').forEach(function(c){ c.classList.remove('listening'); });
+  const c = listenCard(i);
+  if(c){ c.classList.add('open', 'listening'); try{ c.scrollIntoView({ block: 'center', behavior: 'smooth' }); }catch(e){} }
+}
+function listenLabel(){
+  if(!ls) return;
+  const bar = ls.bar.querySelector('.ls-label');
+  if(ls.done){ bar.textContent = 'End of section.'; return; }
+  bar.textContent = (ls.i + 1) + ' / ' + ls.entries.length + ' · ' + stripTags(ls.entries[ls.i].item.q);
+}
+function listenSpeak(){
+  if(!ls || !ls.playing) return;
+  const text = ls.chunks[ls.c];
+  const u = new window.SpeechSynthesisUtterance(text);
+  u.rate = ls.rate;
+  const v = listenVoices().find(function(x){ return x.voiceURI === ls.voiceURI; });
+  if(v) u.voice = v;
+  const mine = ++ls.token;
+  u.onend = function(){
+    if(!ls || !ls.playing || ls.token !== mine) return;
+    ls.c++;
+    if(ls.c < ls.chunks.length) setTimeout(function(){ if(ls && ls.playing && ls.token === mine) listenSpeak(); }, ls.c === 1 ? 1500 : 0);   // a beat after the question
+    else listenAdvance(1);
+  };
+  u.onerror = function(){ /* cancel() fires an error on some browsers: the state is already updated */ };
+  window.speechSynthesis.speak(u);
+}
+function listenGo(i){
+  ls.i = i; ls.c = 0; ls.done = false;
+  ls.chunks = speakable(ls.entries[i].item.q, ls.entries[i].item.a, ls.full);
+  listenMark(i); listenLabel();
+}
+function listenAdvance(d){
+  if(!ls) return;
+  window.speechSynthesis.cancel(); ls.token++;
+  const n = ls.i + d;
+  if(n < 0) return listenGo(0), listenSpeak();
+  if(n >= ls.entries.length){ ls.playing = false; ls.done = true; listenLabel(); listenSync(); listenLock(false); return; }
+  listenGo(n); listenSpeak();
+}
+function listenSync(){
+  if(!ls) return;
+  ls.bar.querySelector('.ls-play').textContent = ls.playing ? 'Pause' : 'Play';
+}
+function listenToggle(){
+  if(!ls) return;
+  if(ls.done){ listenGo(0); }
+  if(ls.playing){ ls.playing = false; ls.token++; window.speechSynthesis.cancel(); listenLock(false); }
+  else { ls.playing = true; listenLock(true); listenSpeak(); }
+  listenSync();
+}
+function stopListen(){
+  if(!ls) return;
+  const s = ls; ls = null;
+  s.token++; try{ window.speechSynthesis.cancel(); }catch(e){}
+  s.playing = false;
+  if(s.lock){ try{ s.lock.release(); }catch(e){} }
+  s.bar.remove();
+  content.querySelectorAll('.qcard.listening').forEach(function(c){ c.classList.remove('listening'); });
+}
+function startListen(){
+  if(!listenOk()) return;
+  const entries = deckFromView();
+  if(!entries.length) return;
+  stopListen();
+  const set = listenSettings();
+  const bar = document.createElement('div');
+  bar.id = 'listenBar'; bar.className = 'listen-bar'; bar.setAttribute('role', 'region'); bar.setAttribute('aria-label', 'Listen');
+  const voices = listenVoices();
+  bar.innerHTML = (set.seen ? '' : '<p class="ls-note">Reading aloud uses your device’s voice. It plays while this tab is open and the screen is on.</p>') +
+    '<div class="ls-row"><button type="button" class="ls-prev" aria-label="Previous question">⏮</button><button type="button" class="ls-play">Pause</button><button type="button" class="ls-next" aria-label="Next question">⏭</button>' +
+    '<label class="ls-f">Speed <select class="ls-rate" aria-label="Speed">' + LISTEN_RATES.map(function(r){ return '<option value="' + r + '"' + (r === set.rate ? ' selected' : '') + '>' + r + '×</option>'; }).join('') + '</select></label>' +
+    (voices.length > 1 ? '<label class="ls-f">Voice <select class="ls-voice" aria-label="Voice">' + voices.map(function(v){ return '<option value="' + v.voiceURI + '"' + (v.voiceURI === set.voiceURI ? ' selected' : '') + '>' + v.name + '</option>'; }).join('') + '</select></label>' : '') +
+    '<label class="ls-f"><input type="checkbox" class="ls-full"' + (set.full ? ' checked' : '') + '> Full answers</label>' +
+    '<button type="button" class="ls-close">Close</button></div><div class="ls-label" aria-live="polite"></div>';
+  document.body.appendChild(bar);
+  const startAt = (typeof focusIdx === 'number' && focusIdx >= 0 && cards()[focusIdx]) ? Math.max(0, entries.indexOf(entry(cards()[focusIdx].dataset.sec, Number(cards()[focusIdx].dataset.q)))) : 0;
+  ls = { entries: entries, bar: bar, i: 0, c: 0, chunks: [], playing: true, done: false, token: 0, lock: null, rate: set.rate, voiceURI: set.voiceURI || (voices[0] && voices[0].voiceURI) || '', full: set.full };
+  listenGo(startAt);
+  listenSave();
+  bar.querySelector('.ls-play').addEventListener('click', listenToggle);
+  bar.querySelector('.ls-prev').addEventListener('click', function(){ listenAdvance(-1); });
+  bar.querySelector('.ls-next').addEventListener('click', function(){ listenAdvance(1); });
+  bar.querySelector('.ls-close').addEventListener('click', stopListen);
+  bar.querySelector('.ls-rate').addEventListener('change', function(e){ ls.rate = Number(e.target.value); listenSave(); if(ls.playing){ window.speechSynthesis.cancel(); ls.token++; listenSpeak(); } });
+  const vs = bar.querySelector('.ls-voice');
+  if(vs) vs.addEventListener('change', function(e){ ls.voiceURI = e.target.value; listenSave(); if(ls.playing){ window.speechSynthesis.cancel(); ls.token++; listenSpeak(); } });
+  bar.querySelector('.ls-full').addEventListener('change', function(e){ ls.full = e.target.checked; listenSave(); listenGo(ls.i); if(ls.playing){ window.speechSynthesis.cancel(); ls.token++; listenSpeak(); } });
+  bar.addEventListener('keydown', function(e){ if(e.key === 'Escape'){ e.preventDefault(); e.stopPropagation(); stopListen(); } });
+  listenLock(true);
+  listenSync();
+  listenSpeak();
+}
+function initListen(){
+  if(!listenOk()) return;
+  const actions = document.querySelector('.hero-actions');
+  if(actions && !document.getElementById('listenBtn')){
+    const b = document.createElement('button');
+    b.id = 'listenBtn'; b.type = 'button'; b.className = 'fc-start alt'; b.textContent = '🔊 Listen';
+    b.addEventListener('click', startListen);
+    actions.appendChild(b);
+  }
+  document.addEventListener('visibilitychange', function(){ if(ls && ls.playing && document.visibilityState === 'visible') listenLock(true); });
+  if(window.speechSynthesis.addEventListener) window.speechSynthesis.addEventListener('voiceschanged', function(){ /* voices are read when the player opens */ });
+}
 // ---- listen:end
 function enhance(root){
   drawDiagrams(root);
@@ -646,7 +771,7 @@ function toolbarHTML(section, shown){
   const coreN = section.questions.filter((_,i)=>CORE.has(qKey(section.id,i))).length;
   return '<div class="toolbar">' +
     '<span class="tmeta">~' + minutes(words) + ' min full read' + (coreN && section.id!=='review' ? ' · ' + coreN + ' core' : '') + (shown !== section.questions.length ? ' · showing ' + shown : '') + '</span>' +
-    '<span class="tgroup"><button data-act="flash" class="flash-btn">▶ Flashcards</button><button data-act="expand">Expand all</button><button data-act="collapse">Collapse all</button></span>' +
+    '<span class="tgroup"><button data-act="flash" class="flash-btn">▶ Flashcards</button>' + (listenOk() ? '<button data-act="listen">🔊 Listen</button>' : '') + '<button data-act="expand">Expand all</button><button data-act="collapse">Collapse all</button></span>' +
     '<span class="tgroup">' +
       '<label><input type="checkbox" data-pref="summaries"' + (prefs.summaries?' checked':'') + '> Summaries</label>' +
       (CORE.size ? '<label><input type="checkbox" data-pref="coreOnly"' + (prefs.coreOnly?' checked':'') + '> ★ Core only</label>' : '') +
@@ -654,6 +779,7 @@ function toolbarHTML(section, shown){
     '</span></div>';
 }
 function renderContent(forceIdx){
+  stopListen();
   content.innerHTML = '';
   const section = DATA.find(s=>s.id===activeId);
   const idx = DATA.findIndex(s=>s.id===activeId);
@@ -690,6 +816,7 @@ function renderContent(forceIdx){
 let searchTerm = '';
 const searchInput = document.getElementById('searchInput');
 function renderSearch(){
+  stopListen();
   const terms = searchTerm.toLowerCase().split(/\s+/).filter(t=>t.length > 1);
   const hits = INDEX.filter(e=> terms.every(t=> e.text.includes(t)))
     .map(e=>({ e, score: terms.reduce((n,t)=> n + (e.item.q.toLowerCase().includes(t) ? 10 : 1), 0) }))
@@ -811,6 +938,7 @@ content.addEventListener('click', (e)=>{
   if(g){ activeId = g.dataset.goto; hideBack(); renderNav(); renderContent(); window.scrollTo(0,0); return; }
   const act = e.target.closest('button[data-act]');
   if(act){
+    if(act.dataset.act === 'listen'){ startListen(); return; }
     if(act.dataset.act === 'flash'){ startDeck(deckFromView(), searchTerm ? 'Search: ' + searchTerm : DATA.find(s=>s.id===activeId).title); return; }
     content.querySelectorAll('.qcard').forEach(c=> c.classList.toggle('open', act.dataset.act === 'expand'));
   }
@@ -860,6 +988,7 @@ const fcEl = document.getElementById('fc');
 const fc = { open:false, deck:[], i:0, revealed:false, got:0, missed:[], again:new Map(), title:'', source:[] };
 function shuffleArr(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
 function startDeck(entries, title){
+  stopListen();
   if(!entries.length) return;
   fc.source = entries.slice();
   fc.deck = prefs.shuffle ? shuffleArr(entries.slice()) : entries.slice();
@@ -1028,6 +1157,7 @@ function soloRender(key){
   post();
 }
 // ---- solo:end
+initListen();
 const SOLO = soloKey(location.search);
 if(SOLO){ soloRender(SOLO); updateProgress(); }
 else { renderNav(); renderContent(); updateProgress(); }
