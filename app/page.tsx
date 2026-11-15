@@ -7,6 +7,7 @@ import {
   BookOpen,
   Bot,
   Braces,
+  FlaskRound,
   MessagesSquare,
   Bug,
   Brain,
@@ -85,6 +86,7 @@ const GROUPS: Group[] = [
       { slug: 'nextjs', title: 'Next.js 16', desc: 'App Router, Server Components, Cache Components, proxy.ts, Server Actions and deployment, with diagrams.', icon: Triangle },
       { slug: 'tailwind-css', title: 'CSS & Tailwind v4', desc: 'Box model, Flexbox and Grid, stacking contexts, responsive design, and Tailwind v4 (@theme, @source, container queries).', icon: Palette },
       { slug: 'web-platform', title: 'Web Platform & Tooling', desc: 'CORS, CSP and cookies, HTTP/2 and HTTP/3, caching, service workers, Docker, CI/CD, feature flags, Git and i18n.', icon: Globe },
+      { slug: 'testing', title: 'Testing', desc: 'Test strategy, unit tests, React Testing Library, MSW, Playwright and back-end tests in Node.js. Every sample was run before it was written down.', icon: FlaskRound },
     ],
   },
   {

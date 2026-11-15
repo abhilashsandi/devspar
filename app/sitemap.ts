@@ -11,7 +11,7 @@ const GUIDES = [
   ['nodejs', 0.8], ['tailwind-css', 0.8], ['coding-questions', 0.8],
   ['system-design', 0.8], ['system-design-scale', 0.7], ['performance-optimization', 0.7],
   ['web-platform', 0.8],
-  ['ai-dev', 0.8], ['whiteboard', 0.8], ['architecture', 0.8], ['bug-clinic', 0.8], ['behavioural', 0.8], ['crash-course', 0.8], ['aws', 0.8],
+  ['ai-dev', 0.8], ['whiteboard', 0.8], ['architecture', 0.8], ['bug-clinic', 0.8], ['behavioural', 0.8], ['testing', 0.8], ['crash-course', 0.8], ['aws', 0.8],
 ] as const;
 const LABS = ['coding-questions/labs', 'javascript/labs', 'react-training/labs', 'system-design/labs'];
 const TOOLS = ['csv-tools', 'pdf-tools'];
