@@ -67,6 +67,14 @@ the shared engine works, and the homepage's links and search work — see `tests
 it is deliberately never part of `public/study/` (its content only exists client-side, after the
 reader's own password decrypts it).
 
+## Practice tools
+
+Pages that rehearse the interview itself (listed in `app/lib/tools.mjs`; plans in `docs/superpowers/plans/`).
+Everything a reader types stays in their browser.
+
+- `/mock`: a timed 45-minute round (behavioural, concepts, whiteboard, a bug, a SQL puzzle) with a scorecard
+  that feeds the weak cards.
+
 ## SEO
 
 Set `NEXT_PUBLIC_SITE_URL` in the deploy environment (the production domain, e.g.

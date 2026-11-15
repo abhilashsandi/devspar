@@ -6,7 +6,7 @@
 
 /** @type {Tool[]} */
 export const TOOLS = [
-  { id: 'mock', href: '/mock', title: 'Mock round', icon: 'timer', ready: false, desc: 'A timed 45-minute interview drawn from the guides: behavioural, concepts, whiteboard, a bug and a SQL puzzle, with a scorecard.' },
+  { id: 'mock', href: '/mock', title: 'Mock round', icon: 'timer', ready: true, desc: 'A timed 45-minute interview drawn from the guides: behavioural, concepts, whiteboard, a bug and a SQL puzzle, with a scorecard.' },
   { id: 'plan', href: '/plan', title: 'Interview plan', icon: 'calendar', ready: false, desc: 'Enter your interview date and role to get a daily plan built from core, weak and unreviewed cards.' },
   { id: 'match', href: '/match', title: 'Job match', icon: 'target', ready: false, desc: 'Paste a job posting to get a deck for it and a list of gaps. The posting stays in your browser.' },
   { id: 'drills', href: '/drills', title: 'Estimation drills', icon: 'calculator', ready: false, desc: 'Capacity and latency sums with new numbers every time, so you practise the arithmetic.' },

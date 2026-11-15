@@ -273,3 +273,9 @@ follow-up questions, kept apart from the guide's own text as an overlay.
   block is left out of every summary and Quick Reference line.
 - **Rebuilding.** A guide that is rebuilt from content modules must call `applyExtras(data, entries)` in its builder
   before `lib.save`, or a rebuild drops the overlay. Interview Prep is edited in place, so it is safe today.
+
+## Mock rounds
+
+`/mock` builds a round from the card bank (`app/lib/mock.mjs`). Which cards can appear in a segment is decided by
+`kindOf` in `app/lib/bank.mjs` (and, for the concept questions, the ★ core cards of Interview Prep). A new guide
+that should feed a segment needs a rule there. `/mock?seed=<text>` reproduces a round exactly.
