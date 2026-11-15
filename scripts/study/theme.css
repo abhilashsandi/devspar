@@ -491,6 +491,23 @@
   details.reveal > :not(summary){margin-left:16px; margin-right:16px;}
   details.reveal > summary + *{margin-top:14px;}
   details.reveal > p{max-width:var(--measure);}
+  /* answer length switch and follow-up ladder (scripts/study/extras.mjs) */
+  .depth-bar{display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin:0 0 14px;}
+  .depth-bar button{font:inherit; font-size:13.5px; font-weight:600; color:var(--accent); background:var(--panel); border:1px solid var(--border); border-radius:999px; padding:5px 13px; cursor:pointer;}
+  .depth-bar button:hover{border-color:var(--accent);}
+  .depth-bar button[aria-pressed="true"]{background:var(--accent); color:var(--accent-ink); border-color:var(--accent);}
+  .depth-bar .depth-time{font-size:13px; color:var(--muted); margin-left:6px;}
+  .qbody:not(.depth-short) .xdepths{display:none;}
+  .qbody.depth-short > *:not(.depth-bar):not(.xdepths):not(.xladder){display:none;}
+  .qbody.depth-short .xdepths > div{display:none;}
+  .qbody.depth-short[data-depth="15"] .xdepths > [data-depth="15"], .qbody.depth-short[data-depth="60"] .xdepths > [data-depth="60"]{display:block; border-left:4px solid var(--gold); background:var(--gold-soft); border-radius:0 10px 10px 0; padding:4px 16px; margin:0 0 16px; max-width:var(--measure);}
+  .xladder{margin:22px 0 4px;}
+  .xladder .ladder-h{font-family:var(--hand); font-size:22px; font-weight:700; color:var(--muted); margin:0 0 8px;}
+  .xladder details.rung{border-left:4px solid var(--gold);}
+  .xladder .ladder-foot{display:flex; align-items:center; gap:12px; flex-wrap:wrap;}
+  .xladder .ladder-count{font-size:13px; color:var(--muted);}
+  .xladder .ladder-next{font:inherit; font-size:14px; font-weight:700; color:var(--accent); background:var(--panel); border:1px solid var(--accent); border-radius:10px; padding:7px 14px; cursor:pointer;}
+  .xladder .ladder-next:hover{background:var(--accent-soft);}
   /* "say this" script blocks used by the whiteboard guide */
   .say{border-left:4px solid var(--gold); background:var(--gold-soft); border-radius:0 10px 10px 0; padding:10px 16px; margin:0 0 16px; max-width:var(--measure);}
   .say > :last-child{margin-bottom:0;}

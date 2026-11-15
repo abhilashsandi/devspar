@@ -202,8 +202,82 @@ function enlargeDiagram(box){
   if(dlg.showModal){ if(!dlg.open) dlg.showModal(); } else dlg.setAttribute('open', '');
 }
 // ---- sketch:end
+// ---- depths:start
+// Answer length. A card may carry an extras block (scripts/study/extras.mjs) with a 15-second and a
+// 60-second spoken version. The switch shows one at a time; "Full answer" is the card as written. The
+// choice is one setting for every card and every guide. A card without the block gets no switch.
+const DEPTH_PREF = 'study-depth-pref-v1';
+let depthMem = null;   // used when storage is blocked, so the switch still works for this visit
+function depthSeconds(words){ return Math.round(words / 2.5); }   // 150 words a minute
+function depthMode(){
+  if(depthMem) return depthMem;
+  try{ const v = localStorage.getItem(DEPTH_PREF); return v === '15' || v === '60' ? v : 'full'; }catch(e){ return 'full'; }
+}
+function depthWords(el){ return (el.textContent || '').trim().split(/\s+/).filter(Boolean).length; }
+function applyDepth(doc){
+  const mode = depthMode();
+  doc.querySelectorAll('.depth-bar').forEach(bar=>{
+    const body = bar.parentElement;
+    body.classList.toggle('depth-short', mode !== 'full');
+    body.dataset.depth = mode;
+    bar.querySelectorAll('button').forEach(b=> b.setAttribute('aria-pressed', String(b.dataset.depth === mode)));
+    const t = bar.querySelector('.depth-time');
+    if(mode === 'full') t.textContent = 'about ' + Math.max(1, Math.round(Number(bar.dataset.words) / 150)) + ' min spoken';
+    else { const s = body.querySelector('.xdepths [data-depth="' + mode + '"]'); t.textContent = 'about ' + depthSeconds(s ? depthWords(s) : 0) + ' s spoken'; }
+  });
+}
+function mountDepths(root){
+  root.querySelectorAll('.xdepths').forEach(x=>{
+    if(x.dataset.mounted) return;
+    const body = x.closest('.qbody') || x.parentElement;
+    x.dataset.mounted = '1'; x.hidden = false;
+    const ladder = body.querySelector('.xladder');
+    const full = depthWords(body) - depthWords(x) - (ladder ? depthWords(ladder) : 0);
+    const bar = document.createElement('div');
+    bar.className = 'depth-bar'; bar.setAttribute('role', 'group'); bar.setAttribute('aria-label', 'Answer length');
+    bar.dataset.words = String(Math.max(1, full));
+    bar.innerHTML = '<button type="button" data-depth="15" aria-pressed="false">15 s</button><button type="button" data-depth="60" aria-pressed="false">60 s</button><button type="button" data-depth="full" aria-pressed="false">Full answer</button><span class="depth-time"></span>';
+    bar.addEventListener('click', (ev)=>{
+      const b = ev.target.closest('button[data-depth]'); if(!b) return;
+      try{ localStorage.setItem(DEPTH_PREF, b.dataset.depth); depthMem = null; }catch(e){ depthMem = b.dataset.depth; }
+      applyDepth(document);
+    });
+    body.insertBefore(bar, body.firstChild);
+    body.insertBefore(x, bar.nextSibling);
+    applyDepth(body);   // the card is not in the page yet, so scope to it, not to document
+  });
+}
+// ---- depths:end
+// ---- ladder:start
+// The interviewer pushes: follow-up questions that get harder, one at a time.
+function mountLadders(root){
+  root.querySelectorAll('.xladder').forEach(l=>{
+    if(l.dataset.mounted) return;
+    l.dataset.mounted = '1';
+    const rungs = Array.from(l.querySelectorAll('.rung'));
+    if(!rungs.length) return;
+    l.hidden = false;
+    const head = document.createElement('p'); head.className = 'ladder-h'; head.textContent = 'The interviewer pushes';
+    l.insertBefore(head, l.firstChild);
+    let shown = 1;
+    rungs.forEach((r, i)=>{ r.hidden = i > 0; });
+    const foot = document.createElement('div'); foot.className = 'ladder-foot';
+    const count = document.createElement('span'); count.className = 'ladder-count'; count.setAttribute('aria-live', 'polite');
+    const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'ladder-next'; btn.textContent = 'Push harder →';
+    const update = ()=>{ count.textContent = 'Follow-up ' + shown + ' of ' + rungs.length; if(shown >= rungs.length) btn.remove(); };
+    btn.addEventListener('click', ()=>{
+      rungs[shown].hidden = false; shown++; update();
+      const s = rungs[shown - 1].querySelector('summary'); if(s) s.focus();
+    });
+    foot.appendChild(count); foot.appendChild(btn); l.appendChild(foot);
+    update();
+  });
+}
+// ---- ladder:end
 function enhance(root){
   drawDiagrams(root);
+  mountDepths(root);
+  mountLadders(root);
   root.querySelectorAll('pre').forEach(colourCode);
   root.querySelectorAll('table.cmp').forEach(t=>{
     const p = t.parentElement;
@@ -246,7 +320,7 @@ const INDEX = [];
 DATA.forEach(section=>{
   section.questions.forEach((item, qIdx)=>{
     // Summary: leading prose (no badges, tables, code or diagrams), whole sentences until it says something useful.
-    const prose = stripTags(item.a.replace(/<details[\s\S]*?<\/details>/g,' ').replace(/<span class="tbadge">[\s\S]*?<\/span>/,'').replace(/<table[\s\S]*?<\/table>/g,' ').replace(/<div class="diagram">[\s\S]*?<\/div>/g,' '));
+    const prose = stripTags(item.a.replace(/<!--x:extras-->[\s\S]*?<!--\/x:extras-->/g,' ').replace(/<details[\s\S]*?<\/details>/g,' ').replace(/<span class="tbadge">[\s\S]*?<\/span>/,'').replace(/<table[\s\S]*?<\/table>/g,' ').replace(/<div class="diagram">[\s\S]*?<\/div>/g,' '));
     const sentences = prose.split(/(?<=[.!?])\s+(?=[A-Z0-9"'(])/);
     let summary = '';
     for(const s of sentences){ if(summary.length >= 90) break; summary = (summary ? summary + ' ' : '') + s; }
