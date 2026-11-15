@@ -40,6 +40,10 @@ for (const slug of Object.keys(PAGES)) {
   pages[slug] = PAGES[slug];
   let cards = 0, questions = 0;
   const keys = [];
+  // core cards: the ones the guide's 'review' section links to (same rule as CORE in the engine)
+  const core = new Set();
+  const rv = data.find((s) => s.id === 'review');
+  if (rv) for (const q of rv.questions) for (const m of q.a.match(/data-go="[^"]+"/g) || []) core.add(m.slice(9, -1));
   for (const s of data) {
     s.questions.forEach((q, i) => {
       cards++;
@@ -47,7 +51,10 @@ for (const slug of Object.keys(PAGES)) {
       questions++;
       keys.push(fnv(titleKey(q.q)));
       if (/^Cheat sheet:/.test(strip(q.q))) return;
-      items.push([slug, s.id, i, strip(s.title), strip(q.q), summary(q.a)]);
+      const shown = strip(q.q), item = [slug, s.id, i, strip(s.title), shown, summary(q.a), core.has(s.id + ':' + i) ? 1 : 0, strip(q.q + ' ' + q.a).split(' ').length];
+      // a title with escaped markup keys differently once displayed as text: say so explicitly
+      if (titleKey(shown) !== titleKey(q.q)) item.push(titleKey(q.q));
+      items.push(item);
     });
   }
   meta[slug] = { title: PAGES[slug], cards, questions, sections: data.length, keys };
