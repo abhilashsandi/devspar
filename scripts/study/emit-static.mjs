@@ -18,6 +18,7 @@ import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { MARK } from './parsePage.mjs';
+import { vendorPglite } from './vendor-pglite.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const APP = path.join(ROOT, 'app');
@@ -27,6 +28,13 @@ const SKIP = new Set(['my-prep']);
 async function main() {
   await mkdir(OUT, { recursive: true });
   await copyFile(path.join(ROOT, 'scripts', 'study', 'engine.js'), path.join(OUT, 'engine.js'));
+
+  // the in-browser SQL runner: its own small modules and the seed, plus the PGlite engine under /vendor
+  const runDir = path.join(ROOT, 'scripts', 'study', 'sqlrun');
+  await mkdir(path.join(OUT, 'sqlrun'), { recursive: true });
+  await copyFile(path.join(ROOT, 'scripts', 'study', 'sql-lab', 'seed.sql'), path.join(OUT, 'sqlrun', 'seed.sql'));
+  if (existsSync(runDir)) for (const f of await readdir(runDir)) await copyFile(path.join(runDir, f), path.join(OUT, 'sqlrun', f));
+  await vendorPglite();
 
   const guides = (await readdir(APP, { withFileTypes: true }))
     .filter((d) => d.isDirectory() && !SKIP.has(d.name))
