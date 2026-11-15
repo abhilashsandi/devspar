@@ -18,7 +18,7 @@ export const APP = path.join(ROOT, 'app');
 // The one stylesheet and font link every guide uses. upgrade() swaps each guide's own <style> for
 // theme.css, so a design change is one file plus `npm run study:upgrade`.
 const THEME_PATH = path.join(ROOT, 'scripts', 'study', 'theme.css');
-const FONTS_LINK = '<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,500;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">';
+const FONTS_LINK = '<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,500;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=IBM+Plex+Mono:wght@400;500;600&family=Caveat:wght@600;700&display=swap" rel="stylesheet">';
 let _theme;
 async function theme() {
   if (!_theme) _theme = '<style>\n' + (await readFile(THEME_PATH, 'utf8')).trimEnd() + '\n</style>';

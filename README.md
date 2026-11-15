@@ -56,6 +56,10 @@ site — but the generated `public/study/*.html`, `public/study/engine.js`,
 `public/search-index.json` and `app/lib/studyMeta.json` are committed like any other file, so
 commit them with the content change.
 
+Diagrams are authored once as tidy SVG and shown hand-drawn, like a whiteboard, with the tidy
+original and an enlarged view one click away. `npm run study:audit` checks that no diagram loses a
+label or lets one spill out of its box (see "Whiteboard diagrams" in `scripts/study/README.md`).
+
 `npm test` (after `npm run build`) starts a production server and checks that every guide loads,
 the shared engine works, and the homepage's links and search work — see `tests/`.
 

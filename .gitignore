@@ -49,3 +49,4 @@ backend/node_modules/
 
 # scripts/study/preview-diagrams.mjs output
 .diagram-preview.html
+.diagram-audit.html

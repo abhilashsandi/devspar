@@ -44,7 +44,150 @@ function colourCode(pre){
   });
   pre.innerHTML = out + escCode(src.slice(last));
 }
+// ---- sketch:start
+// Whiteboard diagrams. Every diagram in every guide is authored as tidy boxes and arrows (dg*.mjs);
+// this redraws it by hand when the card is rendered: edges bow and corners drift a little, arrowheads
+// become open chevrons, neutral outlines become marker ink, and text is set in the handwriting face
+// (theme.css). The wobble is seeded from each shape's own coordinates, so a diagram looks the same
+// on every visit. Strokes draw in when the card opens (theme.css, off under reduced motion).
+// preview-diagrams.mjs inlines this block, so keep it self-contained.
+function sketchRng(seed){
+  let s = (seed >>> 0) || 1;
+  return ()=>{ s ^= s << 13; s >>>= 0; s ^= s >>> 17; s ^= s << 5; s >>>= 0; return s / 4294967296 - 0.5; };
+}
+const skN = (v)=> Math.round(v * 10) / 10;
+// One hand-drawn stroke from (x1,y1) to (x2,y2): the ends stay put, the middle bows by up to `amp`.
+function sketchSeg(x1, y1, x2, y2, r, amp){
+  const len = Math.hypot(x2 - x1, y2 - y1);
+  if(len < 8) return ' L' + skN(x2) + ' ' + skN(y2);
+  const bow = Math.min(amp, len * 0.03) * 2 * r(), t = 0.5 + r() * 0.3;
+  const nx = -(y2 - y1) / len, ny = (x2 - x1) / len;
+  return ' Q' + skN(x1 + (x2 - x1) * t + nx * bow) + ' ' + skN(y1 + (y2 - y1) * t + ny * bow) + ' ' + skN(x2) + ' ' + skN(y2);
+}
+function sketchPath(from, d){
+  const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  for(const a of from.attributes){ if(!/^(x|y|width|height|rx|ry|x1|y1|x2|y2|d)$/.test(a.name)) p.setAttribute(a.name, a.value); }
+  p.setAttribute('d', d);
+  if(!p.hasAttribute('fill')) p.setAttribute('fill', from.tagName === 'line' ? 'none' : 'black');
+  from.replaceWith(p);
+  return p;
+}
+function sketch(svg){
+  if(svg.classList.contains('sk')) return;
+  svg.classList.add('sk');
+  const num = (el, a)=> parseFloat(el.getAttribute(a)) || 0;
+  // arrowheads: a filled triangle becomes an open chevron in the same colour
+  svg.querySelectorAll('marker path').forEach(m=>{
+    const pts = (m.getAttribute('d') || '').match(/-?\d*\.?\d+/g), fill = m.getAttribute('fill');
+    if(!pts || pts.length !== 6 || !fill || fill === 'none' || m.getAttribute('stroke')) return;
+    m.setAttribute('d', 'M' + pts[0] + ' ' + pts[1] + ' L' + pts[2] + ' ' + pts[3] + ' L' + pts[4] + ' ' + pts[5]);
+    m.setAttribute('stroke', fill); m.setAttribute('fill', 'none');
+    m.setAttribute('stroke-width', '1.2'); m.setAttribute('stroke-linecap', 'round'); m.setAttribute('stroke-linejoin', 'round');
+    const mk = m.closest('marker'); if(mk) mk.setAttribute('overflow', 'visible');
+  });
+  const inDefs = (el)=> !!el.closest('defs, marker');
+  svg.querySelectorAll('rect').forEach(el=>{
+    if(inDefs(el)) return;
+    const x = num(el, 'x'), y = num(el, 'y'), w = num(el, 'width'), h = num(el, 'height'), rx = num(el, 'rx');
+    if(w < 22 || h < 14 || rx >= Math.min(w, h) / 2 - 1) return;          // tiny marks and pills stay as they are
+    const r = sketchRng(x * 73856093 ^ y * 19349663 ^ w * 83492791 ^ h * 2971), j = Math.min(1.5, Math.min(w, h) * 0.05);
+    const c = [[x, y], [x + w, y], [x + w, y + h], [x, y + h]].map(pt=> [pt[0] + j * 2 * r(), pt[1] + j * 2 * r()]);
+    let d = 'M' + skN(c[0][0]) + ' ' + skN(c[0][1]);
+    for(let i = 0; i < 4; i++){ const a = c[i], b = c[(i + 1) % 4]; d += sketchSeg(a[0], a[1], b[0], b[1], r, 1.6); }
+    sketchPath(el, d + ' Z');
+  });
+  svg.querySelectorAll('line').forEach(el=>{
+    if(inDefs(el)) return;
+    const x1 = num(el, 'x1'), y1 = num(el, 'y1'), x2 = num(el, 'x2'), y2 = num(el, 'y2');
+    sketchPath(el, 'M' + x1 + ' ' + y1 + sketchSeg(x1, y1, x2, y2, sketchRng(x1 * 73856093 ^ y1 * 19349663 ^ x2 * 83492791 ^ y2 * 2971), 1.8));
+  });
+  svg.querySelectorAll('path').forEach(el=>{
+    if(inDefs(el) || !/^\s*M\s*-?[\d.]+[\s,]+-?[\d.]+(\s*L\s*-?[\d.]+[\s,]+-?[\d.]+)+\s*$/.test(el.getAttribute('d') || '')) return;
+    const n = el.getAttribute('d').match(/-?\d*\.?\d+/g).map(Number);   // straight polylines only: arrows and connectors
+    const r = sketchRng(n[0] * 73856093 ^ n[1] * 19349663 ^ n[n.length - 2] * 83492791 ^ n[n.length - 1] * 2971);
+    let d = 'M' + n[0] + ' ' + n[1];
+    for(let i = 2; i < n.length; i += 2) d += sketchSeg(n[i - 2], n[i - 1], n[i], n[i + 1], r, 2.2);
+    el.setAttribute('d', d);
+  });
+  // ink and draw order: neutral outlines use marker ink; everything gets a small stagger for the draw-in
+  const els = [...svg.querySelectorAll('path, circle, ellipse, polygon, rect, text')].filter(el=> !inDefs(el));
+  const step = Math.min(24, 760 / Math.max(1, els.length));
+  els.forEach((el, i)=>{
+    el.style.setProperty('--d', Math.round(i * step) + 'ms');
+    if(el.tagName === 'text'){
+      el.classList.add('sk-t');
+      const s = el.textContent;                                   // capitals are wide in a handwriting face
+      if(s.length > 10 && !/[a-z]/.test(s)) el.classList.add('sk-caps');
+      return;
+    }
+    const stroke = el.getAttribute('stroke');
+    if(!stroke || stroke === 'none'){ el.classList.add('sk-t'); return; }
+    if(stroke === 'var(--border)') el.setAttribute('stroke', 'var(--muted)');
+    el.classList.add('sk-s');
+    if(el.tagName === 'path' && !el.hasAttribute('stroke-dasharray')){ el.setAttribute('pathLength', '1'); el.classList.add('sk-d'); }
+    else el.classList.add('sk-t');
+  });
+}
+// Both versions are kept: the authored ("tidy") SVG is never thrown away, and a switch under every
+// diagram flips all of them between the whiteboard drawing and the tidy original. The choice is
+// remembered across guides.
+const SK_PREF = 'study-diagram-style';
+let skMem = null;   // used when storage is blocked, so the switch still works for this visit
+function diagramMode(){ if(skMem) return skMem; try{ return localStorage.getItem(SK_PREF) === 'tidy' ? 'tidy' : 'sketch'; }catch(e){ return 'sketch'; } }
+function drawDiagrams(root){
+  const mode = diagramMode();
+  root.querySelectorAll('.diagram').forEach(box=>{
+    box.querySelectorAll('svg').forEach(svg=>{
+      if(!svg.__tidy) svg.__tidy = svg.outerHTML;              // the authored drawing, kept verbatim
+      if(mode === 'sketch') sketch(svg);
+      else if(svg.classList.contains('sk')){
+        const t = document.createElement('div'); t.innerHTML = svg.__tidy;
+        const fresh = t.firstElementChild; fresh.__tidy = svg.__tidy; svg.replaceWith(fresh);
+      }
+    });
+    box.classList.toggle('tidy', mode === 'tidy');
+    let bar = box.querySelector('.dg-bar');
+    if(!bar){
+      bar = document.createElement('div'); bar.className = 'dg-bar';
+      bar.setAttribute('role', 'group'); bar.setAttribute('aria-label', 'Diagram style');
+      bar.innerHTML = '<button type="button" data-dg="sketch">✎ Whiteboard</button><button type="button" data-dg="tidy">▭ Tidy</button>' +
+        '<button type="button" data-dg="zoom" aria-haspopup="dialog">⤢ Enlarge</button>';
+      bar.addEventListener('click', (ev)=>{
+        const b = ev.target.closest('button[data-dg]'); if(!b) return;
+        if(b.dataset.dg === 'zoom'){ enlargeDiagram(box); return; }
+        try{ localStorage.setItem(SK_PREF, b.dataset.dg); }catch(e){ skMem = b.dataset.dg; }
+        drawDiagrams(document);
+      });
+      box.appendChild(bar);
+    }
+    bar.querySelectorAll('button:not([data-dg="zoom"])').forEach(b=> b.setAttribute('aria-pressed', String(b.dataset.dg === mode)));
+  });
+}
+// A diagram is drawn 900 units wide but a card column is narrower, so its labels end up small.
+// "Enlarge" shows it in a dialog as wide as the window (and scrollable on a phone), in whichever
+// style is selected. The dialog element gives focus trapping and Esc for free.
+function enlargeDiagram(box){
+  let dlg = document.getElementById('dgZoom');
+  if(!dlg){
+    dlg = document.createElement('dialog'); dlg.id = 'dgZoom'; dlg.className = 'dg-zoom';
+    dlg.setAttribute('aria-label', 'Enlarged diagram');
+    dlg.innerHTML = '<div class="dg-zoom-top"><span>Scroll to move around. Esc closes.</span>' +
+      '<button type="button" class="dg-zoom-close">✕ Close</button></div><div class="dg-zoom-body" tabindex="0"></div>';
+    dlg.addEventListener('click', (ev)=>{ if(ev.target === dlg || ev.target.closest('.dg-zoom-close')) dlg.close(); });
+    document.body.appendChild(dlg);
+  }
+  const body = dlg.querySelector('.dg-zoom-body');
+  body.innerHTML = '';
+  const copy = document.createElement('div');
+  copy.className = 'diagram' + (box.classList.contains('lightbg') ? ' lightbg' : '');
+  box.querySelectorAll('svg').forEach(svg=>{ const t = document.createElement('div'); t.innerHTML = svg.__tidy || svg.outerHTML; copy.appendChild(t.firstElementChild); });
+  body.appendChild(copy);
+  drawDiagrams(body);
+  if(dlg.showModal){ if(!dlg.open) dlg.showModal(); } else dlg.setAttribute('open', '');
+}
+// ---- sketch:end
 function enhance(root){
+  drawDiagrams(root);
   root.querySelectorAll('pre').forEach(colourCode);
   root.querySelectorAll('table.cmp').forEach(t=>{
     const p = t.parentElement;

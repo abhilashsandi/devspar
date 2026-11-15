@@ -29,6 +29,8 @@ Everything needed to edit, add to, or extend the interview-prep guides (`/interv
 npm run study:emit    # app/*/content.json -> public/study/*.html + engine.js
 npm run study:index   # app/*/content.json -> public/search-index.json + app/lib/studyMeta.json
 npm run study:build   # both of the above (also runs automatically before `npm run build`)
+npm run study:upgrade # re-apply theme.css + engine.js to every guide's content.json (after changing either)
+npm run study:audit   # prove every hand-drawn diagram keeps every detail of its tidy original
 ```
 
 Run `study:build` after editing any `content.json` by hand or by script. If you only change
@@ -135,6 +137,9 @@ card counts, the phone menu and cross-guide search work, progress and weak cards
 between guides, the static-file architecture is actually being used (not a silent fallback to
 embedding), the homepage's links and search work, and an axe-core accessibility pass plus the
 flashcard dialog's keyboard focus handling (Tab trap, focus restored on close) come back clean.
+`09-diagrams.mjs` checks the whiteboard diagrams: sketched by default with every label, `Tidy`
+restores the authored SVG exactly, the choice carries to another guide, and `Enlarge` opens and
+closes. (Whether each label still fits its box is the slower `npm run study:audit`.)
 `tests/checks/05-private-page.mjs` additionally checks `/my-prep` when `PRIVATE_PASSWORD` is set
 in the environment (it never is in CI, since the real password lives outside the repo); it skips
 itself otherwise.
@@ -166,6 +171,36 @@ node scripts/study/preview-diagrams.mjs dg eventLoop,keys  # only the named ones
 
 It writes `.diagram-preview.html` (git-ignored) with a light/dark switch. Check that text stays
 inside its box in both themes before a diagram ships.
+
+## Whiteboard diagrams (and the tidy original)
+
+You author a diagram once, as tidy boxes and arrows (`box`, `arrow`, `txt`, `wrap` in `dg.mjs`).
+Readers see it **drawn by hand**, like the event loop sketch on the homepage:
+
+- `engine.js` (the `sketch` block) redraws each SVG when its card renders: edges bow, corners drift,
+  arrowheads become open chevrons, neutral outlines become marker ink, strokes draw in when the card
+  opens. The wobble is seeded from each shape's coordinates, so a diagram never changes between visits.
+- `theme.css` sets the board, the handwriting face (Caveat, sized by x-height) and the draw-in.
+- **Nothing is thrown away.** The authored SVG is kept, and the switch under every diagram
+  (`✎ Whiteboard` / `▭ Tidy`) flips all diagrams between the two. The choice is remembered across
+  guides. `⤢ Enlarge` opens the diagram as wide as the window, which is where small labels are
+  easiest to read. On a phone a diagram keeps a readable size and scrolls sideways.
+
+So there is no second copy of a diagram to maintain, and nothing to do when you add one. What you do
+need is proof that the handwriting still fits:
+
+```bash
+npm run study:audit            # every diagram in every guide
+npm run study:audit -- sql aws # only these guides
+```
+
+It renders every diagram both ways in a real browser and fails if the sketch drops a label or a
+shape, lets a label spill out of the box it sat in, or lets two labels on one line run into each
+other. It writes `.diagram-audit.html` (git-ignored) with each pair side by side. Run it after
+adding a diagram and after any change to the sketch code or the handwriting sizes in `theme.css`
+(those sizes are the largest that pass). It needs network access for the fonts.
+
+`preview-diagrams.mjs` runs the same sketch, so the gallery shows what readers will see.
 
 ## Keeping content fresh
 

@@ -70,12 +70,12 @@ ${box(14, 220, 230, 52, 'Seq Scan on customers', 'rows: est vs actual', 'n')}
 ${box(262, 220, 230, 52, 'Index Scan on orders', 'rows: est vs actual', 'g')}
 ${arrow('M250 72 L250 58', 'pt')}${arrow('M250 134 L250 120', 'pt')}${arrow('M129 220 L200 182', 'pt')}${arrow('M377 220 L300 182', 'pt')}
 ${txt(14, 292, 'read from the leaves up: each node hands its rows to its parent', { size: 10 })}
-${rect(540, 10, 346, 168, 'panel', 'border')}
+${rect(540, 10, 346, 186, 'panel', 'border')}
 ${txt(556, 32, 'Scan types, slowest to fastest for a few rows', { font: 'sans', size: 11.5, color: 'accent', weight: 700 })}
-${[['Seq Scan', 'reads every row of the table'], ['Bitmap Heap Scan', 'index finds pages, then reads them'], ['Index Scan', 'follows the index to each row'], ['Index Only Scan', 'answers from the index alone']].map((r, i) => txt(556, 62 + i * 28, r[0], { size: 10.5, ...T, weight: 700 }) + txt(556, 77 + i * 28, r[1], { size: 9.5 })).join('')}
-${txt(540, 206, 'If estimated and actual rows differ by', { font: 'sans', size: 11, ...T })}
-${txt(540, 224, 'a large factor, the statistics are stale', { font: 'sans', size: 11, ...T })}
-${txt(540, 242, 'and the planner chose on bad information.', { font: 'sans', size: 11, ...T })}
+${[['Seq Scan', 'reads every row of the table'], ['Bitmap Heap Scan', 'index finds pages, then reads them'], ['Index Scan', 'follows the index to each row'], ['Index Only Scan', 'answers from the index alone']].map((r, i) => txt(556, 60 + i * 34, r[0], { size: 10.5, ...T, weight: 700 }) + txt(556, 75 + i * 34, r[1], { size: 9.5 })).join('')}
+${txt(540, 224, 'If estimated and actual rows differ by', { font: 'sans', size: 11, ...T })}
+${txt(540, 242, 'a large factor, the statistics are stale', { font: 'sans', size: 11, ...T })}
+${txt(540, 260, 'and the planner chose on bad information.', { font: 'sans', size: 11, ...T })}
 `, 'Reading an EXPLAIN plan as a tree from the leaves up');
 
 // ───────────────────────────────────────────── lostUpdate and writeSkew (two lanes)

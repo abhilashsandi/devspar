@@ -1,5 +1,5 @@
 // Writes a gallery page of diagrams so you can check them in a browser (text inside its box, both themes)
-// before they ship in a guide.
+// before they ship in a guide. The gallery runs the same hand-drawn pass the guides do (the "sketch" block in engine.js).
 //   node scripts/study/preview-diagrams.mjs dg-ai            every diagram in scripts/study/dg-ai.mjs
 //   node scripts/study/preview-diagrams.mjs dg loop,context  only the named ones
 // Output: .diagram-preview.html in the repo root (git-ignored). Open it, and use the button to flip the theme.
@@ -13,11 +13,15 @@ const m = await import(pathToFileURL(path.join(here, mod + '.mjs')).href);
 const set = m.default ?? Object.values(m).find((v) => v && typeof v === 'object');
 const keys = Object.keys(set).filter((k) => typeof set[k] === 'string' && (!only || only.split(',').includes(k)));
 const css = await readFile(path.join(here, 'theme.css'), 'utf8');
+const engine = await readFile(path.join(here, 'engine.js'), 'utf8');
+const sketchJs = engine.slice(engine.indexOf('// ---- sketch:start'), engine.indexOf('// ---- sketch:end'));
+if (!sketchJs) throw new Error('sketch block not found in engine.js');
 const html = '<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Diagram preview: ' + mod + '</title>' +
-  '<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;700&family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">' +
+  '<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;700&family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=IBM+Plex+Mono:wght@400;500;600&family=Caveat:wght@600;700&display=swap" rel="stylesheet">' +
   '<style>' + css + '</style></head><body style="padding:20px;max-width:980px;margin:0 auto">' +
   '<button onclick="var r=document.documentElement;r.dataset.theme=r.dataset.theme===\'dark\'?\'light\':\'dark\'" style="position:fixed;top:10px;right:10px">light / dark</button>' +
-  keys.map((k) => '<p class="codelabel">' + mod + ' · ' + k + '</p>' + set[k]).join('') + '</body></html>';
+  keys.map((k) => '<p class="codelabel">' + mod + ' · ' + k + '</p>' + set[k]).join('') +
+  '<script>' + sketchJs + ';drawDiagrams(document);</script></body></html>';
 const out = path.resolve(here, '..', '..', '.diagram-preview.html');
 await writeFile(out, html);
 console.log(keys.length + ' diagram(s) -> ' + out);

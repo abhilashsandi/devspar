@@ -13,6 +13,7 @@
     "study:build": "npm run study:emit && npm run study:index",
     "study:upgrade": "node scripts/study/upgrade-all.mjs",
     "study:freshness": "node scripts/study/freshness.mjs",
+    "study:audit": "node scripts/study/audit-diagrams.mjs",
     "test": "node tests/run-all.mjs"
   },
   "dependencies": {
