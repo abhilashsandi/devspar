@@ -246,7 +246,7 @@ const INDEX = [];
 DATA.forEach(section=>{
   section.questions.forEach((item, qIdx)=>{
     // Summary: leading prose (no badges, tables, code or diagrams), whole sentences until it says something useful.
-    const prose = stripTags(item.a.replace(/<details[\s\S]*?<\/details>/g,' ').replace(/<span class="tbadge">[\s\S]*?<\/span>/,'').replace(/<table[\s\S]*?<\/table>/g,' ').replace(/<div class="diagram">[\s\S]*?<\/div>/g,' '));
+    const prose = stripTags(item.a.replace(/<!--x:extras-->[\s\S]*?<!--\/x:extras-->/g,' ').replace(/<details[\s\S]*?<\/details>/g,' ').replace(/<span class="tbadge">[\s\S]*?<\/span>/,'').replace(/<table[\s\S]*?<\/table>/g,' ').replace(/<div class="diagram">[\s\S]*?<\/div>/g,' '));
     const sentences = prose.split(/(?<=[.!?])\s+(?=[A-Z0-9"'(])/);
     let summary = '';
     for(const s of sentences){ if(summary.length >= 90) break; summary = (summary ? summary + ' ' : '') + s; }

@@ -23,7 +23,7 @@ const titleKey = (t) => String(t).replace(/<[^>]+>/g, ' ').replace(/&[a-z#0-9]+;
 const fnv = (s) => { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return h.toString(36); };
 
 function summary(a) {
-  const prose = strip(a.replace(/<details[\s\S]*?<\/details>/g, ' ').replace(/<span class="tbadge">[\s\S]*?<\/span>/, '').replace(/<table[\s\S]*?<\/table>/g, ' ').replace(/<div class="diagram[^"]*">[\s\S]*?<\/div>/g, ' '));
+  const prose = strip(a.replace(/<!--x:extras-->[\s\S]*?<!--\/x:extras-->/g, ' ').replace(/<details[\s\S]*?<\/details>/g, ' ').replace(/<span class="tbadge">[\s\S]*?<\/span>/, '').replace(/<table[\s\S]*?<\/table>/g, ' ').replace(/<div class="diagram[^"]*">[\s\S]*?<\/div>/g, ' '));
   let s = '';
   for (const x of prose.split(/(?<=[.!?])\s+(?=[A-Z0-9"'(])/)) { if (s.length >= 90) break; s = (s ? s + ' ' : '') + x; }
   s = s.replace(/^(Common follow-ups|Model answer:|Answer:)\s*/i, '');

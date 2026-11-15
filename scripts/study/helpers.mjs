@@ -62,7 +62,7 @@ export function appendHtml(data, prefix, html, secId) {
 // ---- the auto-generated "Quick Reference" section: one card per section, every question title
 // linking to itself with a one-line summary. Call this after editing a page's sections.
 function firstSentence(html) {
-  const t = stripTags(html.replace(/<details[\s\S]*?<\/details>/g, ' '));   // hidden answers stay hidden in the Quick Reference
+  const t = stripTags(html.replace(/<!--x:extras-->[\s\S]*?<!--\/x:extras-->/g, ' ').replace(/<details[\s\S]*?<\/details>/g, ' '));   // hidden answers stay hidden in the Quick Reference
   const m = t.match(/^(.{40,230}?[.!?])(\s|$)/);
   return m ? m[1] : (t.length > 230 ? t.slice(0, 227).replace(/\s+\S*$/, '') + '…' : t);
 }
