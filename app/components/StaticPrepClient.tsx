@@ -55,6 +55,29 @@ export default function StaticPrepClient({
     };
   }, []);
 
+  // The iframe can finish loading before React hydrates (a cached static file often does), and
+  // then onLoad never fires: the loading label would stay on top of the guide and swallow every
+  // click. So also look at the document itself until it is ready. A fresh iframe starts on a
+  // blank document that already reports "complete", which is why the URL is checked too.
+  useEffect(() => {
+    if (loaded) return;
+    const ready = () => {
+      try {
+        const doc = iframeRef.current?.contentDocument;
+        return !!doc && doc.readyState === 'complete' && doc.location.href !== 'about:blank';
+      } catch {
+        return false;
+      }
+    };
+    const timer = setInterval(() => {
+      if (ready()) {
+        clearInterval(timer);
+        setLoaded(true);
+      }
+    }, 100);
+    return () => clearInterval(timer);
+  }, [loaded]);
+
   // Keep the guide's own light/dark styling in sync with the site's theme toggle. The guide's
   // CSS reads a data-theme attribute on its own document root (falling back to the OS setting
   // when unset); the iframe is same-origin (srcDoc, or a static file on this site), so we can
@@ -76,6 +99,7 @@ export default function StaticPrepClient({
             justifyContent: 'center',
             fontFamily: 'monospace',
             color: '#666',
+            pointerEvents: 'none',
           }}
         >
           {loadingLabel ?? 'Loading…'}
