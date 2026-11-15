@@ -229,3 +229,27 @@ Add a technology to track by adding a line to `TRACKED` in `freshness.mjs`.
   trying (Bug Clinic). Text inside it is left out of the card summary and the search index summary.
 - `<ol class="draw">` numbered drawing steps and `<div class="say">` a script to say out loud
   (Whiteboard guide).
+
+## Practice tools and shared seams
+
+Pages that work across guides (`/mock`, `/plan`, `/match`, `/drills`, `/stories`) cannot reach inside a guide's
+iframe, so they use these seams. Plans for each live in `docs/superpowers/plans/`.
+
+- **Index fields.** Every `public/search-index.json` item is `[slug, sectionId, index, sectionTitle, question,
+  summary, flags, words, titleKey?]`. Positions 0 to 5 are read by the guides' search and the homepage search;
+  never move them. `flags` bit 1 is ★ core (the card is linked from the guide's `review` section), `words` is the
+  card's word count, and the optional ninth field is the title key when the displayed question would key
+  differently from the real title (escaped markup).
+- **`app/lib/bank.mjs`.** Turns the index into typed cards (`kindOf`), reads reviewed and weak progress from
+  `localStorage`, builds `#deck=` links and has the seeded shuffle the tools share. No DOM and no clock, so Node tests it.
+- **Open a deck from a link.** `/<guide>#deck=sec:i,sec:j` opens exactly those cards as a flashcard deck
+  (up to 40). `StaticPrepClient` turns the hash into a `start-deck` message; the engine ignores repeats.
+- **Embed one card.** `/study/<guide>.html?card=sec:idx` renders only that card; `app/components/CardEmbed.tsx`
+  shows it in a frame that follows the card's height (`solo-height` messages).
+- **`app/lib/tools.mjs`.** The list of practice tools. A tool's `ready` flag drives the homepage section, the
+  sitemap and the accessibility check. `app/components/ToolShell.tsx` is the page frame they share.
+- **Engine blocks.** A feature of the shared engine lives between `// ---- <name>:start` and `// ---- <name>:end`.
+  `tests/unit/helpers/engine-block.mjs` (`loadBlock`) runs one block in Node so its pure functions get unit tests;
+  only `function` declarations are visible to the test, not top-level `const`/`let`.
+- **Tests.** `npm run test:unit` runs `tests/unit/*.test.mjs` (no browser, no build). `npm run build && npm test`
+  still runs the browser checks.

@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { SITE_URL } from './lib/siteUrl';
+import { TOOLS as PRACTICE_TOOLS } from './lib/tools.mjs';
 
 // /my-prep, /dl and /dl-admin are all robots: noindex and intentionally left out here too.
 // /study/*.html (the guides' own static files, loaded in an iframe) are deliberately excluded:
@@ -22,6 +23,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: SITE_URL + '/', lastModified: now, changeFrequency: 'weekly', priority: 1 },
     ...GUIDES.map(([slug, priority]) => ({ url: `${SITE_URL}/${slug}`, lastModified: now, changeFrequency: 'weekly' as const, priority })),
     ...LABS.map((slug) => ({ url: `${SITE_URL}/${slug}`, lastModified: now, changeFrequency: 'monthly' as const, priority: 0.6 })),
+    ...PRACTICE_TOOLS.filter((t) => t.ready).map((t) => ({ url: `${SITE_URL}${t.href}`, lastModified: now, changeFrequency: 'monthly' as const, priority: 0.7 })),
     ...TOOLS.map((slug) => ({ url: `${SITE_URL}/${slug}`, lastModified: now, changeFrequency: 'monthly' as const, priority: 0.5 })),
   ];
 }

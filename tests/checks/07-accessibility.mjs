@@ -3,6 +3,8 @@
 // and closing returns focus to the button that opened it (or a sensible fallback if that button
 // no longer exists, since some openers live inside content the engine re-renders on close).
 import AxeBuilder from '@axe-core/playwright';
+import { pathToFileURL } from 'node:url';
+import path from 'node:path';
 
 export async function run({ browser, base, ok }) {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
@@ -32,6 +34,14 @@ export async function run({ browser, base, ok }) {
   await page.click('button[title="Toggle theme"]');
   await settle(500);
   await axe('homepage (dark)');
+
+  // the practice tools, once they exist (app/lib/tools.mjs)
+  const { TOOLS } = await import(pathToFileURL(path.resolve('app/lib/tools.mjs')).href);
+  for (const tool of TOOLS.filter((x) => x.ready)) {
+    await page.goto(`${base}${tool.href}`, { waitUntil: 'networkidle' });
+    await settle(800);
+    await axe(`${tool.href} (dark)`);
+  }
 
   await page.goto(`${base}/nextjs`, { waitUntil: 'networkidle' });
   const frame = await (await page.$('iframe')).contentFrame();

@@ -4,12 +4,16 @@ import { useMemo, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import {
   Atom,
+  Calculator,
+  CalendarDays,
   BookOpen,
   Bot,
   Braces,
   Database,
   FlaskRound,
   MessagesSquare,
+  NotebookPen,
+  Target,
   Bug,
   Brain,
   Cloud,
@@ -37,6 +41,7 @@ import SiteSearch from './components/SiteSearch';
 import WhiteboardSketch from './components/WhiteboardSketch';
 import studyMeta from './lib/studyMeta.json';
 import { fnv } from './lib/studyKeys.mjs';
+import { TOOLS } from './lib/tools.mjs';
 
 type Guide = { slug: string; title: string; desc: string; icon: LucideIcon };
 type Group = { id: string; title: string; blurb: string; cols?: 4; guides: Guide[] };
@@ -106,6 +111,9 @@ const GROUPS: Group[] = [
     ],
   },
 ];
+
+const TOOL_ICONS: Record<string, LucideIcon> = { timer: Timer, calendar: CalendarDays, target: Target, calculator: Calculator, notebook: NotebookPen };
+const READY_TOOLS = TOOLS.filter((tool) => tool.ready);
 
 const ALL_GUIDES = GROUPS.flatMap((g) => g.guides);
 
@@ -293,6 +301,34 @@ export default function LandingPage() {
             ))}
           </div>
         </section>
+
+        {/* Practice tools: shown only once a tool is ready */}
+        {READY_TOOLS.length > 0 && (
+          <section id="tools" className="border-t border-line px-5 py-14">
+            <div className="mx-auto max-w-6xl">
+              <div className="mb-5 flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
+                <h2 className="font-display text-2xl font-bold tracking-tight text-ink">Practice tools</h2>
+                <p className="text-[15px] text-ink-2">Rehearse the interview itself: against the clock, out loud, with real numbers.</p>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {READY_TOOLS.map((tool) => {
+                  const Icon = TOOL_ICONS[tool.icon] ?? Timer;
+                  return (
+                    <Link key={tool.id} href={tool.href} className={cardClass}>
+                      <div className="flex items-center gap-3">
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-marker-soft text-marker">
+                          <Icon className="h-5 w-5" aria-hidden />
+                        </span>
+                        <h3 className="font-display text-lg font-bold leading-tight text-ink group-hover:text-marker">{tool.title}</h3>
+                      </div>
+                      <p className="mt-3 text-[15px] leading-relaxed text-ink-2">{tool.desc}</p>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* Interactive labs */}
         <section id="labs" className="border-t border-line px-5 py-14">
