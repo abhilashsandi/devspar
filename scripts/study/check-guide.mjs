@@ -14,6 +14,7 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 import * as lib from './lib.mjs';
 import { plainTitle } from './parsePage.mjs';
+import { TOOLS } from '../../app/lib/tools.mjs';
 
 const [slug, ...rest] = process.argv.slice(2);
 const opt = (name) => { const i = rest.indexOf('--' + name); return i >= 0 ? rest[i + 1] : undefined; };
@@ -68,7 +69,7 @@ for (const s of sections) {
       const sec = target?.find((x) => x.id === m[2]);
       if (!sec || !sec.questions[Number(m[3])]) problems.push('broken link /' + m[1] + '#' + m[2] + ':' + m[3] + ' in ' + ref);
     }
-    for (const m of q.a.matchAll(/href="\/([a-z0-9-]+)"/g)) if (m[1] !== slug && !others.has(m[1])) problems.push('link to unknown guide /' + m[1] + ' in ' + ref);
+    for (const m of q.a.matchAll(/href="\/([a-z0-9-]+)"/g)) if (m[1] !== slug && !others.has(m[1]) && !TOOLS.some((x) => x.href === '/' + m[1])) problems.push('link to unknown guide /' + m[1] + ' in ' + ref);
   });
 }
 

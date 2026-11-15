@@ -902,7 +902,7 @@ Total storage &asymp; 10,000,000 &times; 50KB &asymp; 500GB
 // growing at, say, 500K new users/month &times; 50KB &asymp; 25GB/month
 // — comfortably within a single well-provisioned PostgreSQL instance
 // for years, which is the point: this justifies NOT sharding on day one.</code></pre>
-      <p><strong>Good interview signal:</strong> the exact multiplier matters less than showing you know average traffic and peak traffic are different numbers, and that peak is what you provision for. A storage estimate this small is itself a finding: it tells you a single primary database with read replicas is enough for a long time, and sharding would be solving a problem you don't have yet.</p>`
+      <p><strong>Good interview signal:</strong> the exact multiplier matters less than showing you know average traffic and peak traffic are different numbers, and that peak is what you provision for. A storage estimate this small is itself a finding: it tells you a single primary database with read replicas is enough for a long time, and sharding would be solving a problem you don't have yet.</p><p class="deeper"><strong>Go deeper:</strong> <a href="/drills" target="_top">Estimation drills: practise this arithmetic with new numbers</a></p>`
     }
   ]
 },

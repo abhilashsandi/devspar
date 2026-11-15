@@ -29,6 +29,8 @@ export function formatAmount(n) {
   return String(Number(n.toPrecision(3)));
 }
 const approx = (n) => formatAmount(n);
+// a decimal for the worked steps, without floating-point noise: 0.0009999999999998899 -> 0.001
+const plain = (x) => x.toFixed(9).replace(/0+$/, '').replace(/[.]$/, '');
 
 /** @type {Template[]} */
 export const TEMPLATES = [
@@ -131,7 +133,7 @@ export const TEMPLATES = [
       return {
         prompt: `A request needs ${avail.length} components in a row, with availability ${avail.map((a) => a + '%').join(', ').replace(/, ([^,]*)$/, ' and $1')}. If any one is down the request fails. How many minutes of downtime is that in a 30-day month?`,
         answer, unit: 'minutes',
-        steps: [`Availabilities multiply: ${avail.map((a) => a / 100).join(' × ')} = ${all.toFixed(6)}.`, `Unavailability: 1 − ${all.toFixed(6)} = ${(1 - all).toFixed(6)}.`, `A 30-day month has 43,200 minutes: ${(1 - all).toFixed(6)} × 43,200 = ${approx(answer)} minutes.`],
+        steps: [`Availabilities multiply: ${avail.map((a) => plain(a / 100)).join(' × ')} = ${plain(all)}.`, `Unavailability: 1 − ${plain(all)} = ${plain(1 - all)}.`, `A 30-day month has 43,200 minutes: ${plain(1 - all)} × 43,200 = ${approx(answer)} minutes.`],
       };
     },
   },
@@ -139,11 +141,11 @@ export const TEMPLATES = [
     id: 'avail-pair', title: 'Downtime of two replicas',
     pick: (rng) => ({ a: pick(rng, [99, 99.5, 99.9]) }),
     solve: ({ a }) => {
-      const down = 1 - a / 100, answer = down * down * YEAR_MIN;
+      const down = Math.round((100 - a) * 1000) / 100000, answer = down * down * YEAR_MIN;
       return {
         prompt: `Two independent replicas each have ${a}% availability, and the service is up if at least one is up. How many minutes a year is it down?`,
         answer, unit: 'minutes',
-        steps: [`Each is down ${approx(down * 100)}% of the time, which is ${down}.`, `Both down at once: ${down} × ${down} = ${down * down}.`, `A year has 525,600 minutes: ${down * down} × 525,600 = ${approx(answer)} minutes.`],
+        steps: [`Each is down ${plain(down * 100)}% of the time, which is ${plain(down)}.`, `Both down at once: ${plain(down)} × ${plain(down)} = ${plain(down * down)}.`, `A year has 525,600 minutes: ${plain(down * down)} × 525,600 = ${approx(answer)} minutes.`],
       };
     },
   },
