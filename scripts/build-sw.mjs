@@ -16,6 +16,7 @@ const guides = (await list(path.join(PUBLIC, 'study'))).filter((f) => f.endsWith
 const precache = [
   ...guides.map((g) => `/study/${g}.html`),
   '/study/engine.js',
+  ...(await list(path.join(PUBLIC, 'study', 'audio'))).map((f) => `/study/audio/${f}`),
   ...(await list(path.join(PUBLIC, 'study', 'sqlrun'))).map((f) => `/study/sqlrun/${f}`),   // small files; the 15 MB engine is only saved once it has been used
   '/search-index.json',
   ...(await list(path.join(PUBLIC, 'icons'))).map((f) => `/icons/${f}`),

@@ -13,12 +13,14 @@
 //
 // Runs automatically before every `npm run build` (see package.json's "prebuild"); run directly
 // with `npm run study:emit` after an edit if you want the files without a full build.
-import { mkdir, readdir, readFile, writeFile, copyFile, stat } from 'node:fs/promises';
+import { mkdir, readdir, readFile, writeFile, copyFile, stat, rm } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { MARK } from './parsePage.mjs';
 import { vendorPglite } from './vendor-pglite.mjs';
+import { loadScript, buildAudio } from './audio.mjs';
+import { loadData } from './parsePage.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const APP = path.join(ROOT, 'app');
@@ -41,11 +43,18 @@ async function main() {
     .map((d) => d.name)
     .filter((slug) => existsSync(path.join(APP, slug, 'content.json')));
 
+  // audio overviews: one JSON per guide that has a script (scripts/study/audio/<slug>.mjs)
+  await rm(path.join(OUT, 'audio'), { recursive: true, force: true });
+  await mkdir(path.join(OUT, 'audio'), { recursive: true });
+  let audio = 0;
+
   let count = 0, totalBytes = 0;
   for (const slug of guides) {
     const html = JSON.parse(await readFile(path.join(APP, slug, 'content.json'), 'utf8')).html;
     const mi = html.indexOf(MARK);
     if (mi < 0) continue; // not on the card engine (shouldn't happen for a current guide)
+    const script = await loadScript(slug);
+    if (script) { await writeFile(path.join(OUT, 'audio', slug + '.json'), JSON.stringify(buildAudio(script, loadData(html)))); audio++; }
     const head = html.slice(0, mi); // <head>, sidebar markup, DATA, and the window.__STUDY__ config
     const out = head + '</script>\n<script src="/study/engine.js"></script>\n</body>\n</html>\n';
     const file = path.join(OUT, slug + '.html');
@@ -55,7 +64,7 @@ async function main() {
     count++;
   }
   const engineSize = (await stat(path.join(OUT, 'engine.js'))).size;
-  console.log(`emit-static: ${count} guide(s) -> public/study/*.html (${(totalBytes / 1024).toFixed(0)} KB total) + engine.js (${(engineSize / 1024).toFixed(1)} KB, shared)`);
+  console.log(`emit-static: ${count} guide(s) -> public/study/*.html (${(totalBytes / 1024).toFixed(0)} KB total) + engine.js (${(engineSize / 1024).toFixed(1)} KB, shared) + ${audio} audio overview(s)`);
 }
 
 main().catch((e) => { console.error(e); process.exitCode = 1; });

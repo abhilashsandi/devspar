@@ -490,40 +490,42 @@ function speakable(q, a, full){
   const body = (!full && m) ? speakText(m[1]) : speakText(a);
   return ['Question. ' + speakText(q)].concat(speakChunks(body));
 }
-// The player. It reads the cards now shown in #content, one after another, in short chunks.
+// The player. It plays a list of items, each a label and its spoken chunks. Two kinds of list:
+//   the guide's audio overview (scripts/study/audio/<guide>.mjs -> /study/audio/<guide>.json): an introduction
+//   and one chapter per section, written to be listened to; and, for a guide that has none (My Prep), the cards
+//   now shown in #content, read one after another.
 const LISTEN_KEY = 'study-listen-v1';
 const LISTEN_RATES = [0.8, 1, 1.2, 1.4, 1.6];
-let ls = null;   // the player's state while it is open
+let ls = null;            // the player's state while it is open
+let listenNav = false;    // true while the player itself changes section, so that re-render does not stop it
+let overviewOnce = null;  // the overview, fetched once
 function listenOk(){ return typeof window !== 'undefined' && !!window.speechSynthesis && typeof window.SpeechSynthesisUtterance === 'function'; }
 function listenSettings(){ return Object.assign({ rate: 1, voiceURI: '', full: false, seen: false }, readJSON(LISTEN_KEY, {})); }
-function listenSave(){ if(!ls) return; ls.set = { rate: ls.rate, voiceURI: ls.voiceURI, full: ls.full, seen: true }; writeJSON(LISTEN_KEY, ls.set); }
+function listenSave(){ if(!ls) return; writeJSON(LISTEN_KEY, { rate: ls.rate, voiceURI: ls.voiceURI, full: ls.full, seen: true }); }
 function listenVoices(){ try{ return window.speechSynthesis.getVoices().filter(function(v){ return /^en/i.test(v.lang || ''); }); }catch(e){ return []; } }
+// The guide's audio overview, or null when it has none (or it cannot be fetched).
+function listenOverview(){
+  if(overviewOnce) return overviewOnce;
+  const m = /\/study\/([a-z0-9-]+)\.html$/.exec(location.pathname);
+  overviewOnce = !m ? Promise.resolve(null) : fetch('/study/audio/' + m[1] + '.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(j){ return j && Array.isArray(j.chapters) && j.chapters.length ? j : null; }).catch(function(){ return null; });
+  return overviewOnce;
+}
 async function listenLock(on){
   try{
-    if(on && navigator.wakeLock && !ls.lock){ ls.lock = await navigator.wakeLock.request('screen'); ls.lock.addEventListener && ls.lock.addEventListener('release', function(){ if(ls) ls.lock = null; }); }
+    if(on && navigator.wakeLock && ls && !ls.lock){ ls.lock = await navigator.wakeLock.request('screen'); if(ls.lock.addEventListener) ls.lock.addEventListener('release', function(){ if(ls) ls.lock = null; }); }
     else if(!on && ls && ls.lock){ const l = ls.lock; ls.lock = null; await l.release(); }
   }catch(e){ /* a wake lock is a nicety */ }
 }
-function listenCard(i){
-  if(!ls) return null;
-  const e = ls.entries[i];
-  return content.querySelector('.qcard[data-sec="' + e.section.id + '"][data-q="' + e.qIdx + '"]');
-}
-function listenMark(i){
-  content.querySelectorAll('.qcard.listening').forEach(function(c){ c.classList.remove('listening'); });
-  const c = listenCard(i);
-  if(c){ c.classList.add('open', 'listening'); try{ c.scrollIntoView({ block: 'center', behavior: 'smooth' }); }catch(e){} }
-}
+function listenUnmark(){ content.querySelectorAll('.qcard.listening').forEach(function(c){ c.classList.remove('listening'); }); }
 function listenLabel(){
   if(!ls) return;
-  const bar = ls.bar.querySelector('.ls-label');
-  if(ls.done){ bar.textContent = 'End of section.'; return; }
-  bar.textContent = (ls.i + 1) + ' / ' + ls.entries.length + ' · ' + stripTags(ls.entries[ls.i].item.q);
+  const el = ls.bar.querySelector('.ls-label');
+  if(ls.done){ el.textContent = ls.mode === 'overview' ? 'End of the overview.' : 'End of section.'; return; }
+  el.textContent = (ls.i + 1) + ' / ' + ls.items.length + ' · ' + ls.items[ls.i].label;
 }
 function listenSpeak(){
   if(!ls || !ls.playing) return;
-  const text = ls.chunks[ls.c];
-  const u = new window.SpeechSynthesisUtterance(text);
+  const u = new window.SpeechSynthesisUtterance(ls.chunks[ls.c]);
   u.rate = ls.rate;
   const v = listenVoices().find(function(x){ return x.voiceURI === ls.voiceURI; });
   if(v) u.voice = v;
@@ -531,77 +533,129 @@ function listenSpeak(){
   u.onend = function(){
     if(!ls || !ls.playing || ls.token !== mine) return;
     ls.c++;
-    if(ls.c < ls.chunks.length) setTimeout(function(){ if(ls && ls.playing && ls.token === mine) listenSpeak(); }, ls.c === 1 ? 1500 : 0);   // a beat after the question
-    else listenAdvance(1);
+    // a beat after a card's question, and a shorter one between the paragraphs of a chapter
+    const gap = ls.mode === 'cards' ? (ls.c === 1 ? 1500 : 0) : (ls.breaks.has(ls.c) ? 700 : 0);
+    if(ls.c < ls.chunks.length) setTimeout(function(){ if(ls && ls.playing && ls.token === mine) listenSpeak(); }, gap);
+    else setTimeout(function(){ if(ls && ls.playing && ls.token === mine) listenAdvance(1); }, ls.mode === 'overview' ? 1200 : 0);
   };
   u.onerror = function(){ /* cancel() fires an error on some browsers: the state is already updated */ };
   window.speechSynthesis.speak(u);
 }
 function listenGo(i){
   ls.i = i; ls.c = 0; ls.done = false;
-  ls.chunks = speakable(ls.entries[i].item.q, ls.entries[i].item.a, ls.full);
-  listenMark(i); listenLabel();
+  const item = ls.items[i];
+  const parts = item.parts(ls.full);                 // paragraphs, each an array of chunks
+  ls.chunks = []; ls.breaks = new Set();
+  parts.forEach(function(p){ if(ls.chunks.length) ls.breaks.add(ls.chunks.length); ls.chunks = ls.chunks.concat(p); });
+  if(item.show) item.show();
+  listenLabel();
 }
 function listenAdvance(d){
   if(!ls) return;
   window.speechSynthesis.cancel(); ls.token++;
   const n = ls.i + d;
-  if(n < 0) return listenGo(0), listenSpeak();
-  if(n >= ls.entries.length){ ls.playing = false; ls.done = true; listenLabel(); listenSync(); listenLock(false); return; }
+  if(n < 0){ listenGo(0); listenSpeak(); return; }
+  if(n >= ls.items.length){ ls.playing = false; ls.done = true; listenLabel(); listenSync(); listenLock(false); return; }
   listenGo(n); listenSpeak();
 }
-function listenSync(){
-  if(!ls) return;
-  ls.bar.querySelector('.ls-play').textContent = ls.playing ? 'Pause' : 'Play';
-}
+function listenSync(){ if(ls) ls.bar.querySelector('.ls-play').textContent = ls.playing ? 'Pause' : 'Play'; }
 function listenToggle(){
   if(!ls) return;
-  if(ls.done){ listenGo(0); }
+  if(ls.done) listenGo(0);
   if(ls.playing){ ls.playing = false; ls.token++; window.speechSynthesis.cancel(); listenLock(false); }
   else { ls.playing = true; listenLock(true); listenSpeak(); }
   listenSync();
 }
 function stopListen(){
-  if(!ls) return;
+  if(!ls || listenNav) return;
   const s = ls; ls = null;
   s.token++; try{ window.speechSynthesis.cancel(); }catch(e){}
-  s.playing = false;
   if(s.lock){ try{ s.lock.release(); }catch(e){} }
   s.bar.remove();
-  content.querySelectorAll('.qcard.listening').forEach(function(c){ c.classList.remove('listening'); });
+  listenUnmark();
 }
-function startListen(){
-  if(!listenOk()) return;
-  const entries = deckFromView();
-  if(!entries.length) return;
+// Items for the cards now shown: each is read as its question, a beat, then its answer.
+function listenCardItems(){
+  return deckFromView().map(function(e){
+    return {
+      label: stripTags(e.item.q),
+      parts: function(full){ return [speakable(e.item.q, e.item.a, full)]; },
+      show: function(){
+        listenUnmark();
+        const c = content.querySelector('.qcard[data-sec="' + e.section.id + '"][data-q="' + e.qIdx + '"]');
+        if(c){ c.classList.add('open', 'listening'); try{ c.scrollIntoView({ block: 'center', behavior: 'smooth' }); }catch(err){} }
+      },
+    };
+  });
+}
+// Items for the overview: the introduction, then a chapter per section. Showing a chapter opens its section.
+function listenOverviewItems(ov){
+  const paras = function(text){ return String(text).split(/\n\s*\n/).map(function(p){ return speakChunks(p.replace(/\s+/g, ' ').trim()); }).filter(function(p){ return p.length; }); };
+  const items = [{ label: 'Introduction', parts: function(){ return paras(ov.intro); }, show: null }];
+  ov.chapters.forEach(function(ch){
+    items.push({
+      label: ch.title, sec: ch.id,
+      parts: function(){ return paras(ch.text); },
+      show: function(){
+        if(activeId === ch.id && !searchTerm) return;
+        if(!DATA.some(function(s){ return s.id === ch.id; })) return;
+        listenNav = true;
+        try{ if(searchTerm) clearSearch(false); activeId = ch.id; hideBack(); renderNav(); renderContent(); }finally{ listenNav = false; }
+      },
+    });
+  });
+  return items;
+}
+function listenOpen(mode, items, startAt){
+  if(!items.length) return;
   stopListen();
   const set = listenSettings();
+  const voices = listenVoices();
   const bar = document.createElement('div');
   bar.id = 'listenBar'; bar.className = 'listen-bar'; bar.setAttribute('role', 'region'); bar.setAttribute('aria-label', 'Listen');
-  const voices = listenVoices();
+  bar.dataset.mode = mode;
   bar.innerHTML = (set.seen ? '' : '<p class="ls-note">Reading aloud uses your device’s voice. It plays while this tab is open and the screen is on.</p>') +
-    '<div class="ls-row"><button type="button" class="ls-prev" aria-label="Previous question">⏮</button><button type="button" class="ls-play">Pause</button><button type="button" class="ls-next" aria-label="Next question">⏭</button>' +
+    '<div class="ls-row"><button type="button" class="ls-prev" aria-label="' + (mode === 'overview' ? 'Previous chapter' : 'Previous question') + '">⏮</button><button type="button" class="ls-play">Pause</button><button type="button" class="ls-next" aria-label="' + (mode === 'overview' ? 'Next chapter' : 'Next question') + '">⏭</button>' +
     '<label class="ls-f">Speed <select class="ls-rate" aria-label="Speed">' + LISTEN_RATES.map(function(r){ return '<option value="' + r + '"' + (r === set.rate ? ' selected' : '') + '>' + r + '×</option>'; }).join('') + '</select></label>' +
     (voices.length > 1 ? '<label class="ls-f">Voice <select class="ls-voice" aria-label="Voice">' + voices.map(function(v){ return '<option value="' + v.voiceURI + '"' + (v.voiceURI === set.voiceURI ? ' selected' : '') + '>' + v.name + '</option>'; }).join('') + '</select></label>' : '') +
-    '<label class="ls-f"><input type="checkbox" class="ls-full"' + (set.full ? ' checked' : '') + '> Full answers</label>' +
+    (mode === 'cards' ? '<label class="ls-f"><input type="checkbox" class="ls-full"' + (set.full ? ' checked' : '') + '> Full answers</label>' : '') +
     '<button type="button" class="ls-close">Close</button></div><div class="ls-label" aria-live="polite"></div>';
   document.body.appendChild(bar);
-  const startAt = (typeof focusIdx === 'number' && focusIdx >= 0 && cards()[focusIdx]) ? Math.max(0, entries.indexOf(entry(cards()[focusIdx].dataset.sec, Number(cards()[focusIdx].dataset.q)))) : 0;
-  ls = { entries: entries, bar: bar, i: 0, c: 0, chunks: [], playing: true, done: false, token: 0, lock: null, rate: set.rate, voiceURI: set.voiceURI || (voices[0] && voices[0].voiceURI) || '', full: set.full };
-  listenGo(startAt);
+  ls = { mode: mode, items: items, bar: bar, i: 0, c: 0, chunks: [], breaks: new Set(), playing: true, done: false, token: 0, lock: null, rate: set.rate, voiceURI: set.voiceURI || (voices[0] && voices[0].voiceURI) || '', full: set.full };
+  listenGo(Math.min(Math.max(0, startAt || 0), items.length - 1));
   listenSave();
+  const restart = function(){ if(ls.playing){ window.speechSynthesis.cancel(); ls.token++; listenSpeak(); } };
   bar.querySelector('.ls-play').addEventListener('click', listenToggle);
   bar.querySelector('.ls-prev').addEventListener('click', function(){ listenAdvance(-1); });
   bar.querySelector('.ls-next').addEventListener('click', function(){ listenAdvance(1); });
   bar.querySelector('.ls-close').addEventListener('click', stopListen);
-  bar.querySelector('.ls-rate').addEventListener('change', function(e){ ls.rate = Number(e.target.value); listenSave(); if(ls.playing){ window.speechSynthesis.cancel(); ls.token++; listenSpeak(); } });
+  bar.querySelector('.ls-rate').addEventListener('change', function(e){ ls.rate = Number(e.target.value); listenSave(); restart(); });
   const vs = bar.querySelector('.ls-voice');
-  if(vs) vs.addEventListener('change', function(e){ ls.voiceURI = e.target.value; listenSave(); if(ls.playing){ window.speechSynthesis.cancel(); ls.token++; listenSpeak(); } });
-  bar.querySelector('.ls-full').addEventListener('change', function(e){ ls.full = e.target.checked; listenSave(); listenGo(ls.i); if(ls.playing){ window.speechSynthesis.cancel(); ls.token++; listenSpeak(); } });
+  if(vs) vs.addEventListener('change', function(e){ ls.voiceURI = e.target.value; listenSave(); restart(); });
+  const fa = bar.querySelector('.ls-full');
+  if(fa) fa.addEventListener('change', function(e){ ls.full = e.target.checked; listenSave(); listenGo(ls.i); restart(); });
   bar.addEventListener('keydown', function(e){ if(e.key === 'Escape'){ e.preventDefault(); e.stopPropagation(); stopListen(); } });
   listenLock(true);
   listenSync();
   listenSpeak();
+}
+// Read the cards now shown (the fallback, and what My Prep gets).
+function startListen(){
+  if(!listenOk()) return;
+  const cs = cards();
+  const at = (typeof focusIdx === 'number' && focusIdx >= 0 && cs[focusIdx]) ? focusIdx : 0;
+  listenOpen('cards', listenCardItems(), at);
+}
+// Play the audio overview from a section's chapter (or from the introduction); read the cards if there is none.
+function startOverview(secId){
+  if(!listenOk()) return;
+  listenOverview().then(function(ov){
+    if(!ov) return startListen();
+    const items = listenOverviewItems(ov);
+    const at = secId ? items.findIndex(function(it){ return it.sec === secId; }) : 0;
+    if(secId && at < 0) return startListen();          // this section has no chapter: read its cards
+    listenOpen('overview', items, at);
+  });
 }
 function initListen(){
   if(!listenOk()) return;
@@ -609,11 +663,10 @@ function initListen(){
   if(actions && !document.getElementById('listenBtn')){
     const b = document.createElement('button');
     b.id = 'listenBtn'; b.type = 'button'; b.className = 'fc-start alt'; b.textContent = '🔊 Listen';
-    b.addEventListener('click', startListen);
+    b.addEventListener('click', function(){ startOverview(null); });
     actions.appendChild(b);
   }
   document.addEventListener('visibilitychange', function(){ if(ls && ls.playing && document.visibilityState === 'visible') listenLock(true); });
-  if(window.speechSynthesis.addEventListener) window.speechSynthesis.addEventListener('voiceschanged', function(){ /* voices are read when the player opens */ });
 }
 // ---- listen:end
 function enhance(root){
@@ -938,7 +991,7 @@ content.addEventListener('click', (e)=>{
   if(g){ activeId = g.dataset.goto; hideBack(); renderNav(); renderContent(); window.scrollTo(0,0); return; }
   const act = e.target.closest('button[data-act]');
   if(act){
-    if(act.dataset.act === 'listen'){ startListen(); return; }
+    if(act.dataset.act === 'listen'){ if(searchTerm) startListen(); else startOverview(activeId); return; }
     if(act.dataset.act === 'flash'){ startDeck(deckFromView(), searchTerm ? 'Search: ' + searchTerm : DATA.find(s=>s.id===activeId).title); return; }
     content.querySelectorAll('.qcard').forEach(c=> c.classList.toggle('open', act.dataset.act === 'expand'));
   }
