@@ -51,7 +51,9 @@ async function main() {
     };
 
     const checksDir = path.join(ROOT, 'tests', 'checks');
-    const files = (await readdir(checksDir)).filter((f) => f.endsWith('.mjs')).sort();
+    // CHECK=20 npm test runs only the checks whose file name contains "20"
+    const only = process.env.CHECK;
+    const files = (await readdir(checksDir)).filter((f) => f.endsWith('.mjs') && (!only || f.includes(only))).sort();
     for (const file of files) {
       console.log(`\n--- ${file} ---`);
       const mod = await import(pathToFileURL(path.join(checksDir, file)));

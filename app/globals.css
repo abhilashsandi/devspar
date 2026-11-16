@@ -24,6 +24,10 @@
   --red-marker: #B42318;
 }
 .dark {
+  /* the page's own background: without these a page with no full-height panel (such as /offline)
+     shows the dark theme's light text on the light theme's white */
+  --background: #101A19;
+  --foreground: #ECF1EE;
   --board: #101A19;
   --surface: #17231F;
   --surface-2: #1E2D29;
