@@ -1,0 +1,298 @@
+// Audio overview of the Interview Cheatsheet. Written to be heard, not read: plain sentences, no code, no lists.
+export default {
+  intro: `This is the audio overview of the Interview Cheatsheet. The cheatsheet is a set of short answers, each one a paragraph you could say in under a minute. It is made for the last pass before an interview.
+
+This overview follows the same order: a start here note, then engineering practice, JavaScript, TypeScript, React, Node, databases, cloud and deployment, architecture and reliability, security, CSS, testing, system design, design at scale, performance, Next.js, and three coding exercises.
+
+Each chapter gives you the one sentence answers for its topic. Try to say each answer yourself before I finish it. If you cannot, that card is the one to open later.`,
+
+  chapters: {
+    review: `The start here section is about the last two hours before an interview, and it begins with guardrails for how you speak.
+
+Say I built, or I worked on, only for what you actually did. When a topic comes up that you did not own, say so, and then explain how you would approach it. That is a strong answer. An inflated claim is a weak one, because interviewers probe, and it falls apart on the second question.
+
+Then a plan for the time. Do not try to learn anything new. Go through the must know pass instead: thirty eight topics that come up most often, each marked as core in the cheatsheet. You can filter the page to show only those, or run them as flashcards. Aim to get through them in about half an hour, saying each answer out loud.
+
+After that, spend some time on your own stories. Say your introduction once. Run through the five or six stories you have prepared, and check that each one ends with a result.
+
+Prepare your questions for them. Check the practical things: the time, the link, your equipment, and a glass of water.
+
+And in the final minutes, stop studying. Read your introduction, breathe, and go in with the intention of having a good technical conversation, not of passing an exam. Interviewers respond to someone who thinks out loud and is honest about what they know.`,
+
+    behavioral: `The engineering practice section has two short answers.
+
+The first is about the quality of AI generated code. It needs the same quality gates as code written by a person, and more of them, because it looks confident and can be wrong in ways that are easy to miss. So run the same pipeline: types, lint, tests and review. Check every new dependency, because a model can suggest a package that does not exist, and attackers register those names. Read the whole diff, and check that the tests actually assert something. And remember that whoever merges the code owns it.
+
+The second is about design systems. A design system has three layers, each with a different job. Design tokens are the base: CSS custom properties for colour, spacing, type and radius, with names that describe their role, such as surface or brand, not their value. Components are built only from those tokens, so a theme or a rebrand changes the tokens and nothing else. And documentation shows how and when to use each component, with examples and accessibility notes.
+
+Add the governance point, because it is what separates a library from a system. Someone owns it, changes are versioned, and teams can contribute. Without that, every team forks the button, and within a year there are seven buttons.`,
+
+    javascript: `The JavaScript section has seven short answers.
+
+A closure is a function that keeps access to the variables of the scope where it was created, even after that scope has finished.
+
+The event loop. JavaScript runs one call stack. When the stack is empty, the loop drains the whole microtask queue, meaning promise callbacks and code after an await, and then runs one macrotask, such as a timer.
+
+Promise all against all settled. All rejects as soon as any input rejects. The others keep running, but their results are ignored. So use it when everything must succeed. All settled waits for every input and reports each outcome, so use it when partial success is acceptable.
+
+Object against Map. A map accepts keys of any type, has a real size, iterates in insertion order, and has no inherited keys. Use it for dynamic collections. Use a plain object for a fixed record.
+
+Map against WeakMap. A weak map holds its keys weakly. When nothing else refers to a key object, the entry can be collected. That makes it right for attaching data to objects you do not own.
+
+Var, let and const. Var is function scoped and hoisted with the value undefined. Let and const are block scoped and sit in the temporal dead zone until their line. Const stops reassignment, not mutation.
+
+And try, catch and finally. Finally always runs, even after a return or a throw, so it is the place for cleanup. And try only catches a rejection from a promise you await inside it.`,
+
+    typescript: `TypeScript is the largest section in the cheatsheet, so here are its themes.
+
+Why TypeScript: it catches a whole class of bugs before a test runs, such as shape mismatches, wrong argument counts and missing null checks, and it makes refactoring safe.
+
+Types are erased. Nothing checks them at run time, so validate at the boundary. Parsing a response and declaring it a user is a lie. Parse every external input with a schema.
+
+Typing is structural. Two types are compatible when their shapes match. When you need two ids with the same shape kept apart, add a brand.
+
+For safety: unknown, not any. Unknown accepts everything and makes you narrow it. An exhaustive switch on a discriminated union, with a never check in the default branch, stops compiling when a new state is added. Prefer the expect error comment to the ignore comment, because the first one becomes an error itself once the problem is fixed.
+
+For expressiveness: generics remember which type flowed through. Tying a key to its object gives the exact property type. Conditional types and infer pick and capture types. The utility types cover most needs.
+
+For style: prefer a union of string literals to an enum. Use an interface for extendable object shapes, and a type alias for unions. Use satisfies to check a value without widening it.
+
+And the practical answers. Start projects with strict mode. Migrate JavaScript by converting leaf modules first. Measure before blaming a slow compile. Node can now run TypeScript by stripping types, without checking them. And TypeScript seven is the same language on a new native compiler.`,
+
+    react: `The React section has fifteen short answers. Here are the ones most often asked.
+
+Local or global state? Pick the smallest tool that works: component state for what one component owns, context for values that rarely change, and a store or a server state library for the rest. Prop drilling is passing data through components that do not use it.
+
+Server components render on the server and send the result without shipping their JavaScript. They can read data directly, and they cannot use state or effects.
+
+A performance audit works from the biggest wins down: the bundle first, then moving non interactive parts to the server, then long lists, and only then memoisation. And know when not to memoise: for cheap components, or for props that change on every render anyway.
+
+Effects. List every reactive value the effect reads in its dependencies. Leaving one out creates a stale closure. Return a cleanup.
+
+A deferred value keeps the input responsive and renders the heavy result at lower priority. Unlike debouncing, it has no fixed delay.
+
+When a context value changes, every component that reads it renders again. Split contexts by how often they change.
+
+Reconciliation: same type at the same position means update in place, and keys tell React which list item is which.
+
+An optimistic update changes the screen at once, keeps the previous value, and rolls back if the server refuses.
+
+And the rest: keep search state in the address, use headless primitives for accessible components, and load heavy components lazily inside Suspense.`,
+
+    'node-js': `The Node section has nine short answers.
+
+Blocking the event loop. Node runs your JavaScript on one thread, so a synchronous, processor heavy task, such as a big parse, crypto or image work, blocks every request. Move it to a worker thread or a queue.
+
+Backpressure is a signal from a slow consumer to a fast producer. Without it, unwritten data piles up in memory. Use the pipeline function, which handles it, along with errors and cleanup.
+
+To detect a leak, confirm it first: watch heap use after garbage collection. If it keeps climbing under steady load, take heap snapshots and compare them.
+
+When not to use Node: for heavy processor work on the main thread, such as video processing or machine learning inference.
+
+Event loop ordering. After the current synchronous code, Node runs next tick callbacks first, then promise microtasks, then the phases of the loop, with timers before set immediate in most cases.
+
+Since version fifteen, an unhandled promise rejection crashes the process by default. That is deliberate, because the application may be in an unknown state.
+
+Graceful shutdown. On the termination signal, stop accepting connections, stop pulling jobs, let requests in flight finish, close the pools, and exit, with a timer as a backstop.
+
+The cache stampede. A hot key expires, and thousands of requests rebuild it at once. Fix it with a lock, stale while revalidate, or random expiry.
+
+And the memory usage fields: the resident size is everything the process holds, heap total is what V8 reserved, and heap used is what is in use.`,
+
+    databases: `The databases section has six short answers.
+
+A query went from one second to thirty. Ask the database to explain and analyse it, and compare the planner's estimated row counts with the actual ones. A big gap means stale statistics, so refresh them. Then look for a missing index, a sort that spills to disk, or a plan that changed.
+
+N plus one is one query for a list plus one query per item. A data loader collects every load call made in one tick and issues a single batched query.
+
+Caching strategies. Cache aside is the most common: the application checks the cache, loads from the database on a miss, and fills the cache. Write through updates the cache on every write. And every strategy needs an invalidation plan.
+
+Index types. A B tree is the default, and serves equality, ranges and ordering. A partial index covers only the rows that match a condition, which keeps it small. Others exist for documents, text search and ranges.
+
+MongoDB schema design. Design from the queries. Embed data that is bounded and read together with its parent. Reference data that is shared, or that grows without limit.
+
+And the zero downtime schema change is expand and contract. Add the new column as nullable. Deploy code that writes to both the old and the new. Backfill the old rows. Switch reads to the new column. And only then remove the old one. Each step must work with both versions of the code running.`,
+
+    cloud: `The cloud and deployment section has seven short answers.
+
+A content delivery network caches content on edge servers near users, so a request is served from nearby instead of travelling to your origin. It lowers latency and protects the origin.
+
+Multi AZ against multi region. Multi AZ spreads a service across separate data centres within one region, and protects against one data centre failing. Multi region protects against the loss of a whole region, at much higher cost and complexity.
+
+Three rollout styles. Blue green runs two full environments and switches traffic at once, with instant rollback and double the infrastructure. Canary sends a small share of traffic to the new version first. Rolling replaces instances a few at a time.
+
+Logs, metrics and traces. Logs are detailed records of events. Metrics are numbers over time, cheap to keep and to alert on. Traces follow one request across services.
+
+A typical AWS path: the name service, a content delivery network with a firewall at the edge, a gateway or load balancer, containers or functions, and a managed database and cache across zones.
+
+Scaling to about a hundred thousand users. Keep the application tier stateless so it scales horizontally. Cache aggressively, at the edge and in Redis. Add read replicas. And move slow work to queues.
+
+And Lambda cold starts. A cold start is the extra time to create a new environment and initialise your code. Measure it first. Then reduce the package size, move initialisation out of the hot path, or pay for provisioned concurrency on paths where latency matters.`,
+
+    architecture: `The architecture and reliability section has twelve short answers.
+
+A circuit breaker wraps calls to a dependency. Closed lets calls through and counts failures. After a set number it opens, and calls fail fast. After a cool down it goes half open and lets a test request through.
+
+Retry only transient failures, with exponential backoff and jitter, and a limit. A bulkhead gives each dependency its own pool, so one slow service cannot exhaust everything.
+
+The indicator is the measurement. The objective is the internal target. The agreement is the contract with consequences.
+
+Rate limiting. A token bucket refills at a steady rate and allows bursts up to its size. A sliding window is more exact.
+
+A queue stores messages until one consumer processes them. A topic pushes each message to every subscriber.
+
+A monorepo, microservices and microfrontends are three independent decisions: repository structure, deployment of the backend, and deployment of the frontend.
+
+An API gateway handles traffic coming into the system. A service mesh handles traffic between services.
+
+A Node service is structured in layers, with dependencies pointing inwards to the domain.
+
+Reliable RabbitMQ needs three hops to be safe: publisher confirms, durable queues with persistent messages, and acknowledgement only after the work is saved.
+
+Server sent events are a plain HTTP response that stays open, with events written as small blocks of text.
+
+And why a queue with server sent events instead of polling: the queue moves long work off the request, so the API answers at once, and the events push the result to the browser without repeated requests.`,
+
+    security: `The security section has four short answers.
+
+OAuth two at a glance. It is delegated authorisation. A user lets a client application act on their behalf with a limited scope, and the application never sees their password. The application receives an access token. OpenID Connect adds an identity token on top, which says who the user is. Browser and mobile applications use the authorisation code flow with PKCE.
+
+A JSON web token has three parts: a header, a payload and a signature, each encoded. The signature proves the token was not altered. But the payload is only encoded, not encrypted, so anyone can read it. Never put secrets in it. The risks are well known: accepting a token with no signature algorithm, not checking expiry or audience, and the fact that a token cannot be revoked before it expires. Keep access tokens short lived.
+
+Role based access control done right. Separate authentication, who you are, from authorisation, what you may do. Check permissions on the server, for every request, next to the data. Hiding a button in the interface is not access control. Check ownership as well as role: an editor may edit articles, but only in their own organisation.
+
+And securing AI written code. Apply the same gates as for any code, with extra care. Verify that every new dependency exists and is legitimate. Look for missing input validation and missing authorisation checks, which models often leave out. And never let secrets reach a prompt.`,
+
+    css: `The CSS section has twelve short answers.
+
+The box model: content, padding, border and margin. With border box, the width includes padding and border.
+
+Positioning. Static is normal flow. Relative offsets an element and keeps its space. Absolute places it against the nearest positioned ancestor. Fixed places it against the viewport. Sticky sticks within its scrolling container.
+
+Specificity, in order: inline styles, then ids, then classes and attributes, then elements.
+
+Responsive design uses relative units, Flexbox for one dimension, Grid for two, and breakpoints written mobile first.
+
+Animate transform and opacity, which the compositor can handle, and avoid animating layout properties.
+
+A rem is relative to the root font size, so it is predictable and respects the user's settings. An em is relative to its own element, and compounds when nested.
+
+Flexbox lays items out in one dimension, driven by content. Grid lays them out in two, driven by the layout.
+
+Container queries style a component by the size of its container, not the viewport.
+
+Tailwind is utility first. Version four is configured in CSS, and it scans your source for complete class names. Unprefixed utilities apply at every size, and a prefix means that size and up. Use apply sparingly, since extracting a component is usually better.
+
+And for conditional classes, use a small helper to build the list, and a merge helper so that a later, conflicting utility wins.`,
+
+    testing: `The testing section has four short answers.
+
+The Testing Trophy has static analysis at the base, meaning TypeScript and a linter, then unit tests, then integration tests, which carry the most weight, and a small number of end to end tests at the top. Integration tests give the most confidence for their cost, because they render real components together and use them the way a person would.
+
+Flaky test causes. The most common is a fixed sleep or timeout instead of waiting for a condition. Use queries and locators that wait automatically. Others are shared state between tests, a dependence on the order in which tests run, a real network call, and uncontrolled time or randomness. Fix the cause. Do not paper over it with retries.
+
+The three query forms in Testing Library. Get expects the element to exist now, and throws if it does not. Query returns null when the element is missing, so use it to assert that something is absent. Find returns a promise and waits for the element to appear, so use it for anything that shows up after an async update.
+
+And act against wait for. Act makes React apply state updates and effects before you assert. Testing Library already wraps its helpers in act, so you rarely call it yourself. Wait for retries an assertion until it passes or times out. If you see a warning about updates not wrapped in act, usually something is still happening after the test ended, and you need to wait for it.`,
+
+    'system-design': `The system design section has nine short answers.
+
+The member portal at scale. Walk through the answer in a fixed order so you do not skip anything: requirements and scale, a capacity estimate, the API and data model, the high level diagram, the deep dives, and the trade offs.
+
+The saga pattern. When each service owns its database, there is no transaction across services. A saga is a sequence of local transactions, each with a compensating action that undoes it if a later step fails.
+
+The transactional outbox solves the dual write problem. If you save to the database and then publish an event, a crash between the two loses the event. So write the event to an outbox table in the same transaction, and publish it afterwards.
+
+Liveness asks whether the process is stuck and should be restarted. Readiness asks whether it should receive traffic right now.
+
+A layer four load balancer routes on address and port without reading the request, with very low latency. A layer seven one reads the HTTP request, and can route by path or host.
+
+GraphQL federation composes several services into one schema behind a router, which plans each query across them.
+
+CQRS separates the write model from the read models. Event sourcing stores every change as an event and derives the state from them. Both add complexity, so use them only when the problem needs them.
+
+Hexagonal architecture puts the domain in the centre, defining ports, with adapters for each technology on the outside.
+
+And DynamoDB is designed from the access patterns first, with a partition key that has many distinct values.`,
+
+    'scale-design': `The design at scale section has ten short answers, and together they form one full answer.
+
+Open the question by clarifying scope before drawing anything. Pick two or three core workflows, then ask for the numbers: users, traffic and the required latency and availability.
+
+The rough estimate. Average requests per second equals daily active users, times requests per user per day, divided by eighty six thousand four hundred. Multiply by three to five for the peak.
+
+Justify the web framework by what it can do, not by its popularity: a rendering choice for each route.
+
+Sessions are easy to revoke and need shared storage on every request. Tokens are stateless and scale easily, and are hard to revoke.
+
+Begin with a modular monolith, and split out services only when there is a concrete reason.
+
+Default to PostgreSQL for core data, and use a NoSQL store where a specific access pattern needs it.
+
+Scale the database in order: indexes and queries first, then read replicas, then caching, then partitioning, and sharding last.
+
+Caching is a waterfall, each layer cheaper than the next: the browser, the content delivery network, the gateway, Redis, and only then the database.
+
+Security is defence in depth: encryption everywhere, including internal traffic, encryption at rest, authorisation next to the data, secrets in a secrets manager, and least privilege.
+
+And pacing a thirty to forty five minute answer: about five minutes on requirements and estimates, ten to fifteen on the high level design, and the rest on the deep dives and trade offs.`,
+
+    optimization: `The performance section has ten short answers.
+
+The optimisation loop. Measure the real behaviour, profile to find where the time goes, fix only the biggest bottleneck, and measure again.
+
+Core Web Vitals fixes. For the largest paint, cut the time to the first byte, prioritise the main image, and avoid resources that block rendering. For interaction, break up long tasks. For layout shift, reserve space.
+
+The main thread runs JavaScript, style, layout and paint, so long tasks make the page unresponsive. Animate with transform and opacity, and move heavy work to a worker.
+
+At the network layer, give static, fingerprinted assets a long lifetime marked immutable, and give cacheable dynamic content a short lifetime with stale while revalidate.
+
+At the API layer, avoid N plus one with a data loader.
+
+In Node, a blocking synchronous call stops every request, so keep the event loop free.
+
+Three caches. An in process cache is the fastest, but private to each instance, so copies can disagree. Redis is shared, and costs a network hop. A content delivery network serves whole responses near users.
+
+To diagnose a slow query, compare estimated and actual rows in the query plan.
+
+To find the real bottleneck, the golden signals tell you which service is unhealthy, and a trace tells you why a request was slow.
+
+And the latency numbers to know: memory is about a hundred nanoseconds, a call within a region is a millisecond or two, and a round trip between continents is over a hundred milliseconds.`,
+
+    'next-js': `The Next.js section has fifteen short answers.
+
+Server components are the default. They run only on the server, ship no JavaScript, and can read data and secrets. Client components handle interaction.
+
+A page is the unique screen of a route. A layout wraps its children and persists across navigation.
+
+Static generation builds a page once. Regeneration rebuilds it on a timer or on demand. Server rendering renders it per request. Client rendering builds it in the browser.
+
+Next.js has four caches: request memoisation, the data cache, the full route cache and the router cache in the browser.
+
+The versions: thirteen brought the App Router, fourteen made server actions stable, fifteen brought React nineteen, async request APIs and uncached fetch by default, and sixteen brought Cache Components and the proxy file.
+
+A route handler is a public endpoint, for webhooks and outside clients. A server action is for changes made from your own interface. And treat every server action as a public endpoint: validate its input and check authorisation again.
+
+Stream the slow parts behind Suspense boundaries.
+
+Put filters, sort and the page in the address, so the state can be shared and the back button works.
+
+The image and font components handle sizing, formats, lazy loading and layout shift.
+
+The proxy file, formerly middleware, is for redirects, rewrites and cheap checks.
+
+The Edge runtime starts instantly near users with a small set of APIs. The Node runtime has everything.
+
+Links prefetch the routes they point to. Parallel and intercepting routes render several slots, or a route in a modal. And one function tells Next.js which dynamic pages to build ahead of time.`,
+
+    coding: `The final section is three coding exercises, each with the requirements that interviewers check.
+
+An accessible modal. Render it in a portal, outside the normal flow of the page. Move focus into the dialog when it opens. Trap the Tab key inside it, so focus cannot wander behind it. Close it on Escape. And when it closes, return focus to the element that opened it. Give the dialog a role and a label, and stop the page behind it from scrolling. The detail most candidates forget is returning focus, and it is the one keyboard users notice most.
+
+Accessible tabs. Use a roving tab index. Only the selected tab is in the Tab order, and the arrow keys move between tabs, with Home and End jumping to the first and last. Each tab is connected to its panel, and only the selected panel is shown. The standard pattern defines the roles, and following it means screen readers announce the tabs correctly.
+
+And a todo list saved to local storage. Give every item a stable id, so that the list renders correctly when items are added and removed. Update state immutably. Read the initial value lazily, so that storage is read only on the first render. Write back to storage in an effect when the list changes. And guard for server rendering, where there is no storage at all, as well as for storage that is unavailable or full.
+
+That is the cheatsheet. Go back to the core topics and say each answer out loud.`,
+  },
+};
