@@ -85,5 +85,55 @@ export async function run({ browser, base, ok }) {
   ok('without speech synthesis there is no Listen button', (await qf.locator('#listenBtn').count()) === 0 && (await qf.locator('button[data-act="listen"]').count()) === 0);
   await mute.close();
 
+  // ---------------------------------------------------------------- Offline
+  const { readFile } = await import('node:fs/promises');
+  const version = ((await readFile('public/sw.js', 'utf8')).match(/const VERSION = '([0-9a-f]+)'/) || [])[1];
+  const off = await browser.newContext({ viewport: { width: 1200, height: 900 } });
+  const op = await off.newPage();
+  op.on('pageerror', (e) => errors.push(e.message));
+
+  const manifest = await op.request.get(`${base}/manifest.webmanifest`);
+  const mj = manifest.ok() ? await manifest.json() : {};
+  ok('the web app manifest is served with three icons', mj.name === 'DevSpar' && mj.display === 'standalone' && (mj.icons || []).length === 3 && (mj.icons || []).some((i) => i.purpose === 'maskable'), JSON.stringify(mj).slice(0, 60));
+
+  await op.goto(`${base}/`, { waitUntil: 'networkidle' });
+  await op.evaluate(() => navigator.serviceWorker.ready.then(() => true));
+  await op.reload({ waitUntil: 'networkidle' });
+  ok('the service worker is installed and controls the page', await op.evaluate(() => !!navigator.serviceWorker.controller));
+
+  await op.getByRole('button', { name: 'Save for offline' }).click();
+  await op.getByText(/^Saved for offline on /).waitFor({ timeout: 90000 }).catch(() => {});
+  ok('Save for offline finishes', (await op.getByText(/^Saved for offline on /).count()) === 1, await op.locator('footer').textContent());
+
+  await off.setOffline(true);
+  await op.goto(`${base}/sql`, { waitUntil: 'load' });
+  const of = await (await op.waitForSelector('iframe')).contentFrame();
+  await of.waitForSelector('#navList .nav-item', { state: 'attached', timeout: 15000 }).catch(() => {});
+  ok('a saved guide opens with no connection', (await of.locator('#navList .nav-item').count()) > 0);
+  await of.locator('.qcard .qhead').first().click();
+  ok('and its cards open', (await of.locator('.qcard.open').count()) === 1);
+
+  await op.goto(`${base}/`, { waitUntil: 'load' });
+  await op.getByRole('link', { name: /^Node\.js/ }).first().click();
+  await op.waitForURL(/\/nodejs$/, { timeout: 15000 }).catch(() => {});
+  const nf = await (await op.waitForSelector('iframe', { timeout: 15000 })).contentFrame();
+  await nf.waitForSelector('#navList .nav-item', { state: 'attached', timeout: 15000 }).catch(() => {});
+  ok('a guide opened from the home page works offline too', /\/nodejs$/.test(op.url()) && (await nf.locator('#navList .nav-item').count()) > 0, op.url());
+
+  await op.goto(`${base}/definitely-not-a-page-xyz`, { waitUntil: 'load' });
+  ok('a page that was never saved says so, in the site’s own words', (await op.getByText('You are offline, and this page has not been saved yet.').count()) === 1);
+
+  await op.goto(`${base}/`, { waitUntil: 'load' });
+  await op.getByRole('searchbox').first().fill('closure');
+  await op.waitForTimeout(1200);
+  ok('search works offline (the index is saved)', (await op.locator('a[href*="#"]', { hasText: /closure/i }).count()) > 0);
+
+  await off.setOffline(false);
+  const status = await op.evaluate(() => fetch('/api/mock-interview', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' }).then((r) => r.status));
+  ok('the API is never intercepted: the server still answers', status === 400, String(status));
+  const names = await op.evaluate(() => caches.keys());
+  ok('exactly two DevSpar caches, both of this build', names.filter((n) => n.startsWith('devspar-')).length === 2 && names.every((n) => n.includes(version)), names.join(' '));
+  await off.close();
+
   ok('no script errors', errors.length === 0, errors.slice(0, 2).join(' | '));
 }

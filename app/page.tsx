@@ -44,6 +44,7 @@ import { fnv } from './lib/studyKeys.mjs';
 import { TOOLS } from './lib/tools.mjs';
 import { dayDiff, readSettings } from './lib/plan.mjs';
 import { localToday } from './lib/today';
+import { OfflineControls } from './components/OfflineSetup';
 
 type Guide = { slug: string; title: string; desc: string; icon: LucideIcon };
 type Group = { id: string; title: string; blurb: string; cols?: 4; guides: Guide[] };
@@ -402,6 +403,7 @@ export default function LandingPage() {
 
       <footer className="border-t border-line px-5 py-8 text-center text-sm text-ink-2">
         <p>© {new Date().getFullYear()} DevSpar. Study guides and utilities that run in your browser.</p>
+        <OfflineControls />
       </footer>
     </div>
   );

@@ -335,3 +335,37 @@ them. To add a skill, add an entry to `SKILLS`: an `id`, a `label`, the `aliases
 no everyday words such as `rest`, `express`, `spring`, `swift`, `cursor` or `go`) and optionally `guides` (a slug, or
 `slug:section`) that cover it. Whether a skill is covered, thin or missing is computed from the card bank, never written by
 hand. `tests/unit/match.test.mjs` checks every guide pointer against the real index, so a renamed guide or section fails there.
+
+## Listen mode
+
+Every guide has a **Listen** button (hero and section toolbar) when the browser has speech synthesis. The `listen` block of
+`engine.js` turns each card into short spoken chunks (at most 220 characters, because some browsers cut a long utterance
+off after about 15 seconds) and plays them through the device's own voice: the question, a beat, then the 60-second
+script when the card has one (or the whole answer with **Full answers**). Code, tables and diagrams are read as one short
+marker ("Code example on the card."), never character by character. Pause is cancel-and-remember, because
+`speechSynthesis.pause()` is unreliable on Android. Settings are in `study-listen-v1`. A screen wake lock is held while it
+plays. Opening flashcards, changing section or searching stops it. `tests/checks/19-listen-offline.mjs` replaces the speech
+engine with a fake that records what would be said; it cannot judge how it sounds, so listen to a real section after changing
+`speakText`.
+
+## Offline
+
+`npm run study:build` ends with `scripts/build-sw.mjs`, which writes `public/sw.js` (git-ignored) from
+`scripts/sw-template.js`. The worker is registered only in a production build (`app/components/OfflineSetup.tsx`; in
+development it unregisters any worker). What it does, by request:
+
+| Request | Strategy |
+|---------|----------|
+| not GET, `/api/...`, `/my-prep...`, `/sw.js` | not handled: the network |
+| `/_next/static/...`, `/vendor/...` | cache first (hashed or versioned names); the 15 MB SQL engine is saved only once used |
+| `/study/...`, `/search-index.json`, icons | precached; stale-while-revalidate (the `?card=` query does not change the file) |
+| a page load | network first with a 4 second timeout, then the saved page, then `/offline` |
+| Google Fonts | stale-while-revalidate |
+| anything else same-origin | network first, then the cache |
+
+The cache names carry a version (a SHA-1 of the template and every precached file), so a deploy that changes any guide
+installs a new worker, which deletes the old caches on activation. **Save for offline** (home page footer) fetches every guide
+and tool route and the files they need. New guides and tool pages join it automatically: the lists come from `public/study`
+and `app/lib/tools.mjs`. A check that uses `page.route` to fail a request must use a context with `serviceWorkers: 'block'`,
+or the worker answers from its saved copy. To debug, unregister the worker in DevTools > Application > Service workers.
+Never add `X-Frame-Options: DENY`: the guides are shown in a same-origin iframe. `/my-prep` is never available offline, by design.

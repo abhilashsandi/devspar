@@ -60,13 +60,15 @@ export async function run({ browser, base, ok }) {
   ok('Same round again points at the same seed', (await page.getByRole('link', { name: 'Same round again' }).getAttribute('href')) === `/mock?seed=${expected.seed}`);
 
   // the bank cannot load
-  const down = await ctx.newPage();
+  // a context with the service worker blocked: it would otherwise answer from its saved copy of the index
+  const downCtx = await browser.newContext({ viewport: { width: 1100, height: 900 }, serviceWorkers: 'block' });
+  const down = await downCtx.newPage();
   down.on('pageerror', (e) => errors.push(e.message));
   await down.route('**/search-index.json', (r) => r.abort());
   await down.goto(`${base}/mock`, { waitUntil: 'load' });
   await down.getByText('The question bank could not load. Check your connection and try again.').waitFor({ timeout: 8000 }).catch(() => {});
   ok('a failed bank load says so, with a retry button', (await down.getByText('The question bank could not load.').count()) === 1 && (await down.getByRole('button', { name: 'Try again' }).count()) === 1);
-  await down.close();
+  await downCtx.close();
 
   ok('no script errors', errors.length === 0, errors.slice(0, 2).join(' | '));
   await ctx.close();

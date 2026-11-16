@@ -29,6 +29,7 @@ const geistMono = Geist_Mono({
 });
 
 import { ThemeProvider } from "./components/ThemeProvider";
+import OfflineSetup from "./components/OfflineSetup";
 
 export const metadata: Metadata = {
   title: "DevSpar",
@@ -52,6 +53,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <OfflineSetup />
         </ThemeProvider>
       </body>
     </html>

@@ -13,6 +13,14 @@ const nextConfig: NextConfig = {
         ],
       },
       {
+        // The service worker must always be re-fetched, or an old one could outlive a deploy.
+        source: "/sw.js",
+        headers: [
+          { key: "Content-Type", value: "application/javascript; charset=utf-8" },
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+        ],
+      },
+      {
         // The in-browser SQL engine (scripts/study/vendor-pglite.mjs): the folder name carries the
         // version, so the files never change under one URL and can be cached for a year.
         source: "/vendor/:path*",
