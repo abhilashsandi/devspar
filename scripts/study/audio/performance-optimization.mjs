@@ -1,0 +1,138 @@
+// Audio overview of the Performance Optimization guide. Written to be heard, not read: plain sentences, no code, no lists.
+export default {
+  intro: `This is the audio overview of the Performance Optimization guide. The guide answers one large interview question: how would you make this system fast? And it answers it the way a strong candidate does, by walking the path of a request, layer by layer, from the browser down to the database and back.
+
+There are eleven sections. The complete flow, the optimisation mindset, then the layers in order: the client, the network and edge, the API layer, the application server, caching, the database, and async messaging. Then observability, and a closing section of reference numbers.
+
+One sentence governs all of it. Measure, fix the biggest bottleneck, and measure again. Never optimise by intuition.`,
+
+  chapters: {
+    overview: `Section one is the complete flow, the whole answer on one page. A request passes through the same stages every time: the browser, the edge network, the gateway, the application servers, the cache, the database and the queues behind them. At every stage there are two jobs. Make the happy path fast, and keep the system standing when something below is slow or down.
+
+The guide groups the protective patterns by where they sit.
+
+At the entrance: timeouts and deadlines, so that every network call has a limit and no request waits forever. Rate limiting, so that no single client can use up the capacity. And load shedding, which means rejecting some requests early when you are overloaded, so that the rest are served well.
+
+To contain failure: bulkheads, which give each dependency its own limited pool, so one slow service cannot exhaust everything. Backpressure, which tells a fast producer to slow down. Idempotency, so a retry cannot do the work twice. And dead letter queues, for messages that keep failing.
+
+To keep traffic off the origin: request collapsing, where many identical requests share one trip to the back end. Serving stale content while refreshing it in the background. Warming a cache before traffic arrives. And batching.
+
+To protect the database: connection pooling, read replicas and indexes.
+
+In the browser: cancel stale requests, update the screen optimistically, and degrade gracefully when a feature is unavailable.
+
+And to operate it safely: health checks, canary releases that roll back automatically, and the four golden signals.`,
+
+    mindset: `Section two is the mindset, and it is the part most candidates skip.
+
+Before touching any layer, there is a process. Measure. Profile. Fix the single biggest bottleneck. Validate against the metric you started from. Then repeat. Never optimise by intuition, and never fix several things at once, because then you cannot tell which change helped, or whether one of them made things worse.
+
+With five things all looking slow, how do you decide what to fix first? Rank them. Take the impact, multiply it by how many users it affects, and divide by the effort to fix it. And measure impact against something a user can feel, such as a Core Web Vital or the time to complete a checkout, not against an internal number that nobody experiences. A small fix on the page everyone visits beats a heroic fix on a page that few people see.
+
+It also helps to state a target before you begin. Faster is not a goal. The ninety fifth percentile of search under three hundred milliseconds is a goal, and it tells you when to stop.
+
+Then the question that separates senior answers: how do you stop regressions from landing in the first place? Everything else in this guide is remediation. Prevention is a budget and a gate. Set performance budgets, for bundle size and for the key metrics. Check them in the pipeline, so a change that breaks the budget fails the build. And monitor real users in production, with alerts, because laboratory tests do not see real devices and real networks.`,
+
+    client: `Section three is the client and the browser.
+
+Core Web Vitals are three measures. Largest contentful paint is about loading: how soon the main content appears, with a target of two and a half seconds. Interaction to next paint is about responsiveness, with a target of two hundred milliseconds. Cumulative layout shift is about visual stability. One detail shows that you have really done this work: interaction to next paint replaced first input delay in 2024, and it is much harder to pass. The old metric measured only the delay before the first interaction. The new one covers every interaction, through to the next paint.
+
+Each metric has its own levers. For the largest paint: a fast server response, an optimised main image, and nothing blocking the first render. For interaction: less JavaScript on the main thread, and long tasks broken up. For layout shift: reserved space for images and for content that arrives late.
+
+For a React app, work down from the biggest lever, not straight to memoisation. Audit the bundle first. Splitting code by route and importing only what you use usually gives the most. Then virtualise long lists. Only then look at individual renders.
+
+Keeping the main thread free depends on the rendering pipeline: script, style, layout, paint and composite. Properties such as width trigger layout. Transform and opacity skip straight to compositing, which is why they animate smoothly. Move heavy computation to a worker.
+
+And the assets. Images are almost always the largest bytes on a page, and usually the largest paint element. Serve them at the size actually displayed, in a modern format. Then fonts, then bundles.`,
+
+    network: `Section four is the network and the edge.
+
+Start with the caching policy at the content delivery network, because it is simple and it matters enormously. Versioned static assets, the files with a content hash in their name, get a very long lifetime and are marked immutable. They never need revalidating, because a change in content means a new address. Pages and other public responses that can be cached get a short lifetime at the edge, with stale while revalidate, so users get a fast answer and the cache refreshes in the background. Private, per user responses are not stored at the edge at all.
+
+Does the transport protocol matter? It does. Version two of HTTP sends many requests over one connection. Version three runs over a different transport, which sets up connections faster and copes better with packet loss, a real benefit on mobile networks. In most cases you get these by enabling them at the content delivery network. Add compression for text, and resource hints to open connections to important origins early.
+
+When does rendering at the edge help? For server rendered pages that are mostly the same for everyone, such as a product page or a marketing page. Running the render close to the user removes a long round trip. It helps much less if every render must call a database that lives in one region, because the round trip simply moves.
+
+The edge can do other work too: redirects, experiments, checking a token before the request reaches your origin, and resizing images.`,
+
+    api: `Section five is the API and gateway layer, which has two jobs: protect the system, and avoid wasted round trips.
+
+Protection first. Rate limiting keeps any single client from consuming your capacity. A token bucket allows short bursts while holding the average. A sliding window is more accurate. Enforce it at the edge or the gateway, so that a rejected request costs you almost nothing. Reply with the status for too many requests, and say when to retry.
+
+Then speed. Compress responses. Paginate anything that can grow, and prefer cursor based pagination for large or fast changing lists. Let clients ask for only the fields they need. Cache responses that are safe to cache, with validators, so an unchanged resource costs a tiny reply. And keep connections alive between your services, so that calls do not pay for a new handshake each time.
+
+The second topic is the N plus one pattern, which appears at every layer, not only in the database. A client fetches a list of posts, and then makes one more call per post for its author. A resolver in a graph API does the same thing behind the scenes. A service calls another service inside a loop.
+
+The fixes are the same idea in different clothes. Give the client an endpoint that returns the related data together, or one that accepts many ids at once. In a graph API, use a data loader, which gathers the ids requested in one tick and fetches them in one query. Between services, add batch endpoints. The principle is fewer round trips, not faster ones.`,
+
+    server: `Section six is the application server, with Node as the example.
+
+Node runs JavaScript on a single thread. So any synchronous, processor heavy work blocks the event loop entirely, and freezes every request being served at that moment. Performance hygiene in Node is mostly about protecting that loop. Never use the synchronous versions of file or crypto functions on a request path. Move heavy computation, such as image work or large parsing jobs, to worker threads or to a separate service. Use streams for large payloads, so you do not hold them in memory. Run independent async operations together instead of awaiting them one after another. And monitor event loop delay as a metric of its own, because it tells you directly whether the loop is being blocked.
+
+Then horizontal scaling. Stateless application servers are what make it straightforward. If session state lives in a shared store and never inside the process, the orchestrator can add or remove instances freely, and any instance can serve any request. Autoscale on a signal that reflects real load. And remember that scaling out moves pressure downstream. More instances mean more database connections, which is where connection pooling comes back in.
+
+Memory is the last piece. A process with a leak grows until the platform kills it, and under load the garbage collector's pauses add latency. Set memory limits deliberately. Bound every cache inside the process. And watch the heap over time, since a floor that keeps rising after each collection is the sign of a leak.
+
+Finally, shut down gracefully, so that scaling in does not drop requests in flight.`,
+
+    caching: `Section seven is the caching layer.
+
+Three layers, with different scope and lifetime. A cache inside the process, a map or a least recently used structure in application memory, is the fastest option there is. But it is per instance. Each server has its own copy, they can disagree, and it is lost on every restart. Use it for small, hot data that changes rarely. A distributed cache such as Redis is shared by all instances and survives a deploy. It costs a network round trip, which is still far cheaper than most queries. Use it for sessions, computed results and rate limit counters. A content delivery network caches whole responses close to the user, and is the only layer that removes the trip to your servers altogether.
+
+What actually breaks a caching layer in production? Almost always invalidation, not the caching mechanism. The guide names the failure modes, and you should too.
+
+The stampede, also called the dogpile. A hot key expires and every concurrent request rebuilds it at once. Defend with a lock, with stale while revalidate, and with random variation in expiry times.
+
+Stale data. The source changed and the cache did not hear about it. Decide for each kind of data how stale is acceptable, and invalidate on write where it matters.
+
+Penetration. Requests for keys that do not exist go to the database every time. Cache the negative answer for a short while.
+
+And the cold start. After a restart or a deploy, an empty cache sends the full load to the database. Warm the important keys first.
+
+One more: a cache that hides a slow query is a risk. Know what happens when it is empty.`,
+
+    database: `Section eight is the database.
+
+Diagnosing a slow query has a real process. Ask the database to explain and analyse the query. That shows what the planner chose, and what actually happened when it ran. The single most useful signal is the gap between estimated rows and actual rows. A large gap means the planner was working from wrong statistics, and it probably chose a bad plan. Refreshing the statistics may fix it with no other change.
+
+Then read the plan for the familiar problems. A sequential scan on a large table, where an index should have been used. A sort that spills to disk. A nested loop that runs an inner query thousands of times. The fixes are an index that matches the filter and the order, a composite index with its columns in the right sequence, or a rewritten query. And check that the query selects only the columns it needs.
+
+Beyond a single query, how do you scale throughput? In order of cost. Connection pooling first, because connections are expensive and limited. Then read replicas, which take read traffic off the primary, and reads are the majority of load for most consumer applications. The caveat is that replication is asynchronous. A replica can be slightly behind, so a user might not see what they just wrote. Read your own writes from the primary.
+
+After that, caching in front of the database. Then partitioning large tables, so queries touch only the relevant slice. And last, sharding across several databases, which is powerful, and costly in complexity. Most systems never need it.`,
+
+    async: `Section nine is async work and messaging, and its question is how to tune a system built on queues for throughput.
+
+The first lever is batching. Consuming and handling a number of messages at once, instead of one at a time, spreads the fixed overhead of each operation across many items. One database write for a hundred rows costs far less than a hundred writes. The same goes for publishing. The trade off is latency: a message may wait for its batch to fill. So set both a maximum batch size and a maximum wait.
+
+The second lever is concurrency. Add consumers, or let each consumer work on several messages at once. Throughput rises until something downstream becomes the limit, which is usually the database. Past that point, more consumers make things worse. The prefetch setting matters here too. It controls how many unacknowledged messages a consumer may hold. Too low, and consumers sit idle between fetches. Too high, and one slow consumer hoards messages that others could have handled.
+
+The third is ordering. If messages for the same entity must be processed in order, partition by a key, so that each key always goes to the same consumer. You get ordering within a key, and parallel work across keys.
+
+Then safety, because tuning must not lose messages. Acknowledge only after the work is saved. Make handlers idempotent, since delivery is at least once. Send repeated failures to a dead letter queue.
+
+And watch the right metric. Queue depth and the age of the oldest message tell you whether consumers are keeping up. A queue that only grows is an outage in slow motion.`,
+
+    observability: `Section ten is observability and validation.
+
+How do you find the real bottleneck in a system with many services? In two steps. The golden signals, latency, traffic, errors and saturation, measured for each service, tell you which service is unhealthy. A distributed trace then tells you why a particular request was slow. It follows one request across every service, and shows how long each hop took. Often the answer is a surprise: not one slow call, but a fast call made two hundred times.
+
+Use percentiles, not averages. An average hides the slow tail, and the tail is what people complain about. Look at the ninety fifth and ninety ninth percentiles. And connect your logs to your traces with a shared request id, so that you can move from a slow trace to the exact log lines.
+
+Then, how do you validate a fix before it reaches production? Profiling tells you what to change. Load testing tells you whether the change survives contact with real concurrency. Those are different things. A function that is fast alone may contend for a lock or a connection pool when there are a thousand of it.
+
+Make the load test realistic. Use production like data volumes, since a query that is fast on a thousand rows may not be on ten million. Use a realistic mix of requests. Ramp up gradually, and hold the load long enough to see memory growth. Know which kind of test you are running: a load test at the expected peak, a stress test beyond it to find the breaking point, or a soak test over hours.
+
+Then release behind a canary, and compare its metrics with the current version before going further.`,
+
+    reference: `The final section is reference numbers and a summary.
+
+Some latency numbers are worth knowing cold, because they are a sanity check on any estimate. The exact figures vary with hardware. The relative gaps are what to remember. Reading from memory takes about a hundred nanoseconds. A random read from a solid state disk takes about a hundred and fifty microseconds. A round trip to Redis is about half a millisecond, and a hop to another service in the same region about one millisecond. An indexed database query takes one to ten milliseconds. A round trip between continents is about a hundred and twenty milliseconds.
+
+Two ratios explain most performance advice. Memory beats disk by a very large factor, which is why caches work. And a hop within a region beats a hop between continents by about a hundred times, which is why you put infrastructure close to users. It also lets you reject a design in your head: fifty calls between regions on the critical path is several seconds of latency.
+
+Then the summary, one lever for each layer. It is a strong way to close an answer, because it shows you covered the whole stack and did not just list tricks.
+
+In the browser: ship less JavaScript and optimise images. At the edge: cache static assets for a long time and serve stale while revalidating. At the gateway: rate limit and avoid N plus one calls. On the server: keep the event loop free and stay stateless. In the cache: plan invalidation and defend against the stampede. In the database: index for your queries, pool connections, and add replicas for reads. In the queues: batch, and watch the depth. And across all of it: measure before and after.`,
+  },
+};

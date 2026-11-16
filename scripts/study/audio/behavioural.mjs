@@ -1,0 +1,134 @@
+// Audio overview of the Behavioural guide. Written to be heard, not read: plain sentences, no code, no lists.
+export default {
+  intro: `This is the audio overview of the Behavioural Interview guide. Of all the guides, this one suits listening best, because behavioural answers are spoken, and the way to get better at them is to say them out loud.
+
+The guide does not give you scripts. It gives you, for each common question, what the interviewer is checking and the shape of a strong answer. Your own stories fill that shape.
+
+There are nine sections. How these interviews work, introducing yourself, ownership and delivery, collaboration and conflict, leadership and mentoring, failure and growth, judgement and values, tricky and closing questions, and a practice section on rewriting weak answers.
+
+As you listen, try matching each question to one real story of your own.`,
+
+  chapters: {
+    bh1: `Section one explains how behavioural interviews work.
+
+A behavioural interview asks about what you did in the past, as evidence for how you will work in the future. The interviewer is not collecting stories. They are scoring signals: ownership, judgement, how you work with people, and whether you learn. Each question is a way of looking for one or two of those.
+
+The structure to use is STAR: situation, task, action, result. The proportions matter more than the labels. The situation is one sentence, only enough for the story to make sense. The task is one sentence: what you were responsible for. The action takes most of the time, because it is the only part that shows what you did. That is the quiz answer in this section. And the result is concrete, with a number if you have one, plus what you learned.
+
+Say I, not we. The interviewer cannot hire your team. They need to hear your contribution.
+
+You cannot rehearse an answer for every question, and you should not try. Build a story bank instead. Prepare six to eight stories, and learn to tell each one from several angles. The same incident can be a story about pressure, about a mistake, or about a disagreement, depending on which part you put the weight on.
+
+For length, aim at ninety seconds to two minutes. Shorter feels thin, and longer loses the listener. Stop when the result is told, and let them ask. Follow up questions are a good sign. They mean the interviewer is interested, and they are where you add detail.`,
+
+    bh2: `Section two is introducing yourself.
+
+Tell me about yourself is not a request for your life story. It is a request for a short, relevant pitch, and it sets the tone for everything after. Aim for about seventy five seconds, in three parts. Who you are now: your role and what you focus on. Two or three pieces of evidence from recent work, chosen because they match this job. And why you are here: what you want next, and why this role fits it.
+
+Walk me through your CV is the same question with more room. Go in reverse order, newest first, with one thread running through it, and spend your time on the last two roles. Old jobs get a sentence.
+
+Why this role, and why this company? They are checking whether you chose them or are applying everywhere, and whether your motives match what the job really is. A strong answer names something specific about the company, connects it to work you have done, and says what you hope to contribute.
+
+Why are you leaving your current job? They are checking that you leave for good reasons and speak about people fairly. Bitterness is the red flag. Give a positive, forward looking reason: what you are moving towards, not what you are escaping.
+
+Tell me about a project you are proud of. They are checking what you value, the scale of what you have done, and whether you can explain your own contribution. Pick something with a clear result, say what was hard, and say what you personally did.
+
+Practise the first of these until it is natural. It is the one answer you can be sure you will need.`,
+
+    bh3: `Section three is ownership and delivery, six questions about getting work done.
+
+A tight deadline. They are checking how you prioritise, whether you communicate early, and what you cut and why. Say what was fixed, what you chose to drop or simplify, who you told and when, and how it ended.
+
+Unclear requirements. They are checking whether you reduce ambiguity yourself or wait to be told. Describe what was unclear, the questions you asked, the small thing you built to test your understanding, and how you limited the risk while you were still learning.
+
+A project that slipped or failed. They are checking honesty and accountability, and they are listening to how you describe your own part. Say what went wrong, what your share of it was, what you did when you saw it, and what you do differently now.
+
+A production incident. They are checking calm under pressure and a systematic approach. Give the impact, how you narrowed it down, the fix that stopped the damage, and then the part many people forget: the real cause, and what you changed so it cannot happen again.
+
+Going beyond your role. They are checking initiative, and that you respect other people's areas while taking it.
+
+Competing priorities. They are checking that you make trade offs visible, and do not silently drop work. Say how you decided, and who agreed.
+
+And the quiz. A story that ends with the project was a big success is missing a concrete result, ideally with a number, and what you learned.`,
+
+    bh4: `Section four is collaboration and conflict.
+
+Conflict questions test whether you can disagree without damaging the relationship. Interviewers listen above all to how you describe the other person. Describe their position fairly, as something a reasonable person could hold. If the other person in your story is simply stupid or difficult, the story is working against you.
+
+A good conflict story has a shape. What the disagreement was about, in neutral terms. What each side wanted and why. What you did to understand their view. How it was resolved, by evidence, a trial or a decision from someone with authority. And the state of the relationship afterwards.
+
+A disagreement with a teammate about a technical approach. They are checking that you argue from evidence, stay open to being wrong, and keep the relationship intact. The strongest stories include a moment where you changed your mind, at least in part.
+
+A disagreement with your manager or a product decision. They are checking whether you speak up respectfully, and whether you can disagree and then commit. Say what you raised, how, what was decided, and that you then supported the decision fully.
+
+A difficult stakeholder. They are checking empathy and influence. Difficulty usually comes from a mismatch of goals or of information, so show that you found out what they actually needed.
+
+Giving difficult feedback. They are checking courage and care: early, specific and kind. Describe the behaviour and its effect, not the person.
+
+And receiving feedback that was hard to hear. They are checking humility, and whether you really changed. Give the feedback, your honest first reaction, and what you do differently now.`,
+
+    bh5: `Section five is leadership and mentoring. You do not need a title to answer these. Most of them are about influence.
+
+Leading without formal authority. They are checking whether people followed you because you made the goal clear and the work easier, not because of a title. Describe how you got agreement on the goal, how you divided the work, how you removed obstacles for others, and the result.
+
+Mentoring someone. They are checking that you grow other people, and that you can describe how, not only that you helped. Say who they were and where they started, what you actually did, such as pairing, reviewing or setting stretch tasks, and what they could do afterwards that they could not before.
+
+An unpopular decision. They are checking that you can make a call, explain it, and take responsibility. Give the decision, the reaction, how you explained your reasoning, what you did with the objections, and how it turned out. If it turned out badly, say so.
+
+Helping a teammate who was struggling. They are checking empathy and practical help, without taking over their work. Say what you noticed, how you raised it privately, and what support you gave.
+
+Delegating something you could have done faster yourself. They are checking whether you scale yourself by developing others, and accept a short term cost for a long term gain.
+
+The quiz sums up the section. Which answer shows leadership? Not I made the team follow my design. The better answer is: I wrote a proposal, listened to concerns from three teams, changed the design, and we shipped it together. Leadership in these stories is listening and adjusting, and then delivering.`,
+
+    bh6: `Section six is failure, growth and self awareness. These are the questions people fear most, and they are the easiest to prepare.
+
+What is your biggest failure? They are checking honesty, ownership and learning. They want a real failure with a real consequence, told without blame. A disguised success does not count, and neither does a failure that was someone else's fault. Say what happened, what your part was, what it cost, and what you changed afterwards. The change is the point of the story.
+
+A mistake that reached production. They are checking accountability and engineering maturity. Cover three things: how it was detected, how you responded, and how you prevented a repeat. A new test, an alert or a change in process is good evidence.
+
+What is your biggest weakness? They are checking self awareness, and whether you work on your gaps. A real weakness with a concrete mitigation scores best. Avoid the fake ones, such as I work too hard. And avoid one that disqualifies you for this particular job. Name it, give an example of it costing you something, and say what you do about it now.
+
+Learning something quickly. They are checking your learning process. Do not just say that you learn fast. Describe how. What you read first, what small thing you built, who you asked, and how soon you were productive.
+
+Feedback that changed how you work. They are checking whether you seek feedback and let it change you, with evidence.
+
+Across this whole section, the pattern is the same. Own it plainly, in the first person, and spend more time on what you did next than on what went wrong.`,
+
+    bh7: `Section seven is judgement and values.
+
+Trading speed against quality. They are checking pragmatism with a conscience. Can you ship, and do you know where the risk is? Say what the pressure was, what you chose to simplify or postpone, what you refused to compromise on, and how you recorded the debt so that it was paid later. An answer that says you never cut corners sounds as weak as one that says you always do.
+
+Pushing back on a requirement. They are checking whether you protect users and the business, and how you say no constructively. The strong form is not a refusal. It is: here is the problem I see, here is evidence, and here is an alternative that meets the real goal.
+
+Being asked to cut a corner you thought was unsafe. They are checking integrity and judgement under pressure, and how you escalate. The quiz gives the model answer. Your manager asks you to skip a security check to make a deadline. You do not do it quietly and hope. You do not simply refuse and say nothing more. You state the specific risk, propose a faster way to do the check, and if you are still overruled, you make sure the decision is made openly by someone with the authority to accept that risk.
+
+And a newer question: how do you use AI generated code responsibly? They are checking that you use modern tools well and remain accountable for the result. Say how you use it, for planning, drafts and tests. Say that you read and understand everything before it is merged, and that you verify it with tests. Say that you keep secrets and private data out of prompts. And say that the responsibility for the code is yours.`,
+
+    bh8: `Section eight covers the tricky questions and the closing ones.
+
+Short tenures and gaps. They are common, and rarely fatal. What hurts is a vague or defensive answer. Be brief, factual and forward looking. Say what happened in one or two sentences, without blame, say what you did with the time if it was a gap, and move to why this role is right now. Then stop talking.
+
+Salary expectations. Preparation matters more than phrasing. Research the market range for the role, the level and the location before the call. If you can, ask what range the company has for the role. If you must give a figure, give a range based on your research, and say that you are looking at the whole package.
+
+Why should we hire you? Answer with fit and evidence, not adjectives. Three points are enough. The problem they have, as you understand it. Your most relevant experience, with a result. And what you would bring in the first months.
+
+Where do you see yourself in five years? They want to know whether the role fits your direction, and whether you will grow with them. Be honest, with a sensible frame. Talk about the skills and scope you want to grow into, and not about a job title.
+
+And what questions do you have for us? A good question shows that you are thinking about the work. Prepare four, and choose two or three for each interviewer. Ask what success looks like in the first six months, how the team decides what to build, or what the hardest problem is right now. The guide's warning: do not ask the first interviewer about salary, holidays or perks, and do not ask something that is answered on their website.`,
+
+    bh9: `The final section is practice, and it works by showing you weak answers and asking you to fix them.
+
+The first is a vague teamwork answer. It says something like: we worked well together, we communicated a lot, and the project went well. What is wrong? There is no specific situation, no I, no action and no result. It could describe any team on any project. The rewrite names one project, says what you personally did, and ends with an outcome.
+
+The second is a failure answer that blames others. The requirements kept changing, the other team was late, and so the release slipped. Every sentence may be true, and the answer still fails, because the speaker takes no ownership and learned nothing. The rewrite keeps the same facts, and adds what you could have done earlier, and what you do now.
+
+The third is a conflict answer with no outcome. It describes the disagreement in detail, and then just ends. The interviewer is left wondering who was right and whether you still speak to each other. The rewrite adds the resolution and the state of the relationship.
+
+Then the red flags that interviewers write down afterwards. Never says I, so they cannot separate you from the team. Blames others. Gives no result. Speaks badly of a previous employer. Cannot name a real failure or weakness. And rambles past the point.
+
+The day before, keep it light. Read your story bank once. Say your introduction out loud. Prepare your questions for them. Check the time, the link and your equipment. And sleep.
+
+That is the guide. The best use of the next ten minutes is to tell one of your stories out loud, right now, and time it.`,
+  },
+};
