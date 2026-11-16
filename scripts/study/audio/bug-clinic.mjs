@@ -33,9 +33,9 @@ And three small traps. Braces in an arrow function need an explicit return. Pass
 
     bc2: `React, fifteen bugs. Most come from four ideas.
 
-The first idea is identity. Delete a row, and its typed text appears in the row that moved up. The index was used as the key, so the row that moved up inherited the deleted row's key, and React kept that element and its state. An input that loses focus after every keystroke has a related cause: a component defined inside another component is a new component type on every render, so React unmounts and remounts it.
+The first idea is identity. Delete a row, and its typed text appears in the row that moved up. The index was the key, so that row inherited the deleted row's key, and React kept the element and its state. An input that loses focus after every keystroke has a related cause: a component defined inside another component is a new component type on every render, so React unmounts and remounts it.
 
-The second idea is that state is a snapshot for each render. A counter stops at one because the effect ran once and captured the count from the first render. That is a stale closure. Clicking once should add three but adds one, for the same reason: the count is the same value for the whole handler. Use the updater form, which receives the latest value. And adding an item does not update the list when the array was mutated, because React sees the same reference and skips the render.
+The second idea is that state is a snapshot for each render. A counter stops at one because the effect ran once and captured the count from the first render. That is a stale closure. Clicking once should add three but adds one, for the same reason. And adding an item does not update the list when the array was mutated, because React sees the same reference and skips the render.
 
 The third idea is effects. A profile that does not change when another user is selected has a missing dependency. A component that renders forever has an object created during render as a dependency, which is new every time. The wrong user's data flashing up is a race between two requests with no cleanup. And a handler that keeps firing after the component is gone never removed its listener.
 
