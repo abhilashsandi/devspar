@@ -1,0 +1,60 @@
+// Audio overview of the Web Platform and Tooling guide. Written to be heard, not read: plain sentences, no code, no lists.
+export default {
+  intro: `This is the audio overview of the Web Platform and Tooling guide. This is the material that sits underneath every framework: how the browser protects users, how requests travel and get cached, how an app works offline, and how code gets from your laptop to production.
+
+Interviewers like these topics because they separate people who have shipped things from people who have followed tutorials. There are five sections: browser security, the network, offline and storage, delivery and tooling, and a deep dive into sign in, real time updates and content delivery networks.
+
+As you listen, try to hold on to the one sentence rule for each topic. I will point them out.`,
+
+  chapters: {
+    security: `Browser security starts with the same origin policy. A page may not read responses from another origin, meaning a different scheme, host or port. Cross origin resource sharing, or CORS, is the opt in: the server sends headers saying which origins may read its responses, and the browser enforces it. For anything beyond a simple request, the browser first sends a preflight request to ask permission.
+
+Here is the sentence to remember. CORS is about reading. Cross site request forgery is about causing actions. That is why a CORS policy alone never protects an endpoint that trusts cookies. For that, the main defence is the SameSite cookie attribute, backed by a token or an origin check on requests that change state. Cookies that hold a session should also be HttpOnly, so scripts cannot read them, and Secure, so they only travel over an encrypted connection.
+
+A content security policy is a response header that tells the browser which sources of script are allowed, so an injected script does not run.
+
+Three more to know. The OWASP top ten is a ranked list of common risks, and you do not need to recite it: pick the three that fit the system in front of you. Server side request forgery is tricking your server into fetching an address the attacker chose, to reach internal services. And passwords are stored with a slow, memory hard hash. The preferred one is Argon2id.`,
+
+    http: `The network section opens with the classic question: what happens when you type an address and press Enter?
+
+The browser parses the address and checks its caches, including any service worker. Then the name is resolved to an address. Then a connection is set up, a handshake for the transport and another for encryption, or a single combined handshake with the newest protocol. Then the request goes out, the response comes back, and the browser builds and paints the page.
+
+Next, what changed between the versions of HTTP. Version two sends many requests over one connection at the same time, so the old tricks of spreading files over several domains, or gluing images into one sprite, are no longer needed. Its weakness is that one lost packet stalls every stream on that connection. Version three fixes that by running over a different transport, where streams are independent.
+
+For caching, the standard strategy is one sentence: long lived, never changing addresses for assets, and short or revalidated caching for pages and API responses. You invalidate an asset by changing its file name, usually with a content hash.
+
+Finally, status codes. Return a consistent error body with a code, a message and a request id. Make creating things safe to retry with an idempotency key. And never return a success code with an error hidden inside the body.`,
+
+    offline: `The offline section is short, with two ideas.
+
+The first is the service worker. It is a script the browser runs in the background, sitting between your page and the network. It can intercept requests, answer them from a cache, and so make an app work with no connection. It also enables push notifications and background sync. It only works over a secure connection, and it has a life cycle worth knowing: it is installed, then it waits, then it is activated and takes control. That waiting step is why a new version of a site sometimes does not appear until every tab is closed. The caching strategy is a choice per kind of request: cache first for files that never change, network first for pages, and serve stale while refreshing for things in between.
+
+The second idea is choosing where to store data in the browser. Cookies travel with every request, so keep them small and use them for the session. Local storage is for small preferences such as a theme. IndexedDB is for larger, structured offline data. The cache API holds responses for a service worker.
+
+And the rule that matters most: none of these is a safe place for secrets. Any script running on the page can read local storage and IndexedDB. A session token belongs in an HttpOnly cookie, which scripts cannot read.`,
+
+    delivery: `Delivery and tooling covers the path from a commit to production.
+
+Docker first. An image is a read only, layered template: your app, its runtime and its dependencies. A container is a running instance of an image, with its own file system and processes, sharing the host's kernel. Layer order decides how well the build cache works, so copy the dependency list and install before you copy the source. A multi stage build compiles in one stage and ships only the result in a small final image.
+
+A pipeline runs in stages. On every push: lint, type checks, unit tests and a build. On merge: integration tests and security scans, and the artifact is built once and tagged. Then staging, then production, using a rollout strategy that limits the damage of a bad release.
+
+Feature flags separate deploying code from releasing it. For a percentage rollout, hash a stable id so each user always gets the same variant. Evaluate on the server when the flag hides code or data. And give every flag an owner and a removal date, or they pile up.
+
+On Git: rebase to tidy your own branch, merge to bring shared history together, and prefer the safer form of force push, which stops if someone else has pushed.
+
+Internationalisation closes the section. Put every string in a message catalogue, never glue translated fragments together because word order differs between languages, and let the platform format plurals, dates and numbers.`,
+
+    'deep-browser': `The last section goes deeper on five topics.
+
+Sign in first. OAuth lets an app get an access token to call an API on the user's behalf, without ever seeing their password. OpenID Connect adds an identity token that says who the user is, which is what a sign in with Google button uses. PKCE protects the exchange: the app creates a secret, sends only its hash at the start, and proves it holds the secret when it swaps the code for tokens.
+
+Then real time updates. If the client only needs to receive, server sent events are the simple choice: one way, over ordinary HTTP, with reconnection built in. WebSockets are for true two way traffic, like chat or collaboration. Long polling is the fallback.
+
+Resource hints let you tell the browser what matters. Preconnect warms up a connection. Preload is a promise to use a file, so an unused preload wastes bandwidth.
+
+Responsive images let the browser choose the right file. You list the files with their real widths, and you say how wide the image will be displayed. Leave that second part out and the browser assumes the full width of the screen, and often downloads too large a file.
+
+Finally, content delivery networks. Edge servers near users store responses, and a miss goes back to your origin. The cache key is the address by default, and every header, cookie or query parameter you add to the key splits the cache. So strip what does not matter.`,
+  },
+};

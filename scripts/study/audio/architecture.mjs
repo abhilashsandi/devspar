@@ -1,0 +1,52 @@
+// Audio overview of the Architecture Patterns guide. Written to be heard, not read: plain sentences, no code, no lists.
+export default {
+  intro: `This is the audio overview of the Architecture Patterns guide. Architecture questions sound large, but they almost always come down to two things: where do you put the boundaries, and what does each choice cost you.
+
+We will go through five sections. Frontend architecture first, then backend and full stack patterns in Node, then the patterns that have appeared with AI, then how to choose and defend an architecture in an interview, and finally three worked design answers: a banking app, a heavy data dashboard and a ticketing system.
+
+One habit to carry through all of it: never name a pattern without naming its price. An answer with no trade off sounds like a brochure.`,
+
+  chapters: {
+    ar1: `Frontend architecture is best known as one story, because why not just build a single page app, and why Next.js, are really the same question.
+
+It started with static pages: fast, cacheable, and not interactive. Then came server rendered apps, where a controller takes the request, asks the model for data and picks a template. Then the single page app moved everything into the browser, which gave rich interaction and cost you a slow first load and weaker search visibility. Today's frameworks put the two halves back together, and you choose a rendering strategy for each route. Static for marketing pages, regenerated in the background for product pages, rendered per request for the basket, and client rendered widgets inside any of them.
+
+As a frontend grows, the thing that hurts is structure. Most codebases that are hard to change are organised by file type, so one feature is smeared across the tree and everything can import everything. Organise by domain instead: a modular monolith on the client.
+
+Micro frontends take that further, letting teams deploy parts of the screen independently. Be honest that this is an organisational solution, and expensive for a small team. A backend for frontend is a small server the frontend team owns, which combines and trims service responses for one client. And on state: classify it first. Data from the server is a cache, and it does not belong in a global store that you keep in sync by hand.`,
+
+    ar2: `Now the backend. Picture three points on one line: the monolith, the modular monolith, and microservices. The question is always where the boundaries are, and whether they are enforced by convention, by the build, or by the network.
+
+The monolith is not the problem. The big ball of mud is. A monolith with clear internal structure serves many companies at large scale, and it is the right start unless you have a concrete reason otherwise. Layered architecture splits code horizontally, and it hurts when one feature means touching every layer. The modular monolith is one deployable split by business capability, where each module has a public interface and private internals. You keep one deploy, in process calls and real transactions.
+
+Microservices buy independent deployment and scaling, and they charge you in network calls, eventual consistency and operations. The trap is the distributed monolith: services that share a database or must be released together. That has the costs of both and the benefits of neither.
+
+A few more patterns to place. An API gateway handles cross cutting concerns, and a backend for frontend shapes data for a screen. Keep business logic out of both. Event driven architecture has services publish facts to a broker without knowing who listens. Hexagonal, onion and clean architecture are one idea drawn three ways: business rules in the middle, technology on the outside, dependencies pointing inward. And CQRS separates the model that changes data from the models that read it. Take it only as far as the problem needs.`,
+
+    ar3: `Section three covers the patterns that arrived with AI, and the first one is the most useful to say in an interview: rules first.
+
+A call to a language model is slow, it costs money on every request, and it is not deterministic. So a rules first design handles the bulk of requests with ordinary code, and sends only the cases the rules cannot handle to a model. You measure what share of traffic takes each path, and you turn frequent model answers into new rules. You always validate the model's output against a schema, and you keep a fallback that does not use AI at all. The reverse works too: the model proposes, and deterministic code decides the things that must be right, like limits, permissions and calculations. Most of a production AI feature is ordinary engineering around a small model call.
+
+An agent is a model run in a loop with tools and memory, working towards a goal instead of answering once. Use an agent when the steps cannot be known in advance. If they can, a fixed workflow is cheaper, faster and easier to test. And an agent's quality depends more on its tools and its verification step than on the model.
+
+Multi agent designs have a supervisor that delegates tasks to specialised agents, each with its own context. Start with one agent and good tools. Add more only when a single context is the limit, or when you want a reviewer that has not seen the author's reasoning.`,
+
+    ar4: `Section four is about choosing an architecture and defending the choice, which is the part interviewers actually score.
+
+You choose from constraints, not from fashion. How big is the team, how well do you understand the domain, what scale and what reliability do you really need, and what can the team operate at three in the morning. Then you state the cost of what you chose.
+
+There is a question you can prepare word for word: what architecture did your last project use, and why? Name it in one plain sentence. Say why it fitted, in terms of team size, scale and constraints. Say what it cost and how you handled that. Then say what you would change with hindsight. That last part is what makes you sound senior.
+
+Know the common mistakes too. Microservices first, splitting before the boundaries are understood and then paying to move them across a network. The distributed monolith, where services share one database or ship together. And layers that add ceremony without protecting anything.
+
+The guide closes this section with two quiz questions worth remembering. Three services that share a database and must be released together are a distributed monolith. And for a team of five starting a product in a domain they do not know yet, the most defensible choice is a modular monolith, because the boundaries will move while they learn, and inside one deployable, moving them is cheap.`,
+
+    ar5: `The last section turns three design questions into architectures. The order is the same every time: requirements, numbers, the interface and the data, the diagram, the hard parts, then trade offs.
+
+For a banking app, the data model is the answer. You do not store a balance and update it. You store a ledger. Every movement is two entries, a debit on one account and a credit on another, that sum to zero and are written in one database transaction. Entries are only ever added. A balance is the sum of an account's entries. A transfer carries an idempotency key, so a retry cannot move the money twice, and the whole step, including a note for the outbox, commits together.
+
+For a dashboard with heavy data, design backwards from the pixels. A screen is about two thousand pixels across, so sending a million rows to draw one line is waste at every layer. Aggregate on the server and send what can be drawn. The price is that pre aggregated data answers fine grained questions slowly or not at all, so keep raw data for drilling into a narrower range. And ask whether updating every thirty seconds is enough before you build live updates.
+
+For a ticketing system like Jira, the design is won in the data model too: tickets, projects, workflow states, custom fields, and a history written in the same transaction as every change, which serves as both audit log and activity feed. The indexes follow the screens. And the architecture is a modular monolith.`,
+  },
+};
