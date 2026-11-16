@@ -1,0 +1,158 @@
+// Audio overview of the AI-Assisted Development guide. Written to be heard, not read: plain sentences, no code, no lists.
+export default {
+  intro: `This is the audio overview of the AI Assisted Development guide. Interviewers now ask how you work with AI coding tools, and they are not looking for enthusiasm. They are looking for a method: what you hand to the agent, what you keep for yourself, and how you know the result is right.
+
+The guide has ten sections. How AI assisted development works, prompting for code, context engineering, the harness around the model, spec driven development, the BMad method, skills and reusable workflows, a full stack workflow from start to finish, quality and security, and interview questions.
+
+One sentence to carry through all of it: the agent does the typing, and you own the result.`,
+
+  chapters: {
+    ai1: `Section one explains how AI assisted development works.
+
+It means building software with a language model doing part of the work, under your direction. The tools arrived in three waves. First autocomplete, which finished the line you were typing. Then chat, where you asked a question and pasted the answer in. Then agents, which read your repository, edit files, run commands and check their own work.
+
+Every coding agent runs the same loop, and it is worth being able to draw it. Gather context: search the repository, read the relevant files. Take an action: edit a file, run a command. Verify the result: run the tests, read the error. Then repeat, until the work is done.
+
+Models are good at boilerplate, at translating between formats, at explaining unfamiliar code, and at writing tests. They fail in a particular way. Fluent output is not correct output. A model can call a function that does not exist, with full confidence. The defence is verification: compile it, run it, test it.
+
+The context window is the text the model can see at once: its instructions, the conversation, and every file and tool result loaded so far. It is finite, and it shapes everything about working with an agent.
+
+Vibe coding means describing what you want, accepting whatever comes back and not reading the code. That is fine for a throwaway prototype. AI assisted engineering means you read, review and test what is produced.
+
+The quiz sums it up. An agent says the bug is fixed. The strongest evidence is not a clear explanation or a reasonable diff. It is a test that failed before the change and passes now.`,
+
+    ai2: `Section two is prompting for code.
+
+Write a prompt the way you would brief a capable colleague who has never seen this ticket. Five things, a few sentences each. The goal and the reason for it. The context: which files, which constraints. What done looks like. How to verify it, usually a command to run. And what not to touch.
+
+Explaining the reason behind an instruction works better than the bare instruction. A bare rule is followed literally, and only in the cases it names. A rule with its reason lets the model generalise to cases you did not think of.
+
+Ask for a plan before code whenever the change touches several files, has more than one reasonable approach, or would be expensive to redo. A plan is a few paragraphs you can review in a minute, and correcting a plan is far cheaper than correcting a diff.
+
+For debugging, give the agent what you would put in a good bug report: the exact error and stack trace, the steps to reproduce, what you expected. Then ask it to prove the cause before changing anything.
+
+By default a model fills gaps with plausible assumptions. So tell it that gaps are a reason to stop: before you start, ask me anything that is ambiguous.
+
+The common mistakes are a vague goal with no definition of done, several unrelated tasks in one prompt, and no way to verify.
+
+And a habit from the quiz. If you have corrected the agent twice and it is still wrong, do not repeat yourself more loudly. Start a fresh session, with a clearer prompt that includes what you learned.`,
+
+    ai3: `Section three is context engineering.
+
+Prompt engineering is wording one request well. Context engineering is managing everything the model sees while it works: the system prompt, the tool definitions, the rules file, the files it has read, the results of its commands, and the conversation so far.
+
+Picture the context window as one bar, and the disk as boxes beneath it. The design question for every piece of knowledge is whether it sits in the bar all the time, or stays on disk until it is needed.
+
+Context rot is what happens in a long session. Quality drops as the window fills. The model attends less precisely to each part, early instructions fade, and stale file contents and abandoned approaches get in the way. Manage it by keeping sessions focused on one task, clearing or compacting between tasks, and writing important decisions to a file.
+
+A rules file is loaded into every session, so it is the project's standing brief. Because it costs tokens on every turn, each line has to earn its place. Good candidates are the commands to build and test, the conventions that are not obvious from the code, and the things never to do. The quiz makes the point: the command to run a single test file belongs there, and a full API reference does not.
+
+Modern agents mostly retrieve just in time. They search and read files as they go, in place of loading everything up front.
+
+A subagent is a separate instance with its own context window, started for one job. It can read fifty files, and only its short summary comes back.
+
+And memory across sessions is whatever is written down where the next session will find it.`,
+
+    ai4: `Section four is the harness, the program around the model. It runs the loop, exposes the tools, enforces permissions, loads rules and skills, and manages the context window. Much of what people credit to the model is the harness.
+
+A tool is a function the harness offers to the model: a name, a description and a schema for its arguments. The model never runs anything itself. It asks for a tool call, the harness runs it and returns the result. The Model Context Protocol is a standard way to plug in external tools and data, so that one server, for an issue tracker or a database, works with many agents.
+
+An agent that can run shell commands can do anything you can. So harnesses put layers between the model and your machine: permission rules for what may run without asking, approval modes that set how much is automatic, and sandboxing that limits files and network access. Autonomy is safe in proportion to how well the environment is contained.
+
+A hook is a script the harness runs at a fixed point: before a tool call, after a file edit, or when the agent is about to finish. The model does not decide whether it runs. That is the difference from a rules file. A rule is advice the model usually follows. A hook is a guarantee. The quiz applies it: if the agent sometimes edits a folder that the rules forbid, do not write the rule in capitals. Add a hook or a permission rule that blocks the edit.
+
+Headless mode runs an agent with no person watching, which turns it into a build step, for example to review pull requests.
+
+And when comparing tools, compare by category and by fit with your workflow, since features converge quickly.`,
+
+    ai5: `Section five is spec driven development.
+
+In spec driven development, the specification is the primary artefact, and the code is generated from it. You write down what the software must do, agree it, and only then let an agent build. It appeared because agents are fast at producing code, and fast at producing the wrong code when the intent is vague. A reviewed spec moves the human judgement to the place where it is cheapest.
+
+The flow has six steps with three human approvals. Write the spec, and approve it. Derive a plan, and approve it. Break the plan into tasks. Implement. Verify against the acceptance criteria. And review. The habit that matters most: when the result is wrong, correct the spec and regenerate, so the document and the code never drift apart. That is also the quiz answer. If an acceptance criterion turns out to be wrong during implementation, update the spec first.
+
+A good spec contains the problem and the goal, the user flows including the edge cases, acceptance criteria that can be tested, the constraints, and what is out of scope.
+
+Keep three documents apart. The spec says what and why. The plan says how: the architecture and the technical choices. The tasks are small units of work. Keeping them separate lets you change the how without touching the what.
+
+Acceptance criteria should map one to one onto tests. Ask the agent to turn each criterion into a failing test first, and review those tests carefully, because they define done.
+
+And scale the process to the risk. A typo fix needs a sentence. A new billing flow needs a reviewed spec.`,
+
+    ai6: `Section six is the BMad method, one well known framework for building software with agents through the whole lifecycle, from an idea to implemented stories. It is open source. It gives you named agent personas, each with a focus, and workflows that hand documents from one to the next.
+
+There are four phases, and every phase ends in a file that the next phase reads. Analysis explores the idea and produces a brief. Planning produces the product requirements. Solutioning produces the architecture, and breaks the work into epics and stories. Implementation builds the stories one at a time. Before implementation there is a readiness check, which validates that the requirements, the architecture and the stories agree with each other. It is cheap, and it catches contradictions before they become code.
+
+BMad offers planning tracks of different weight, and the principle is useful even if you never run it: match the ceremony to the risk. Running the full method for a one line fix wastes an afternoon.
+
+The value of the personas is not their names. Each one loads only the context its job needs.
+
+The build cycle takes each story through the same steps: create the story, implement it, and review it, with a fresh chat for every step. A fresh chat means a clean context, and a reviewer that has not seen the author's reasoning.
+
+A shared project context file records the decisions every agent must follow, so that one does not choose REST while another chooses GraphQL.
+
+When would you not use it? It is too heavy for a bug fix or a spike. In an interview, describe the ideas you would borrow: documents as hand offs, fresh context per step, and a check that the plans agree.`,
+
+    ai7: `Section seven is skills, rules and reusable workflows.
+
+A skill is a folder containing an instruction file, and optionally scripts, templates and reference material, that teaches an agent how to do one kind of task. Skills use progressive disclosure. Before a skill is used, only its name and description are in the context window. That is a quiz question: with forty skills installed, the cost up front is forty short descriptions, not forty documents. The body is loaded only when the skill is triggered.
+
+There are now several mechanisms, and people confuse them. Here is a quick way to choose. Knowledge goes in a rules file or a skill. Capability, meaning access to an outside system, comes from a Model Context Protocol server. Isolation comes from a subagent. And guarantees come from a hook. A slash command is a shortcut for a prompt you type often.
+
+To write a skill that triggers when it should, start with the description. It is the only part the agent sees up front, so say what the skill does and when to use it, in the words a request would use. Give the skill one job. Write the steps as you would for a capable new colleague, and include how to check the result.
+
+Which skills are worth having? Start with the two that pay off every day: a review skill and a verification skill. Add others when you notice yourself typing the same instructions for the third time.
+
+To share them safely across a team, commit the rules file, the project skills, the hooks and the tool configuration to the repository, so every developer and every pipeline run behaves the same. And review changes to them as you review code, because they change what the agent does.`,
+
+    ai8: `Section eight is a full stack workflow from start to finish, the answer to walk me through how you would build a feature with AI.
+
+Think of two lanes, yours and the agent's, and six steps. Explore: ask the agent how the area works today. Plan: it proposes, and you choose the approach. Implement, in small steps. Verify, with tests and by running the thing. Review: you read the whole diff. And ship.
+
+For frontend work, give the agent something to look at: a screenshot, a design, or an existing page to match. Point it at an existing component to copy the conventions from.
+
+For backend work, start from the contract: the route, the request and response schemas, and the shape of errors. Then tests against the contract, and then the implementation.
+
+Database changes are the least reversible thing a full stack developer does. So the agent proposes, and you approve. Have it write the migration and the rollback, and review them by hand before anything runs.
+
+For debugging, reproduce first: a failing test or a script that shows the bug. No reproduction, no fix. Then ask for ranked hypotheses, with evidence, before any edit.
+
+Generating tests is one of the best uses of an agent, since it is patient with edge cases. The risk is tests that pass without proving anything, so check the assertions.
+
+For a large refactor, do one instance carefully until it is exactly right, write the recipe from it, and then apply the recipe in batches.
+
+Git worktrees let several agents work on separate branches at once. In code review, AI is a good first reviewer and the human stays the approver. And an agent is an excellent guide to an unfamiliar codebase: ask it for a map, then to trace one real path.`,
+
+    ai9: `Section nine is quality, security and guardrails.
+
+How do you know AI written code is correct? The same way you know any code is correct: evidence, cheapest first. The guide calls it the verification ladder. Types and lint. Then unit tests. Then integration tests. Then running the application and looking at it. Then human review. Give the agent the means to climb the ladder itself, and it will fix most of its own mistakes.
+
+When reviewing generated code, ask first whether it solves the problem that was asked, or a nearby, easier one. Then look for invented APIs: functions, options or packages that do not exist. Look for missing error handling, for tests that assert nothing, and for changes outside the scope you gave.
+
+Slopsquatting is a newer supply chain risk. Models sometimes recommend a package that does not exist. The same made up names recur, so an attacker can register one and publish malware under it. Check that a package is real and established before you install it.
+
+Prompt injection is a security problem because a model cannot reliably tell instructions from data. If an agent reads a web page, an issue or a tool result containing text that says ignore your instructions, it may obey. The quiz names the dangerous combination: access to private data, exposure to untrusted content, and a way to send data out. Remove one of the three.
+
+Never paste keys or tokens into a prompt, and keep credential files out of the agent's reach.
+
+Do not measure AI's value by lines of code. It amplifies what a team already has, good practices or bad ones.
+
+And to keep your own skills: read every diff you merge. If you cannot explain why the code works, you are not done.`,
+
+    ai10: `The last section is interview questions.
+
+How do you use AI in your day to day development? Answer with a workflow and an example, not a list of tools. About sixty seconds. Name what you decide: the scope, the design and what done means. Name what you delegate: exploring the code, drafts, tests, mechanical changes. And name how you verify.
+
+Tell me about a time AI gave you wrong code. Every honest user has one, and the interviewer wants to see that you verify. Describe what it produced, how you caught it, a failing test or a check of the documentation, and what you changed in your process afterwards.
+
+Would you let an agent merge to main or deploy to production? A good answer is conditional, and names the conditions. An agent can open pull requests and fix failing checks, and a human approves. For low risk, mechanical changes with strong tests, more automation is reasonable. For production deploys, the agent goes through the same pipeline and the same gates as everyone else.
+
+How would you roll it out to a team? Start with one or two workflows that hurt, such as writing tests or a migration, and not with use AI for everything. Write the rules file together. Agree guardrails. Measure outcomes, not usage.
+
+Design an AI review step for a pipeline. It runs when a pull request opens or updates. It receives the diff, the description and the rules file. It posts comments, and it does not block or approve by itself.
+
+If an interview allows AI tools during live coding, say your plan out loud first, prompt precisely, and review what comes back in front of them.
+
+And on accountability, the quiz is clear. Whoever merges the change owns it, however it was written.`,
+  },
+};

@@ -1,0 +1,178 @@
+// Audio overview of the System Design at Scale guide. Written to be heard, not read: plain sentences, no code, no lists.
+export default {
+  intro: `This is the audio overview of the System Design at Scale guide. It is built around one interview prompt: design a full stack application that serves millions of users. And it answers that prompt as a single, connected story, moving through the stack one layer at a time.
+
+It has a sister guide on performance, which walks the same stack asking how to make it fast. This one asks how to design it in the first place.
+
+There are thirteen sections. The complete flow, framing the problem, the client and framework, authentication, the edge and gateway, service architecture, the data layer, caching, async messaging, deployment, reliability, security, and putting it all together.
+
+Listen for the order as much as the content. A calm, ordered walk through the layers is most of what the interviewer is scoring.`,
+
+  chapters: {
+    overview: `Section one is the complete flow, the whole answer compressed into one pass. It follows a request. The user's browser, the framework that renders the page, the identity check, the content delivery network and gateway, the services, the data stores, the cache in front of them, the queues behind them, and the platform that runs it all, with reliability and security wrapped around everything.
+
+The guide lines this up with its sister guide, row by row. For each layer there are three columns: what you decide when designing it, what you tune once it is running, and which cloud service usually fills the role. Design, optimise, operate.
+
+Every layer has two jobs. Make the happy path fast. And keep the system standing when something below it is slow or down. So the same protective patterns appear here as in the performance guide, and you should be able to sketch each in under a minute.
+
+At the entrance, timeouts and deadlines, rate limiting, and load shedding. To contain failure and absorb bursts, bulkheads, backpressure, idempotency and dead letter queues. To keep traffic off the origin, request collapsing, serving stale while revalidating, cache warming and batching. To protect the database, pooling, read replicas and indexes. In the browser, cancelling stale requests, optimistic updates and graceful degradation. And for safe operation, health checks, where liveness says restart this process and readiness says do not send it traffic yet, canary releases that roll back automatically, and the golden signals.
+
+In an interview, give this overview in a minute, and then ask which layer they would like to go deeper on.`,
+
+    framing: `Section two is framing the problem, which decides the quality of everything after it.
+
+When you are asked to design a full stack app that serves millions of users, treat the prompt as deliberately underspecified. Spend the first few minutes narrowing it, out loud, before any design work starts.
+
+There are two categories of question. Functional: what does the product do, what are the core user journeys, who are the users, and what is in and out of scope for this conversation? Non functional: how many users, daily and at peak? Is it read heavy or write heavy? What latency is acceptable? How available must it be? How consistent must the data be? Is the audience in one region or worldwide? Are there compliance requirements?
+
+Then state your assumptions, so that the interviewer can correct them. A candidate who starts drawing boxes at once is showing that they build before they understand.
+
+Next, size the system with a rough estimate. This turns millions of users from a frightening phrase into numbers you can design for. Start from daily active users. Multiply by the actions each takes in a day, and divide by the seconds in a day, about a hundred thousand, to get average requests per second. Multiply by a peak factor. Estimate storage from the size of a record, times the records per day, times the retention period. And estimate bandwidth the same way.
+
+The arithmetic does not need to be precise. It needs to reach a conclusion. Does this fit on one database? How many application servers is that? Is this a system with a read problem or a write problem? Those conclusions shape every later choice.`,
+
+    client: `Section three is the client layer and the web framework.
+
+Which framework would you choose? Next.js is the strong default for a consumer facing full stack application today, and the reason to give is not that it is popular. The reason is that it lets each route use the rendering strategy that suits it. Marketing pages are generated statically and served from the edge. Catalogue pages are regenerated in the background. Personal pages are rendered per request or in the browser. A single page app with no server rendering is a fair choice for an internal tool behind a login, where search engines and the first paint matter less.
+
+Whatever you choose, mention what serves millions of users well. Static assets with hashed names, cached for a long time at the edge. Code split by route. Images optimised. And a performance budget.
+
+Then the API contract: REST, GraphQL or tRPC. This is a depends on the organisation answer, not a depends on the technology answer, and saying so is the strong signal. Naming one winner unconditionally is the weaker answer.
+
+REST is the default. It is simple, it caches well over HTTP, and every client and tool understands it. It suits public APIs and many different consumers. GraphQL earns its place when many kinds of client need different shapes of the same data, and when several teams own different parts of that data. It costs you complexity in caching and in guarding against expensive queries. And tRPC gives types from end to end with almost no ceremony, when one team owns both the frontend and the backend in TypeScript, and no outside party consumes the API.`,
+
+    auth: `Section four is authentication and identity.
+
+Session cookies or tokens? A session cookie holds an opaque id, and the session itself lives in a store on the server, typically Redis. A JSON web token is signed and self contained. They trade off in exactly one place. A token can be verified by any service without a lookup, which is convenient across many services. But it cannot be revoked before it expires, unless you add a lookup, and then it is no longer stateless. A session can be ended instantly, at the price of a read on every request.
+
+A common production answer combines them: a short lived access token, with a longer lived refresh token that is stored on the server and can be revoked. For a browser application, keep the credential in a cookie that scripts cannot read, sent only over an encrypted connection, with the SameSite attribute set.
+
+Where does authentication actually get checked? In layers. The gateway verifies that the token is genuine and unexpired, and rejects obvious failures cheaply. But authorisation, whether this user may see this particular order, belongs in the service that owns the data, right next to the query. The edge can tell you who someone is. Only the service knows what they are allowed to touch.
+
+A current answer should not stop at passwords plus multi factor authentication. Passkeys are the direction of travel, and are supported on every major platform. They resist phishing, because the credential is bound to the real site and never leaves the device. Add sign in through an identity provider with OpenID Connect, so that you are not storing passwords at all. And name the basics: rate limits on sign in, and alerts on unusual activity.`,
+
+    edge: `Section five is the edge: the content delivery network and the API gateway.
+
+Two distinct layers sit between the client and your services. They are often blurred together in an interview answer, and they are worth naming separately. A content delivery network serves static, cacheable content from close to the user: scripts, styles, images, and pages that can be cached. It also absorbs traffic spikes and attacks. An API gateway is the single front door for dynamic requests. It terminates encryption, verifies tokens, applies rate limits, routes each request to the right service, and gives you one place for logging.
+
+Then versioning. The constraint that drives everything is this: once a mobile app is in the wild, you do not control when clients upgrade. Some share of users will be on an old version for months. So prefer changes that add and never break. Add fields, and never rename or remove them. Make new request fields optional. When a breaking change is unavoidable, introduce a new version alongside the old one, measure who still calls the old one, announce a date, and only then retire it.
+
+The third topic is making write endpoints safe to retry. Any network call can fail after the server has committed, but before the response gets back. The client sees a timeout, and cannot tell it did not happen from it happened and I never heard. If it retries a payment, the customer may be charged twice.
+
+The answer is an idempotency key. The client generates a unique key for each logical operation and sends it with the request. The server stores the key with the result. If the same key arrives again, the server returns the stored result and does not repeat the work.`,
+
+    services: `Section six is service architecture.
+
+Monolith or microservices? Start with a modular monolith: a single deployable, with clear internal boundaries between modules such as authentication, billing and notifications. You get one deployment, simple local calls, real database transactions, and one thing to operate. The boundaries are enforced by code structure, not by a network.
+
+When do you split a module out into a service? When there is a concrete reason, and you can name it. It needs to scale very differently from the rest. It needs a different technology. A team needs to deploy it independently, because the shared release process has become the bottleneck. Or its failures must be isolated from everything else. Splitting earlier than that buys the costs of a distributed system, with network calls, partial failure and eventual consistency, without the benefits. And the worst outcome is the distributed monolith, where services share a database or must be released together.
+
+A backend for frontend is a thin service between one particular client, the web, the mobile app or a partner API, and the services behind it, shaped around exactly what that client needs. It gathers several calls into one, and trims the response. Add one when different clients have truly different needs, and a single general API is serving all of them badly.
+
+The last question separates a senior engineer's answer from an architect's. How do service boundaries relate to team structure? Conway's Law observes that a system's structure tends to mirror the communication structure of the organisation that builds it. So draw boundaries that match teams. A service owned by two teams becomes a coordination problem. And a team that owns part of five services cannot ship anything alone.`,
+
+    data: `Section seven is the data layer, the longest and usually the most important part of the answer.
+
+SQL or NoSQL? The honest answer is that most core application data is relational, and PostgreSQL is a strong default even at large scale. Reach for a NoSQL store when a specific access pattern calls for it: huge write volume with simple lookups by key, documents whose shape varies, or data that must be spread across regions.
+
+How do you scale the database as volume grows? In the order you would actually reach for each step. Correct indexes first, the highest leverage and lowest cost fix. Then read replicas, which take the read traffic, the large majority for most applications. Then caching. Then partitioning. And last, sharding.
+
+Two terms are easy to confuse. Sharding is horizontal partitioning: the same schema, with the rows spread across several databases by a key such as the user id. Vertical partitioning splits by column or by table, moving different kinds of data to different stores. They cut in perpendicular directions.
+
+The CAP theorem says that a distributed store, during a network partition, must choose between consistency and availability. Day to day it matters as a choice per feature. A bank balance wants consistency. A social feed can tolerate a brief delay.
+
+Read replicas bring lag, and the follow up question catches people who have not operated them. Replication is asynchronous, so a user may save something and then not see it. Handle it by reading from the primary for a short time after a write, for that user.
+
+And schema changes at scale follow expand and contract. Add the new structure, write to both, copy the old data across, switch the reads, and only then remove the old. Every step must work with both the old and the new version of the code running.`,
+
+    caching: `Section eight is caching, and the strongest way to answer it is as a waterfall. A request only reaches the database when it has missed at every faster layer in front of it. So walk the layers from the user inwards.
+
+First, the browser's own cache. Static assets with a hash in their name are stored for a long time, and are never requested again until the name changes.
+
+Second, the content delivery network. It serves those assets, and cacheable pages, from a location near the user, so the request never crosses the world to your servers.
+
+Third, the gateway or the application can keep whole responses for popular requests that do not vary by user.
+
+Fourth, a distributed cache such as Redis, shared by all your instances, holding the results of expensive queries and computations, sessions, and counters.
+
+Fifth, a small cache inside each process, for tiny, hot, rarely changing data such as configuration.
+
+And only then, the database, which has caches of its own.
+
+For each layer, say three things: what is stored there, how long it lives, and how it is invalidated. Invalidation is the hard part. Expiry times are simple, and the data is stale for a while. Deleting the entry on write is fresher, and you can miss a case. Often you combine them: invalidate on write, with an expiry time as a safety net.
+
+The default pattern for the application cache is cache aside. Read the cache. On a miss, read the database, and store the result with an expiry.
+
+Then name the failure modes: the stampede when a hot key expires, stale data, and a cold cache after a deploy. And one rule: never put private data in a shared cache under a key that does not include the user.`,
+
+    async: `Section nine is async work and messaging.
+
+What moves off the request and response path? Anything that does not need to be complete before the user gets a response. Sending a notification. Generating a document. Updating a search index. Calling a slow third party. The request handler records the intent, puts a message on a queue, and returns straight away. A worker does the rest. The user gets a fast answer, a burst of traffic becomes a longer queue instead of an outage, and a failed job can be retried without the user being involved.
+
+That raises a hard question. How do you keep data consistent across services without a distributed transaction? With the Saga pattern. A saga is a sequence of local transactions, one per service, where every step has a matching compensating transaction that undoes its work if a later step fails. Reserve the stock, take the payment, book the delivery. If the delivery cannot be booked, refund the payment and release the stock. A saga can be choreographed, with services reacting to each other's events, or orchestrated, with one coordinator directing the steps. Orchestration is easier to follow and to debug as the flow grows.
+
+Then the dual write problem, the most common silent data loss bug in event driven systems. A service must write to its own database and also publish an event. Those are two separate systems, and no transaction covers both. If the process dies between them, you have an order with no event, or an event with no order.
+
+The fix is the transactional outbox. Write the event into an outbox table in the same database transaction as the business change. A separate process reads the outbox and publishes. Events are then delivered at least once, so consumers must be idempotent.`,
+
+    deploy: `Section ten is deployment and infrastructure.
+
+What does the path from a merged pull request to production look like? The code is built, tested and packaged into a container image. The image is pushed to a registry, and deployed by an orchestrator, which handles scheduling, health checks, restarts and scaling. The same image moves through the environments, so that what you tested is what you ship. The rollout is gradual: a rolling update, or a canary that takes a small share of traffic first and rolls back automatically if errors rise. Infrastructure is defined as code. And database migrations run as a separate, backwards compatible step, before the code that depends on them.
+
+Vertical or horizontal scaling? Vertical scaling means a bigger machine: more processors, more memory, the same instance. It is simple, needs no change to the application, and has a ceiling, as well as a single point of failure. Horizontal scaling means more machines. It has no practical ceiling, and it survives the loss of a machine, but it requires a stateless application, and something to spread the traffic. In practice, application servers scale horizontally, and databases scale vertically first, because that is so much simpler, and then add replicas.
+
+That something is the load balancer, which is what actually makes horizontal scaling usable. It gives clients one address, spreads requests across healthy instances, and removes any instance that fails its health check.
+
+For the algorithm: round robin is the simple default when requests are similar. Least connections is better when requests vary in length, or connections are long lived. Hashing on a key sends the same user to the same instance, which helps with local caches, at some cost to even distribution.`,
+
+    reliability: `Section eleven is reliability and observability.
+
+How do you design for things going wrong, and not just for the happy path? Every outbound call between services gets the same layered defence, applied in a specific order, where each layer catches what the one inside it could not.
+
+Innermost, a timeout, so a call never waits forever. Around that, a retry, only for failures that may pass, with exponential backoff and jitter so that clients do not all retry at the same instant, and only for operations that are safe to repeat. Around that, a circuit breaker, which stops calling a dependency that keeps failing, and fails fast until it recovers. Around that, a bulkhead, which limits how much of your capacity any single dependency can consume. And outermost, a fallback: a cached value, a default, or a reduced feature. The page loads without the recommendations panel, and that is better than not loading at all.
+
+Then the question of knowing something is wrong before a user reports it. There are three complementary signals, not one. Logs, for digging into a specific incident after the fact. Metrics, for cheap, always on alerting on trends. And distributed traces, which follow one request across services and show where the time went.
+
+Alert on symptoms that users feel, such as error rate and latency, more than on causes such as processor load. Define service level objectives, and use the error budget to decide between shipping features and fixing reliability. Watch the four golden signals: latency, traffic, errors and saturation.
+
+And finish with the human side. An alert should lead to a runbook. After an incident, hold a review without blame that produces concrete changes.`,
+
+    security: `Section twelve is security, as defence in depth. No single control is trusted to be the only thing standing between an attacker and the data. Each layer assumes that the ones around it could fail.
+
+Walk it from the outside in.
+
+At the edge, a web application firewall, protection against floods of traffic, and rate limiting.
+
+In transit, encryption everywhere, including between your own services. Do not treat the internal network as trusted.
+
+At the gateway, authentication: every request carries a verified identity.
+
+In the services, authorisation, checked next to the data. That is where the most common real breach lives, an endpoint that returns a record by its id without checking that the caller owns it.
+
+At the input, validation against a schema, and parameterised queries, so that input can never become code. And at the output, escaping, with a content security policy as a second line.
+
+At rest, data is encrypted, with keys held in a key management service. Secrets live in a secrets manager, never in the code or the image, and they are rotated.
+
+For access by people and by services, least privilege. Each service has its own role, with only the permissions it needs, and short lived credentials.
+
+In the supply chain, pinned dependencies, automated scanning, and a minimal base image.
+
+And around all of it, audit logs of who did what, alerts on unusual behaviour, and a rehearsed plan for the day something does go wrong.
+
+In an interview you do not need to recite every item. Name the principle, walk three or four layers that fit the system in front of you, and call out the one that matters most. For most products, that is authorisation at the data.`,
+
+    together: `The final section puts it all together.
+
+The whole design converges on one diagram, and the guide suggests drawing it in three passes, saying what each one protects. First the request path, which is about latency and security: client, content delivery network, gateway, services, cache and database. Then the event path, which is about decoupling and reliability: the outbox, the broker, the workers and the dead letter queue. Then the operational plane: deployment, metrics, logs and traces.
+
+A second view shows where it runs. Every tier across several availability zones. The database with a standby and replicas. Backups that have actually been restored in a test. And a stated recovery time and recovery point for the loss of a region.
+
+Cost is where a senior answer becomes an architect's answer, because every decision above has a bill attached, and most candidates never mention it. Name the big items: compute, the database, data transfer and logs. Say which choices you made partly for cost.
+
+Testing has to match the architecture. Unit tests prove that a function works, and tell you nothing about whether two services still agree. So add contract tests between services, integration tests against real dependencies, a few end to end journeys, and load tests before launch.
+
+Then the MVP question. Some things are fine to defer, because retrofitting them is bounded work: read replicas, sharding, a service mesh, multiple regions. Others should be designed in from day one, because retrofitting is painful: authentication and authorisation, idempotent writes, structured logs, backwards compatible migrations, and stateless servers.
+
+For pacing in a forty five minute interview: about five minutes on requirements and the estimate, ten to fifteen on the high level architecture, and the rest going deep where the interviewer leads, ending with trade offs.`,
+  },
+};
