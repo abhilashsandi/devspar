@@ -338,7 +338,34 @@ hand. `tests/unit/match.test.mjs` checks every guide pointer against the real in
 
 ## Listen mode
 
-Every guide has a **Listen** button (hero and section toolbar) when the browser has speech synthesis. The `listen` block of
+Every guide has a **Listen** button (hero and section toolbar) when the browser has speech synthesis. It plays the guide's
+**audio overview**: a spoken explainer written for listening (in a car, on a walk), not a reading of the page. The hero
+button plays an introduction and then one chapter per section; the section toolbar button starts at that section's chapter.
+
+### Audio overviews
+
+Each guide has an authored script at `scripts/study/audio/<slug>.mjs`:
+
+```js
+export default {
+  intro: `about one minute of spoken prose, paragraphs separated by blank lines`,
+  chapters: { '<section id>': `one to two minutes about that section`, /* every section except quickref */ },
+};
+```
+
+`emit-static.mjs` turns it into `public/study/audio/<slug>.json` (`{ intro, chapters: [{ id, title, text }] }`, chapters
+in section order with the section's title), and `build-sw.mjs` precaches those files so overviews play offline.
+`npm run study:audio` (`scripts/study/check-audio.mjs`, add `--require-all` to insist every guide has one) checks that each
+non-quickref section has a chapter, that the intro is 60 to 170 words and each chapter 120 to 330, and that the text has no
+markup, code punctuation, list markers or URLs, which speech engines read badly.
+
+Rules for writing one: plain spoken sentences; describe pictures and code in words; say the one-sentence rule behind each
+topic; stay within what the guide's own cards say (run `node scripts/study/audio-digest.mjs <slug> [sectionId]` to print
+each card's title and the opening of its answer). Never put anything from `private/` into an overview.
+
+### Card reading (fallback)
+
+When a guide has no overview (or the JSON fails to load), Listen falls back to reading the cards. The `listen` block of
 `engine.js` turns each card into short spoken chunks (at most 220 characters, because some browsers cut a long utterance
 off after about 15 seconds) and plays them through the device's own voice: the question, a beat, then the 60-second
 script when the card has one (or the whole answer with **Full answers**). Code, tables and diagrams are read as one short
