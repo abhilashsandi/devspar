@@ -369,3 +369,14 @@ and tool route and the files they need. New guides and tool pages join it automa
 and `app/lib/tools.mjs`. A check that uses `page.route` to fail a request must use a context with `serviceWorkers: 'block'`,
 or the worker answers from its saved copy. To debug, unregister the worker in DevTools > Application > Service workers.
 Never add `X-Frame-Options: DENY`: the guides are shown in a same-origin iframe. `/my-prep` is never available offline, by design.
+
+### Phone-screen answers on Job match
+
+The owner's own pitches ("What is your experience with X?") live in `private/pitches.mjs` (git-ignored). Its `PITCH_META`
+table says which skill ids from `app/lib/skills.mjs` each pitch answers, which pitch is the introduction (`always`) and
+which are role pitches (`role`). `scripts/update-my-prep.mjs` encrypts that list into `public/my-prep/phone.enc.json` with
+the My Prep password, alongside the page itself. On `/match`, after a posting is analysed, the reader enters the password;
+the file is decrypted in the browser into memory only (`app/lib/privateCrypto.ts`), and `app/lib/phone.mjs` picks the
+introduction, the role pitch and one pitch per skill in the posting's order. A skill with no pitch gets an honest frame
+to fill in, never an invented answer. The service worker never caches anything under `/my-prep`. The browser check uses
+a fixture encrypted with a test password, so no real answer or password is ever in a test.

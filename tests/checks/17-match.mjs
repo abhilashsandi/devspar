@@ -66,6 +66,61 @@ export async function run({ browser, base, ok }) {
   const stored = await page.evaluate(() => JSON.stringify({ l: { ...localStorage }, s: { ...sessionStorage } }));
   ok('nothing from the posting is stored', !/Zebra|umbrellas|Northwind|Senior Full-Stack/i.test(stored));
   ok('nothing from the posting was sent anywhere', leaks.length === 0, leaks.join(' '));
-  ok('no script errors', errors.length === 0, errors.slice(0, 2).join(' | '));
   await ctx.close();
+
+  // ---- phone-screen answers: the reader's own pitches, encrypted; here a fixture encrypted with a test password
+  const { pbkdf2Sync, createCipheriv, randomBytes } = await import('node:crypto');
+  const encrypt = (text, password) => {
+    const salt = randomBytes(16), iv = randomBytes(12), iter = 1000;
+    const c = createCipheriv('aes-256-gcm', pbkdf2Sync(password, salt, iter, 32, 'sha256'), iv);
+    const ct = Buffer.concat([c.update(text, 'utf8'), c.final(), c.getAuthTag()]);
+    return JSON.stringify({ v: 1, iter, salt: salt.toString('base64'), iv: iv.toString('base64'), ct: ct.toString('base64') });
+  };
+  const fixture = encrypt(JSON.stringify({ v: 1, pitches: [
+    { id: 'intro', always: true, title: 'Tell me about yourself (fixture)', say: 'Fixture introduction sentence.', probes: ['fixture probe'], verify: '' },
+    { id: 'fullstack', role: 'fullstack', title: 'Full-stack (fixture)', say: 'Fixture full-stack answer.', probes: [], verify: '' },
+    { id: 'react', skills: ['react', 'state'], title: 'React', say: 'Fixture React answer with a number: 7 years.', probes: ['hooks'], verify: 'the year count' },
+  ] }), 'fixture-password');
+
+  const pctx = await browser.newContext({ viewport: { width: 1100, height: 1000 }, serviceWorkers: 'block' });
+  const pp = await pctx.newPage();
+  pp.on('pageerror', (e) => errors.push(e.message));
+  let serve = true;
+  await pp.route('**/my-prep/phone.enc.json', (r) => (serve ? r.fulfill({ status: 200, contentType: 'application/json', body: fixture }) : r.fulfill({ status: 404, body: 'no' })));
+  await pp.goto(`${base}/match`, { waitUntil: 'networkidle' });
+  await pp.getByLabel('Job posting').fill(POSTING);
+  await pp.getByRole('button', { name: 'Find my deck' }).click();
+  const phone = pp.locator('section[aria-label="Phone-screen answers"]');
+  await phone.waitFor({ timeout: 10000 });
+  ok('phone-screen answers start locked', (await phone.getByLabel('My Prep password').count()) === 1 && (await phone.locator('ol li').count()) === 0);
+
+  await phone.getByLabel('My Prep password').fill('wrong-password');
+  await phone.getByRole('button', { name: 'Show my answers' }).click();
+  await phone.getByText('That password did not work.').waitFor({ timeout: 10000 }).catch(() => {});
+  ok('a wrong password is refused', (await phone.getByText('That password did not work.').count()) === 1);
+
+  await phone.getByLabel('My Prep password').fill('fixture-password');
+  await phone.getByRole('button', { name: 'Show my answers' }).click();
+  await phone.locator('ol li').first().waitFor({ timeout: 10000 }).catch(() => {});
+  const qs = await phone.locator('ol > li h3').allTextContents();
+  ok('the right password lists the introduction, the role pitch, then the pitches the posting needs', JSON.stringify(qs) === JSON.stringify(['Tell me about yourself (fixture)', 'What is your background? (Full-stack (fixture))', 'What is your experience with React?']), qs.join(' | '));
+  ok('each answer is shown as written', (await phone.getByText('Fixture React answer with a number: 7 years.').count()) === 1 && (await phone.getByText('the year count').count()) === 1);
+  const gaps = await phone.locator('div', { has: pp.locator('h3', { hasText: 'No answer written yet' }) }).last().locator('li').allTextContents();
+  ok('skills with no pitch get an honest frame, not an invented answer', gaps.some((g) => g === 'I have not used Java in production. The closest I have done is ___. I would get productive by ___.'), `${gaps.length} gaps`);
+
+  const kept = await pp.evaluate(() => JSON.stringify({ l: { ...localStorage }, s: { ...sessionStorage } }));
+  ok('neither the password nor an answer is stored', !/fixture-password|Fixture React answer|Fixture introduction/.test(kept));
+  await pp.reload({ waitUntil: 'networkidle' });
+  await pp.getByLabel('Job posting').fill(POSTING);
+  await pp.getByRole('button', { name: 'Find my deck' }).click();
+  await phone.waitFor({ timeout: 10000 });
+  ok('after a reload the answers are locked again', (await phone.getByLabel('My Prep password').count()) === 1);
+
+  serve = false;
+  await phone.getByLabel('My Prep password').fill('fixture-password');
+  await phone.getByRole('button', { name: 'Show my answers' }).click();
+  await phone.getByText('Your answers have not been published yet.').waitFor({ timeout: 10000 }).catch(() => {});
+  ok('a site with no published answers says so', (await phone.getByText('Your answers have not been published yet.').count()) === 1);
+  await pctx.close();
+  ok('no script errors', errors.length === 0, errors.slice(0, 2).join(' | '));
 }

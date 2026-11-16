@@ -10,7 +10,7 @@
 //
 // Same format as scripts/encrypt-private.mjs: PBKDF2-SHA256 -> AES-256-GCM (auth tag appended).
 // Never commit private/ or the password.
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { randomBytes, pbkdf2Sync, createCipheriv, createDecipheriv } from 'node:crypto';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import path from 'node:path';
@@ -23,6 +23,11 @@ const ENC = path.join(ROOT, 'app', 'my-prep', 'private.enc.json');
 // Order here is the order they appear at the top of the page.
 const SOURCES = [['experience.mjs', 'experienceSection'], ['pitches.mjs', 'pitchesSection']];
 
+// The phone-screen pitches as data (private/pitches.mjs exports `pitchList`), encrypted separately for the
+// Job match page, which lists the pitches a pasted posting needs once the reader unlocks them.
+const PHONE = path.join(ROOT, 'public', 'my-prep', 'phone.enc.json');
+let pitchList = null;
+
 const sections = [];
 for (const [file, name] of SOURCES) {
   const src = path.join(ROOT, 'private', file);
@@ -30,6 +35,7 @@ for (const [file, name] of SOURCES) {
   const mod = await import(pathToFileURL(src).href);
   if (!mod[name]) { console.error(file + ' does not export ' + name); process.exit(1); }
   sections.push(mod[name]);
+  if (Array.isArray(mod.pitchList)) pitchList = mod.pitchList;
 }
 // ✎ marks a hypothetical drafted answer that has not been confirmed yet.
 const left = sections.flatMap((s) => s.questions.filter((q) => /\[fill in|✎/.test(q.a)).map((q) => q.q.replace(/<[^>]+>/g, '')));
@@ -77,5 +83,17 @@ const k2 = pbkdf2Sync(password, salt, payload.iter, 32, 'sha256');
 const c = createCipheriv('aes-256-gcm', k2, iv);
 const ct = Buffer.concat([c.update(updated, 'utf8'), c.final(), c.getAuthTag()]);
 writeFileSync(ENC, JSON.stringify({ v: 1, iter: payload.iter, salt: salt.toString('base64'), iv: iv.toString('base64'), ct: ct.toString('base64') }));
+if (pitchList) {
+  // plain text: the kit's `code` and **bold** marks are dropped, so the page can show it as text
+  const plain = (s) => String(s).split('`').join('').split('**').join('');
+  const body = JSON.stringify({ v: 1, pitches: pitchList.map((p) => ({ ...p, say: plain(p.say), probes: p.probes.map(plain), verify: plain(p.verify) })) });
+  const s2 = randomBytes(16), i2 = randomBytes(12);
+  const k3 = pbkdf2Sync(password, s2, payload.iter, 32, 'sha256');
+  const c2 = createCipheriv('aes-256-gcm', k3, i2);
+  const ct2 = Buffer.concat([c2.update(body, 'utf8'), c2.final(), c2.getAuthTag()]);
+  mkdirSync(path.dirname(PHONE), { recursive: true });
+  writeFileSync(PHONE, JSON.stringify({ v: 1, iter: payload.iter, salt: s2.toString('base64'), iv: i2.toString('base64'), ct: ct2.toString('base64') }));
+  console.log('phone answers encrypted: ' + pitchList.length + ' pitch(es) -> public/my-prep/phone.enc.json');
+}
 console.log('my-prep updated: ' + sections.map((s) => s.title + ' (' + s.questions.length + ')').join(', ') + '; ' + rest.length + ' other section(s) kept');
 console.log(left.length + ' card(s) contain ✎ drafts (or placeholders) to confirm');
