@@ -81,6 +81,16 @@ Everything a reader types stays in their browser.
   `public/vendor/` at build time; see "Runnable SQL" in `scripts/study/README.md`.
 
 - The JavaScript guide's "Predict the Output" cards: type the output, lock it in, then run the snippet in a worker.
+- `/plan`: a day-by-day plan up to an interview date, with night-before and 30-minute modes.
+- `/match`: paste a job description to see which skills it asks for and how well the guides cover each. With the
+  `/my-prep` password it also lists the owner's own phone-screen answers in the order the job needs them: they are
+  decrypted in the browser from `public/my-prep/phone.enc.json`, which `scripts/update-my-prep.mjs` writes.
+- `/stories`: a private STAR story bank.
+- **Listen** in every guide plays a spoken audio overview (an introduction, then one chapter per section), written for
+  listening away from a screen. Scripts live in `scripts/study/audio/<slug>.mjs`; see "Listen mode" in
+  `scripts/study/README.md`.
+- Offline: a service worker keeps the guides, the audio overviews and the tools available without a connection
+  (`/offline` explains what is saved).
 
 ## SEO
 
