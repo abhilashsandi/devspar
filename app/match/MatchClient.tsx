@@ -1,5 +1,7 @@
 'use client';
 
+/* eslint-disable react-hooks/set-state-in-effect -- these pages keep everything in the reader's browser: storage and the clock only exist after hydration, so they are read in an effect (reading them during render would make the server and client HTML differ) */
+
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { loadBank, readProgress } from '../lib/bank.mjs';

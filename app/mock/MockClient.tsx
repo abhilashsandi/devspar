@@ -1,5 +1,7 @@
 'use client';
 
+/* eslint-disable react-hooks/set-state-in-effect -- these pages keep everything in the reader's browser: storage and the clock only exist after hydration, so they are read in an effect (reading them during render would make the server and client HTML differ) */
+
 import { useCallback, useEffect, useReducer, useState } from 'react';
 import Link from 'next/link';
 import CardEmbed from '../components/CardEmbed';
@@ -37,7 +39,7 @@ function bank(segments: Seg[]) {
   return segments.flatMap((s) => s.cards);
 }
 function elapsed(run: Run, i: number, now: number) {
-  return run.segMs[i] + (i === run.seg && !run.paused && !run.done ? now - run.since : 0);
+  return run.segMs[i] + (i === run.seg && !run.paused && !run.done ? Math.max(0, now - run.since) : 0);
 }
 function bankIndex(run: Run) {
   let n = 0;
@@ -185,7 +187,7 @@ export default function MockClient() {
             {cards ? 'Start round' : 'Loading questions…'}
           </button>
           {resumable && (
-            <button type="button" onClick={() => { dispatch({ type: 'start', run: { ...resumable, paused: true } }); setResumable(null); }} className="rounded-xl border border-line bg-surface px-5 py-3 text-base font-bold text-ink hover:border-marker hover:text-marker">
+            <button type="button" onClick={() => { dispatch({ type: 'start', run: { ...resumable, paused: true } }); setNow(Date.now()); setResumable(null); }} className="rounded-xl border border-line bg-surface px-5 py-3 text-base font-bold text-ink hover:border-marker hover:text-marker">
               Resume round
             </button>
           )}
@@ -256,7 +258,7 @@ export default function MockClient() {
   }
 
   // ---------- running ----------
-  const tick = now || Date.now();
+  const tick = now;
   const seg = run.segments[run.seg];
   const budgetMs = seg.minutes * 60000;
   const el = elapsed(run, run.seg, tick);
@@ -266,7 +268,7 @@ export default function MockClient() {
     <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm text-ink-2" role="timer" aria-label="Round clock">
       <span className={left < 0 ? 'font-bold text-red-marker' : 'font-bold text-ink'}>{left >= 0 ? mmss(left) : `+${mmss(-left)}`}</span>
       <span>round {mmss(total)} of 45:00</span>
-      <button type="button" onClick={() => dispatch({ type: run.paused ? 'resume' : 'pause', now: Date.now() })} className="rounded-lg border border-line bg-surface px-3 py-1 font-bold text-ink hover:border-marker">
+      <button type="button" onClick={() => { const t0 = Date.now(); setNow(t0); dispatch({ type: run.paused ? 'resume' : 'pause', now: t0 }); }} className="rounded-lg border border-line bg-surface px-3 py-1 font-bold text-ink hover:border-marker">
         {run.paused ? 'Resume' : 'Pause'}
       </button>
     </div>

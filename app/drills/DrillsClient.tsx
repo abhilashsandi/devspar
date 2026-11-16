@@ -1,5 +1,7 @@
 'use client';
 
+/* eslint-disable react-hooks/set-state-in-effect -- these pages keep everything in the reader's browser: storage and the clock only exist after hydration, so they are read in an effect (reading them during render would make the server and client HTML differ) */
+
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { seedFrom } from '../lib/bank.mjs';
@@ -43,7 +45,7 @@ export default function DrillsClient() {
   const [graded, setGraded] = useState<Grade | null>(null);
   const [results, setResults] = useState<Done[]>([]);
   const [now, setNow] = useState(0);
-  const startedAt = useRef(0);
+  const [startedAt, setStartedAt] = useState(0);
   const input = useRef<HTMLInputElement>(null);
 
   const begin = (seedText?: string | null) => {
@@ -53,11 +55,11 @@ export default function DrillsClient() {
     const seed = seedText ? seedFrom(seedText) : (t ^ Math.floor(Math.random() * 0xffffffff)) >>> 0;
     setSession(makeSession(seed, s));
     setI(0); setText(''); setGraded(null); setResults([]);
-    startedAt.current = t; setNow(t);
+    setStartedAt(t); setNow(t);
   };
   useEffect(() => {
     begin(new URLSearchParams(window.location.search).get('seed'));
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   const finished = !!session && i >= session.length;
   useEffect(() => {
@@ -96,17 +98,17 @@ export default function DrillsClient() {
   }
 
   const d = session[i];
-  const elapsed = Math.max(0, Math.round((now - startedAt.current) / 1000));
+  const elapsed = Math.max(0, Math.round((now - startedAt) / 1000));
   const submit = () => {
     if (graded) {
       // a second Enter moves on, and never grades twice
       setI((n) => n + 1); setText(''); setGraded(null);
-      startedAt.current = Date.now(); setNow(startedAt.current);
+      const t0 = Date.now(); setStartedAt(t0); setNow(t0);
       return;
     }
     const g = grade(text, d) as Grade;
     if (g === 'invalid') { setGraded('invalid'); return; }
-    const seconds = Math.round((Date.now() - startedAt.current) / 1000);
+    const seconds = Math.round((Date.now() - startedAt) / 1000);
     try { recordResult(localStorage, d.id, g); } catch { /* storage unavailable */ }
     setResults((r) => [...r, { id: d.id, grade: g, seconds }]);
     setGraded(g);

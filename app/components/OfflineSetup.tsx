@@ -1,5 +1,7 @@
 'use client';
 
+/* eslint-disable react-hooks/set-state-in-effect -- these pages keep everything in the reader's browser: storage and the clock only exist after hydration, so they are read in an effect (reading them during render would make the server and client HTML differ) */
+
 import { useEffect, useState } from 'react';
 
 // Registers the service worker (public/sw.js, built by scripts/build-sw.mjs) in production, so the guides open
